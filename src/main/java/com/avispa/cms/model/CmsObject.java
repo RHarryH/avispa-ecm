@@ -29,25 +29,24 @@ import java.util.UUID;
 @Table(name = "cms_object")
 public abstract class CmsObject implements CmsEntity {
 
-    //@Id
-    //@GeneratedValue
-    //private Long id;
-
     @Id
+    @GeneratedValue
+    @Getter
+    @Setter
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
+
+    /*@Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "id", updatable = false, nullable = false)
-    @Getter
-    @Setter
-    @ColumnDefault("random_uuid()") // this function will be used when running manual inserts
+    @ColumnDefault("random_uuid()") // this function will be used when running manual inserts*/
     @Type(type = "uuid-char") // do not store as binary type
-    private UUID id;
-
-    //@Getter
-    //private final UUID uuid = UUID.randomUUID();
+    @Column(name = "uuid", updatable = false, nullable = false)
+    @Getter
+    private final UUID uuid = UUID.randomUUID();
 
     @Getter
     @Setter
@@ -75,11 +74,11 @@ public abstract class CmsObject implements CmsEntity {
     @Override
     public boolean equals(Object that) {
         return this == that || that instanceof CmsObject
-                && Objects.equals(id, ((CmsObject) that).id);
+                && Objects.equals(uuid, ((CmsObject) that).uuid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(uuid);
     }
 }

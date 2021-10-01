@@ -9,8 +9,6 @@ import lombok.Setter;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import java.util.Set;
@@ -21,7 +19,6 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Inheritance(strategy= InheritanceType.JOINED)
 public class Document extends CmsObject {
 
     @OneToOne(fetch = FetchType.LAZY)

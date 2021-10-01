@@ -9,5 +9,5 @@ import java.util.UUID;
  * @author Rafał Hiszpański
  */
 @NoRepositoryBean
-public interface CmsEntityRepository<T extends CmsEntity> extends JpaRepository<T, UUID> {
+public interface CmsEntityRepository<T extends CmsEntity> extends JpaRepository<T, Long> {
 }

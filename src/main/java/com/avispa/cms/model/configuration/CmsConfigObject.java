@@ -8,5 +8,5 @@ import javax.persistence.Entity;
  * @author Rafał Hiszpański
  */
 @Entity
-public class CmsConfigObject extends CmsObject {
+public abstract class CmsConfigObject extends CmsObject {
 }

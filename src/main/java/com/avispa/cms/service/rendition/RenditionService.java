@@ -70,7 +70,7 @@ public class RenditionService {
         Content rendition = new Content();
         rendition.setExtension(PDF);
         rendition.setDocument(content.getDocument());
-        rendition.setFileStorePath(Path.of(fileStore.getRootPath(), rendition.getId().toString()).toString());
+        rendition.setFileStorePath(Path.of(fileStore.getRootPath(), rendition.getUuid().toString()).toString());
 
         try  {
             try(InputStream inputStream = new FileInputStream(content.getFileStorePath());
