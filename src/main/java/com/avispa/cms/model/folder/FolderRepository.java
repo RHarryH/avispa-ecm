@@ -16,8 +16,8 @@ public interface FolderRepository extends CmsObjectRepository<Folder> {
     Folder findFolderByObjectNameAndPath(String folderName, String path);
 
     @Query("select d from Document d join Folder f on d.folder.id = f.id where f.id = ?1")
-    List<Document> findDocumentsByFolderId(UUID folderId);
+    List<Document> findDocumentsByFolderId(Long folderId);
 
     @Query("select f from Folder f where f.ancestor.id = ?1")
-    List<Folder> findNestedFoldersByFolderId(UUID folderId);
+    List<Folder> findNestedFoldersByFolderId(Long folderId);
 }
