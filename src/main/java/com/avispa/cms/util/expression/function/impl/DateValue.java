@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * Function that gets property value and formats it using format provided as second
- * parameter
+ * parameter. Pattern used by this function matches Java 8 Data & Time patterns.
  *
  * @author Rafał Hiszpański
  */
@@ -19,7 +19,7 @@ public class DateValue extends ValueFunction {
     @Override
     public String resolve(Document document, String[] params) {
         if(params.length < 2) {
-            throw new IllegalArgumentException("Required two attributes");
+            throw new IllegalArgumentException("Require two attributes");
         }
 
         return getValue(document, params[0], params[1]);

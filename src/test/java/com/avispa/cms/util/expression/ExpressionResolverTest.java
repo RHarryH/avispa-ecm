@@ -15,7 +15,7 @@ class ExpressionResolverTest {
 
     private static SuperDocument document;
 
-    private ExpressionResolver expressionResolver = new ExpressionResolver();
+    private final ExpressionResolver expressionResolver = new ExpressionResolver();
 
     @BeforeAll
     static void init() {
