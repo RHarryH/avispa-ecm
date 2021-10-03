@@ -12,7 +12,7 @@ public class Default implements Function {
     @Override
     public String resolve(Document document, String[] params) {
         if(params.length < 2) {
-            throw new IllegalArgumentException("Required two attributes");
+            throw new IllegalArgumentException("Require two attributes");
         }
 
         return getValue(params[0], params[1]);
