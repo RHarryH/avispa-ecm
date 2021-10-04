@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.avispa</groupId>
-    <artifactId>cms</artifactId>
+    <artifactId>ecm</artifactId>
     <version>2.0.0-SNAPSHOT</version>
-    <name>cms</name>
-    <description>Simple CMS used for internal purposes</description>
+    <name>ecn</name>
+    <description>Simple ECM used for internal purposes</description>
 
     <developers>
         <developer>
