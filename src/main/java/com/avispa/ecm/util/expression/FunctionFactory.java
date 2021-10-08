@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
  * @author Rafał Hiszpański
  */
 @Slf4j
-class FunctionFactory {
+public class FunctionFactory {
     private static final String VALUE_FUNCTION = "value";
     private static final String DATEVALUE_FUNCTION = "datevalue";
     private static final String DEFAULT_FUNCTION = "default";
