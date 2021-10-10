@@ -28,7 +28,7 @@ class ExpressionResolverTest {
     static void init() {
         document = new SuperDocument();
         document.setObjectName("ABC");
-        document.setExtraDate(LocalDateTime.of(2021, 10, 11, 10, 54, 18));
+        document.setExtraDateTime(LocalDateTime.of(2021, 10, 11, 10, 54, 18));
         document.setExtraField("XY");
         document.setExtraInt(5);
     }
@@ -65,12 +65,12 @@ class ExpressionResolverTest {
 
     @Test
     void dateValueFunction() {
-        assertEquals("ABC_10_ABC", expressionResolver.resolve(document, "'ABC_' + $datevalue('extraDate', 'MM') + '_ABC'"));
+        assertEquals("ABC_10_ABC", expressionResolver.resolve(document, "'ABC_' + $datevalue('extraDateTime', 'MM') + '_ABC'"));
     }
 
     @Test
     void dateValueFunctionInvalidFormat() {
-        assertThrows(IllegalArgumentException.class, () -> expressionResolver.resolve(document, "'ABC_' + $datevalue('extraDate', 'invalid_format') + '_ABC'"));
+        assertThrows(IllegalArgumentException.class, () -> expressionResolver.resolve(document, "'ABC_' + $datevalue('extraDateTime', 'invalid_format') + '_ABC'"));
     }
 
     @Test

@@ -5,6 +5,7 @@ import com.avispa.ecm.util.expression.function.ValueFunction;
 import com.avispa.ecm.util.reflect.PropertyUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -31,6 +32,9 @@ public class DateValue extends ValueFunction {
         if(value instanceof LocalDateTime) {
             LocalDateTime localDateTime = (LocalDateTime) value;
             return localDateTime.format(DateTimeFormatter.ofPattern(format));
+        } else if(value instanceof LocalDate) {
+            LocalDate localDate = (LocalDate) value;
+            return localDate.format(DateTimeFormatter.ofPattern(format));
         } else {
             log.warn("Value '{}' is not a date", value.toString());
         }

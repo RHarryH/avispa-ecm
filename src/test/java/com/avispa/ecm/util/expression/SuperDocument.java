@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 public class SuperDocument extends Document {
     private String extraField;
-    private LocalDateTime extraDate;
+    private LocalDateTime extraDateTime;
+    private LocalDate extraDate;
     private int extraInt;
 }
