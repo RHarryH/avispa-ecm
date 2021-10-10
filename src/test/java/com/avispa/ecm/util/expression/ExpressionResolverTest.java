@@ -2,6 +2,7 @@ package com.avispa.ecm.util.expression;
 
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.Trees;
 import org.junit.jupiter.api.BeforeAll;
@@ -95,6 +96,11 @@ class ExpressionResolverTest {
     @Test
     void tooManyParamsFunction() {
         assertEquals("XY", expressionResolver.resolve(document, "$value('extraField', 'redundantParameter')"));
+    }
+
+    @Test
+    void syntaxError() {
+        assertEquals("invalid", expressionResolver.resolve(document, "invalid"));
     }
 
     public static String printSyntaxTree(Parser parser, ParseTree root) {
