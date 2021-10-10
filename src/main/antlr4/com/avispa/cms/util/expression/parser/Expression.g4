@@ -1,4 +1,4 @@
-grammar Expressions;
+grammar Expression;
 
 // LEXER (tokens/terminals)
 
@@ -14,6 +14,8 @@ RIGHT_PARENTHESIS : ')';
 
 TEXT  : '\'' ~[\r\n']* '\'';
 SPACE : [ \t\r\n] -> skip;
+
+ERROR_CHAR : . ; // used to move token recognition issues from lexer to parser
 
 start : expression;
 

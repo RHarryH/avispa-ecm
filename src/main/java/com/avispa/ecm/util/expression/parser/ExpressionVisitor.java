@@ -1,7 +1,7 @@
-package com.avispa.ecm.util.expression.visitor;
+package com.avispa.ecm.util.expression.parser;
 
-import com.avispa.cms.util.expression.parser.ExpressionsBaseVisitor;
-import com.avispa.cms.util.expression.parser.ExpressionsParser;
+import com.avispa.cms.util.expression.parser.ExpressionBaseVisitor;
+import com.avispa.cms.util.expression.parser.ExpressionParser;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.util.expression.FunctionFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class ExpressionVisitor extends ExpressionsBaseVisitor<String> {
+public class ExpressionVisitor extends ExpressionBaseVisitor<String> {
 
     private final Document document;
 
@@ -19,7 +19,7 @@ public class ExpressionVisitor extends ExpressionsBaseVisitor<String> {
     }
 
     @Override
-    public String visitFunction(ExpressionsParser.FunctionContext ctx) {
+    public String visitFunction(ExpressionParser.FunctionContext ctx) {
         String functionSignature = ctx.getText();
         String functionName = ctx.FUNCTION_NAME().getText();
 
@@ -44,9 +44,9 @@ public class ExpressionVisitor extends ExpressionsBaseVisitor<String> {
         }
     }
 
-    private void processParams(ExpressionsParser.FunctionContext ctx, List<String> params) {
+    private void processParams(ExpressionParser.FunctionContext ctx, List<String> params) {
         if(null != ctx.params()) {
-            for (ExpressionsParser.ExpressionContext child : ctx.params().expression()) {
+            for (ExpressionParser.ExpressionContext child : ctx.params().expression()) {
                 String param = this.visit(child);
                 if (log.isDebugEnabled()) {
                     log.debug("Param: {}", param);
@@ -57,7 +57,7 @@ public class ExpressionVisitor extends ExpressionsBaseVisitor<String> {
     }
 
     @Override
-    public String visitConcatExpr(ExpressionsParser.ConcatExprContext ctx) {
+    public String visitConcatExpr(ExpressionParser.ConcatExprContext ctx) {
         String left = this.visit(ctx.left);
         String right = this.visit(ctx.right);
         String result = left + right;
@@ -68,7 +68,7 @@ public class ExpressionVisitor extends ExpressionsBaseVisitor<String> {
     }
 
     @Override
-    public String visitTextExpr(ExpressionsParser.TextExprContext ctx) {
+    public String visitTextExpr(ExpressionParser.TextExprContext ctx) {
         String string = ctx.getText();
         if(log.isDebugEnabled()) {
             log.debug("String: {}", string);
