@@ -58,7 +58,7 @@ class AutolinkServiceTest {
     void unresolvableExpressionButNotEmptyFolderName() {
         // given
         Autolink autolink = new Autolink();
-        autolink.addRule("ABC_$value(nonExistingValue)");
+        autolink.addRule("'ABC_' + $value('nonExistingValue')");
         autolink.setDefaultValue("Unknown");
 
         // when
@@ -74,7 +74,7 @@ class AutolinkServiceTest {
     void unresolvableExpressionAndEmptyFolderName() {
         // given
         Autolink autolink = new Autolink();
-        autolink.addRule("$value(nonExistingValue)");
+        autolink.addRule("$value('nonExistingValue')");
         autolink.setDefaultValue("Unknown");
 
         // when
