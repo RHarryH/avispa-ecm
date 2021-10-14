@@ -1,7 +1,7 @@
 package com.avispa.ecm.service.rendition;
 
 import com.avispa.ecm.model.content.Content;
-import com.avispa.ecm.model.content.ContentRepository;
+import com.avispa.ecm.model.content.ContentService;
 import com.avispa.ecm.model.filestore.FileStore;
 import com.documents4j.api.DocumentType;
 import com.documents4j.api.IConverter;
@@ -36,7 +36,7 @@ import static com.avispa.ecm.util.Formats.PDF;
 public class RenditionService {
     private final OfficeManager officeManager;
     private final FileStore fileStore;
-    private final ContentRepository contentRepository;
+    private final ContentService contentService;
 
     @Value("${rendition.office.always:true}")
     private boolean renditionOfficeAlways;
@@ -54,16 +54,13 @@ public class RenditionService {
             return;
         }
 
-        String extension = content.getExtension();
-
-        Content rendition = new Content();
-        rendition.setExtension(PDF);
-        rendition.setDocument(content.getDocument());
-        rendition.setFileStorePath(Path.of(fileStore.getRootPath(), UUID.randomUUID().toString()).toString());
+        Path renditionFileStorePath = Path.of(fileStore.getRootPath(), UUID.randomUUID().toString());
+        contentService.createNewContent(PDF, content.getDocument(), renditionFileStorePath);
 
         try  {
             try(InputStream inputStream = new FileInputStream(content.getFileStorePath());
-                OutputStream outputStream = new FileOutputStream(rendition.getFileStorePath())) {
+                OutputStream outputStream = new FileOutputStream(renditionFileStorePath.toString())) {
+                String extension = content.getExtension();
 
                 if (renditionOfficeAlways) {
                     generateUsingSoffice(extension, inputStream, outputStream);
@@ -82,8 +79,6 @@ public class RenditionService {
                     }
                 }
             }
-
-            contentRepository.save(rendition);
 
             log.info("PDF rendition generated successfully");
         } catch (Exception e) {
