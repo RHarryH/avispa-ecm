@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Rafał Hiszpański
@@ -48,13 +47,11 @@ public class ContextService {
         }
 
         try {
-            Optional<EcmObject> value = ecmObjectRepository.findOne(
+            return ecmObjectRepository.exists(
                     Example.of(
                             objectMapper.readValue(context.getMatchRule(), object.getClass())
                     )
             );
-
-            return value.isPresent();
         } catch (JsonProcessingException e) {
             log.error(context.getMatchRule());
             log.error(String.format("Error when trying to match document '%s' with sample of '%s'", object.getId(), context.getMatchRule()), e);

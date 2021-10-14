@@ -2,9 +2,10 @@ package com.avispa.ecm.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -21,30 +22,24 @@ import java.util.UUID;
 /**
  * @author Rafał Hiszpański
  */
-//@MappedSuperclass
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "ecm_object")
 public abstract class EcmObject implements EcmEntity {
-
     @Id
-    @GeneratedValue
-    @Getter
-    @Setter
-    @Column(name = "id", updatable = false, nullable = false)
-    private Long id;
-
-    /*@Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @ColumnDefault("random_uuid()") // this function will be used when running manual inserts*/
+    //@Type(type="org.hibernate.type.UUIDCharType")
     @Type(type = "uuid-char") // do not store as binary type
-    @Column(name = "uuid", updatable = false, nullable = false)
+    //@Column(name = "id", updatable = false, nullable = false)
+    // TODO: hibernate annotation, consider use of columnDefinition
+    @ColumnDefault("random_uuid()") // this function will be used when running manual inserts
     @Getter
-    private final UUID uuid = UUID.randomUUID();
+    @Setter
+    private UUID id;
 
     @Getter
     @Setter
@@ -57,7 +52,7 @@ public abstract class EcmObject implements EcmEntity {
     private LocalDateTime modificationDate;
 
     @Version
-    private int version;
+    private Integer version;
 
     @PrePersist
     private void prePersist() {
@@ -72,11 +67,11 @@ public abstract class EcmObject implements EcmEntity {
     @Override
     public boolean equals(Object that) {
         return this == that || that instanceof EcmObject
-                && Objects.equals(uuid, ((EcmObject) that).uuid);
+                && Objects.equals(id, ((EcmObject) that).id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(uuid);
+        return Objects.hashCode(id);
     }
 }
