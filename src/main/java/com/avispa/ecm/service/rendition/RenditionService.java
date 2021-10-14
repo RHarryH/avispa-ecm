@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.UUID;
 
 import static com.avispa.ecm.util.Formats.DOCX;
 import static com.avispa.ecm.util.Formats.ODT;
@@ -58,7 +59,7 @@ public class RenditionService {
         Content rendition = new Content();
         rendition.setExtension(PDF);
         rendition.setDocument(content.getDocument());
-        rendition.setFileStorePath(Path.of(fileStore.getRootPath(), rendition.getUuid().toString()).toString());
+        rendition.setFileStorePath(Path.of(fileStore.getRootPath(), UUID.randomUUID().toString()).toString());
 
         try  {
             try(InputStream inputStream = new FileInputStream(content.getFileStorePath());
