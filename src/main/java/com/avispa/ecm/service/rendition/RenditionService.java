@@ -55,7 +55,6 @@ public class RenditionService {
         }
 
         Path renditionFileStorePath = Path.of(fileStore.getRootPath(), UUID.randomUUID().toString());
-        contentService.createNewContent(PDF, content.getDocument(), renditionFileStorePath);
 
         try  {
             try(InputStream inputStream = new FileInputStream(content.getFileStorePath());
@@ -79,6 +78,8 @@ public class RenditionService {
                     }
                 }
             }
+
+            contentService.createNewContent(PDF, content.getDocument(), renditionFileStorePath);
 
             log.info("PDF rendition generated successfully");
         } catch (Exception e) {
