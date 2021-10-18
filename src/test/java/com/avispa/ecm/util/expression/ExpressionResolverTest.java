@@ -2,7 +2,6 @@ package com.avispa.ecm.util.expression;
 
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.Trees;
 import org.junit.jupiter.api.BeforeAll;
@@ -76,6 +75,11 @@ class ExpressionResolverTest {
     @Test
     void nestedFunction() {
         assertEquals("ABC_XY_ABC", expressionResolver.resolve(document, "'ABC_' + $default($value('extraField'), 'This is default value') + '_ABC'"));
+    }
+
+    @Test
+    void defaultFunctionExtractsNonExistingField() {
+        assertEquals("This is default value", expressionResolver.resolve(document, "$default($value('nonExistingField'), 'This is default value')"));
     }
 
     @Test

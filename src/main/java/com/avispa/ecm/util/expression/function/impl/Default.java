@@ -2,6 +2,7 @@ package com.avispa.ecm.util.expression.function.impl;
 
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.util.expression.function.Function;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Provides default value in case of passed value is null
@@ -19,6 +20,6 @@ public class Default implements Function {
     }
 
     private String getValue(String propertyValue, String defaultValue) {
-        return null != propertyValue ? propertyValue : defaultValue;
+        return StringUtils.isNotEmpty(propertyValue) ? propertyValue : defaultValue;
     }
 }

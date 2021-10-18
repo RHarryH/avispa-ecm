@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ResolvableType;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,8 +38,8 @@ public class ContextService {
      * @param <T>
      * @param <C>
      */
-    @Transactional
-    public <T extends Document, C extends EcmConfigObject> void applyMatchingConfigurations(T object, Class<? extends C>... configs) {
+    @SafeVarargs
+    public final <T extends Document, C extends EcmConfigObject> void applyMatchingConfigurations(T object, Class<? extends C>... configs) {
         List<Class<? extends C>> configsList = List.of(configs);
 
         List<EcmConfigObject> availableConfigurations = getFirstMatchingConfigurations(object).stream()

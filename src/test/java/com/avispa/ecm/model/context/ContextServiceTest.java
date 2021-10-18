@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@Transactional // will rollback changes after each test
 class ContextServiceTest {
     @Autowired
     private EcmObjectRepository ecmObjectRepository;
@@ -179,7 +181,57 @@ class ContextServiceTest {
 
         List<EcmConfigObject> configurations = contextService.getFirstMatchingConfigurations(document);
 
-        assertTrue(configurations.size() == 2);
+        assertEquals(2, configurations.size());
+    }
+
+    @Autowired
+    private ContextRepository contextRepository;
+
+    @Test
+    void twoContexts() {
+        Autoname autoname = createAutoname();
+        Autolink autolink = createAutolink();
+
+        Type type = (Type) ecmObjectRepository.findByObjectName("Document");
+
+        Context context = new Context();
+        context.setObjectName("Sample context");
+        context.setEcmConfigObjects(List.of(autoname));
+        context.setType(type);
+        context.setMatchRule("{ \"objectName\": \"It's me\" }");
+        ecmObjectRepository.save(context);
+
+        Context context2 = new Context();
+        context2.setObjectName("Sample context 2");
+        context2.setEcmConfigObjects(List.of(autolink));
+        context2.setType(type);
+        context2.setMatchRule("{ \"objectName\": \"It's me\" }");
+        ecmObjectRepository.save(context2);
+
+        assertEquals(2, contextRepository.findAll().size());
+    }
+
+    @Test
+    void configurationSharing() {
+        Autoname autoname = createAutoname();
+
+        Type type = (Type) ecmObjectRepository.findByObjectName("Document");
+
+        Context context = new Context();
+        context.setObjectName("Sample context");
+        context.setEcmConfigObjects(List.of(autoname));
+        context.setType(type);
+        context.setMatchRule("{ \"objectName\": \"It's me\" }");
+        ecmObjectRepository.save(context);
+
+        Context context2 = new Context();
+        context2.setObjectName("Sample context 2");
+        context2.setEcmConfigObjects(List.of(autoname));
+        context2.setType(type);
+        context2.setMatchRule("{ \"objectName\": \"It's me\" }");
+        ecmObjectRepository.save(context2);
+
+        assertEquals(2, contextRepository.findAll().size());
     }
 
     private Document createDocument() {
