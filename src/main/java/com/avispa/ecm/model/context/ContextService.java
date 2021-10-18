@@ -68,22 +68,6 @@ public class ContextService {
     }
 
     /**
-     * Extracts configuration supported by provided service by checking what generic type is provided when
-     * extending abstract class
-     * @param ecmConfigService
-     * @return
-     */
-    private Class<?> getClassOfEcmConfigObjectSupportedByService(EcmConfigService ecmConfigService) {
-        ResolvableType ecmConfigServicesType = ResolvableType.forClass(ecmConfigService.getClass());
-        Class<?> ecmConfigObject = ecmConfigServicesType.getSuperType().getGeneric().resolve();
-        if(null == ecmConfigObject) {
-            throw new IllegalStateException(String.format("Can't evaluate object of %s service", ecmConfigService.getClass().getSimpleName()));
-        }
-        debugLog( "{} is applicable for {} configuration object", ecmConfigObject, ecmConfigService.getClass().getSimpleName());
-        return ecmConfigObject;
-    }
-
-    /**
      * Returns list of configurations matching for provided object.
      * If there are more than one configuration of the same type (for example two autolinkings) only first one will
      * be returned.
@@ -150,6 +134,22 @@ public class ContextService {
         }
 
         return false;
+    }
+
+    /**
+     * Extracts configuration supported by provided service by checking what generic type is provided when
+     * extending abstract class
+     * @param ecmConfigService
+     * @return
+     */
+    private Class<?> getClassOfEcmConfigObjectSupportedByService(EcmConfigService ecmConfigService) {
+        ResolvableType ecmConfigServicesType = ResolvableType.forClass(ecmConfigService.getClass());
+        Class<?> ecmConfigObject = ecmConfigServicesType.getSuperType().getGeneric().resolve();
+        if(null == ecmConfigObject) {
+            throw new IllegalStateException(String.format("Can't evaluate object of %s service", ecmConfigService.getClass().getSimpleName()));
+        }
+        debugLog( "{} is applicable for {} configuration object", ecmConfigObject, ecmConfigService.getClass().getSimpleName());
+        return ecmConfigObject;
     }
 
     private void debugLog(String message, Object... objects) {
