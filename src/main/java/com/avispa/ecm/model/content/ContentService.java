@@ -19,6 +19,7 @@ public class ContentService {
 
     public Content createNewContent(String extension, Document document, Path fileStorePath) {
         Content content = new Content();
+        content.setObjectName(document.getObjectName().replace("/","_") + "." + extension);
         content.setExtension(extension);
         content.setDocument(document);
         content.setFileStorePath(fileStorePath.toString());
