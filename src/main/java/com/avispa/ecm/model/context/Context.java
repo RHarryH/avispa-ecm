@@ -9,8 +9,8 @@ import lombok.Setter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import java.util.List;
 
 /**
@@ -23,10 +23,10 @@ import java.util.List;
 @Getter
 @Setter
 public class Context extends EcmObject {
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<EcmConfigObject> ecmConfigObjects;
 
-    @OneToOne(optional = false)
+    @ManyToOne
     private Type type;
 
     @Column(nullable = false, columnDefinition = "varchar(255) default '{}'")
