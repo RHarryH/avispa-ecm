@@ -65,13 +65,13 @@ public abstract class EcmObject implements EcmEntity {
     }
 
     @Override
-    public boolean equals(Object that) {
+    public final boolean equals(Object that) {
         return this == that || that instanceof EcmObject
                 && Objects.equals(id, ((EcmObject) that).id);
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hashCode(id);
     }
 }
