@@ -31,12 +31,6 @@ public class Document extends EcmObject {
      * @return
      */
     public boolean hasPdfRendition() {
-        for(Content content : contents) {
-            if(content.isPdf()) {
-                return true;
-            }
-        }
-
-        return false;
+        return contents.stream().anyMatch(Content::isPdf);
     }
 }
