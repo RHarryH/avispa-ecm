@@ -30,20 +30,24 @@ class AutolinkServiceTest {
     private AutolinkService autolinkService;
 
     private static Document document;
+    private static Document document2;
 
     @BeforeAll
     static void init() {
         document = new Document();
         document.setObjectName("Document");
+
+        document2 = new Document();
+        document2.setObjectName("Document 2");
     }
 
     @Test
     void simpleTest() {
         // given
         Autolink autolink = new Autolink();
-        autolink.addRule("ABC");
-        autolink.addRule("DEF");
-        autolink.addRule("GHI");
+        autolink.addRule("'ABC'");
+        autolink.addRule("'DEF'");
+        autolink.addRule("'GHI'");
 
         // when
         autolinkService.apply(autolink, document);
@@ -51,7 +55,7 @@ class AutolinkServiceTest {
         // then
         Folder folder = document.getFolder();
         assertEquals("GHI", folder.getObjectName());
-        assertEquals("/ABC/DEF", folder.getPath());
+        assertEquals("/ABC/DEF/GHI", folder.getPath());
     }
 
     @Test
@@ -67,7 +71,7 @@ class AutolinkServiceTest {
         // then
         Folder folder = document.getFolder();
         assertEquals("ABC_", folder.getObjectName());
-        assertEquals("/", folder.getPath());
+        assertEquals("/ABC_", folder.getPath());
     }
 
     @Test
@@ -83,6 +87,21 @@ class AutolinkServiceTest {
         // then
         Folder folder = document.getFolder();
         assertEquals("Unknown", folder.getObjectName());
-        assertEquals("/", folder.getPath());
+        assertEquals("/Unknown", folder.getPath());
+    }
+
+    @Test
+    void folderSharing() { // if documents lie in the same folder, existing folders should be used
+        // given
+        Autolink autolink = new Autolink();
+        autolink.addRule("'ABC'");
+        autolink.addRule("'DEF'");
+
+        // when
+        autolinkService.apply(autolink, document);
+        autolinkService.apply(autolink, document2);
+
+        // then
+        assertEquals(document.getFolder().getId(), document2.getFolder().getId());
     }
 }

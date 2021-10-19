@@ -1,7 +1,7 @@
 package com.avispa.ecm.model.folder;
 
 import com.avispa.ecm.model.document.Document;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,23 +10,19 @@ import java.util.List;
  * @author Rafał Hiszpański
  */
 @Service
+@RequiredArgsConstructor
 public class FolderService {
-    private FolderRepository folderRepository;
+    private final FolderRepository folderRepository;
 
-    @Autowired
-    public FolderService(FolderRepository folderRepository) {
-        this.folderRepository = folderRepository;
-    }
-
-    public Folder findFolderByObjectNameAndPath(String name, String path) {
-        return folderRepository.findFolderByObjectNameAndPath(name, path);
+    public Folder findFolderByNameAndAncestor(String name, Folder ancestor) {
+        return folderRepository.findFolderByObjectNameAndPath(name, getFolderPath(name, ancestor));
     }
 
     public Folder createNewFolder(String name, Folder ancestor) {
         Folder folder = new Folder();
         folder.setObjectName(name);
 
-        folder.setPath(getFolderPath(ancestor));
+        folder.setPath(getFolderPath(name, ancestor));
         folder.setAncestor(ancestor);
         return folderRepository.save(folder);
     }
@@ -35,21 +31,21 @@ public class FolderService {
      * If there is no ancestor insert root path ("/").
      * If there is ancestor but it is a root folder then just append ancestor name
      * If there is ancestor and it is not a root folder then append slash and ancestor name
+     * @param name
      * @param ancestor
      * @return
      */
-    private String getFolderPath(Folder ancestor) {
+    private String getFolderPath(String name, Folder ancestor) {
+        String ancestorPath = "";
         if(null != ancestor) {
-            String ancestorPath = ancestor.getPath();
-
-            if(ancestorPath.equals("/")) {
-                return ancestorPath + ancestor.getObjectName();
-            } else {
-                return ancestorPath + "/" + ancestor.getObjectName();
-            }
-        } else {
-            return "/";
+            ancestorPath = ancestor.getPath();
         }
+
+        return ancestorPath + "/" + name;
+    }
+
+    public List<Folder> getAllFolders() {
+        return folderRepository.findAll();
     }
 
     public List<Document> getDocumentsInFolder(Folder folder) {

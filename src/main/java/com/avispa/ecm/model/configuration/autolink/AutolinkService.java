@@ -33,9 +33,11 @@ public class AutolinkService extends EcmConfigService<Autolink> {
         for(String rule : rules) {
             String folderName = getFolderName(autolink, contextDocument, rule);
 
-            folder = folderService.findFolderByObjectNameAndPath(folderName, null != ancestor ? ancestor.getPath() : "/");
+            folder = folderService.findFolderByNameAndAncestor(folderName, ancestor);
             if(null == folder) { // if folder does not exist
-                folder = ancestor = folderService.createNewFolder(folderName, ancestor);
+                ancestor = folder = folderService.createNewFolder(folderName, ancestor);
+            } else {
+                ancestor = folder;
             }
         }
 
