@@ -3,6 +3,8 @@ package com.avispa.ecm.service.rendition;
 import com.avispa.ecm.model.content.Content;
 import com.avispa.ecm.model.content.ContentService;
 import com.avispa.ecm.model.filestore.FileStore;
+import com.avispa.ecm.model.format.Format;
+import com.avispa.ecm.model.format.FormatRepository;
 import com.documents4j.api.DocumentType;
 import com.documents4j.api.IConverter;
 import com.documents4j.job.LocalConverter;
@@ -23,9 +25,9 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.UUID;
 
-import static com.avispa.ecm.util.Formats.DOCX;
-import static com.avispa.ecm.util.Formats.ODT;
-import static com.avispa.ecm.util.Formats.PDF;
+import static com.avispa.ecm.model.format.Format.DOCX;
+import static com.avispa.ecm.model.format.Format.ODT;
+import static com.avispa.ecm.model.format.Format.PDF;
 
 /**
  * @author Rafał Hiszpański
@@ -49,7 +51,9 @@ public class RenditionService {
     public void generate(Content content) {
         log.info("Requested PDF rendition");
 
-        if(content.getExtension().equals("pdf")) {
+        Format format = content.getFormat();
+
+        if(format.isPdf()) {
             log.warn("Document is already a pdf. Ignoring");
             return;
         }
@@ -59,7 +63,7 @@ public class RenditionService {
         try  {
             try(InputStream inputStream = new FileInputStream(content.getFileStorePath());
                 OutputStream outputStream = new FileOutputStream(renditionFileStorePath.toString())) {
-                String extension = content.getExtension();
+                String extension = format.getExtension();
 
                 if (renditionOfficeAlways) {
                     generateUsingSoffice(extension, inputStream, outputStream);

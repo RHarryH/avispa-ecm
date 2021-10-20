@@ -27,10 +27,19 @@ public class Document extends EcmObject {
     private Set<Content> contents;
 
     /**
-     * Returns true if document has pdf rendition or is already a pdf document
+     * Returns true if document has PDF rendition or is already a pdf document
      * @return
      */
     public boolean hasPdfRendition() {
         return contents.stream().anyMatch(Content::isPdf);
+    }
+
+    /**
+     * Returns primary content. Always PDF rendition has precedence over other formats. If not present then first
+     * content file will be considered as primary.
+     * @return
+     */
+    public Content getPrimaryContent() {
+        return contents.stream().filter(Content::isPdf).findFirst().orElse(contents.stream().findFirst().orElseThrow());
     }
 }

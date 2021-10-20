@@ -6,7 +6,9 @@ import com.avispa.ecm.model.configuration.autolink.Autolink;
 import com.avispa.ecm.model.configuration.autoname.Autoname;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.type.Type;
+import com.avispa.ecm.model.type.TypeRepository;
 import com.avispa.ecm.util.expression.SuperDocument;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,17 @@ class ContextServiceTest {
     private EcmObjectRepository ecmObjectRepository;
 
     @Autowired
+    private TypeRepository typeRepository;
+
+    @Autowired
     private ContextService contextService;
+
+    private Type documentType;
+
+    @BeforeEach
+    void init() {
+        documentType = typeRepository.findByTypeName("Document");
+    }
 
     @Test
     void findConfigurationsForContextAcceptingDocument() {
@@ -41,7 +53,7 @@ class ContextServiceTest {
         Context context = new Context();
         context.setObjectName("Sample context");
         context.setEcmConfigObjects(List.of(autoname));
-        context.setType((Type) ecmObjectRepository.findByObjectName("Document"));
+        context.setType(documentType);
         context.setMatchRule("{ \"objectName\": \"It's me\" }");
         ecmObjectRepository.save(context);
 
@@ -59,7 +71,7 @@ class ContextServiceTest {
         Context context = new Context();
         context.setObjectName("Sample context");
         context.setEcmConfigObjects(List.of(autoname));
-        context.setType((Type) ecmObjectRepository.findByObjectName("Document"));
+        context.setType(documentType);
         context.setMatchRule("{ \"objectName\": \"It's me\", \"extraField\": \"Extra field\"}");
         ecmObjectRepository.save(context);
 
@@ -77,7 +89,7 @@ class ContextServiceTest {
         Context context = new Context();
         context.setObjectName("Sample context");
         context.setEcmConfigObjects(List.of(autoname));
-        context.setType((Type) ecmObjectRepository.findByObjectName("Document"));
+        context.setType(documentType);
         context.setMatchRule("{ \"objectName\": \"It's me\"}");
         ecmObjectRepository.save(context);
 
@@ -99,7 +111,7 @@ class ContextServiceTest {
         Context context = new Context();
         context.setObjectName("Sample context");
         context.setEcmConfigObjects(List.of(autoname));
-        context.setType((Type) ecmObjectRepository.findByObjectName("Document"));
+        context.setType(documentType);
         context.setMatchRule("{ \"objectName\": \"It's me\"}");
         ecmObjectRepository.save(context);
 
@@ -116,7 +128,7 @@ class ContextServiceTest {
         Context context = new Context();
         context.setObjectName("Sample context");
         context.setEcmConfigObjects(List.of(autoname));
-        context.setType((Type) ecmObjectRepository.findByObjectName("Document"));
+        context.setType(documentType);
         context.setMatchRule("{}");
         ecmObjectRepository.save(context);
 
@@ -139,7 +151,7 @@ class ContextServiceTest {
         Context context = new Context();
         context.setObjectName("Sample context");
         context.setEcmConfigObjects(List.of(autoname));
-        context.setType((Type) ecmObjectRepository.findByObjectName("Document"));
+        context.setType(documentType);
         context.setMatchRule("{ \"objectName\": \"It's me\"}");
         ecmObjectRepository.save(context);
 
@@ -156,7 +168,7 @@ class ContextServiceTest {
         Context context = new Context();
         context.setObjectName("Sample context");
         context.setEcmConfigObjects(List.of(autoname));
-        context.setType((Type) ecmObjectRepository.findByObjectName("Document"));
+        context.setType(documentType);
         context.setMatchRule("{ \"objectName\": \"It's me\" }");
         ecmObjectRepository.save(context);
 
@@ -175,7 +187,7 @@ class ContextServiceTest {
         Context context = new Context();
         context.setObjectName("Sample context");
         context.setEcmConfigObjects(List.of(autoname, autolink, autoname2));
-        context.setType((Type) ecmObjectRepository.findByObjectName("Document"));
+        context.setType(documentType);
         context.setMatchRule("{ \"objectName\": \"It's me\" }");
         ecmObjectRepository.save(context);
 
@@ -192,19 +204,17 @@ class ContextServiceTest {
         Autoname autoname = createAutoname();
         Autolink autolink = createAutolink();
 
-        Type type = (Type) ecmObjectRepository.findByObjectName("Document");
-
         Context context = new Context();
         context.setObjectName("Sample context");
         context.setEcmConfigObjects(List.of(autoname));
-        context.setType(type);
+        context.setType(documentType);
         context.setMatchRule("{ \"objectName\": \"It's me\" }");
         ecmObjectRepository.save(context);
 
         Context context2 = new Context();
         context2.setObjectName("Sample context 2");
         context2.setEcmConfigObjects(List.of(autolink));
-        context2.setType(type);
+        context2.setType(documentType);
         context2.setMatchRule("{ \"objectName\": \"It's me\" }");
         ecmObjectRepository.save(context2);
 
@@ -215,19 +225,17 @@ class ContextServiceTest {
     void configurationSharing() {
         Autoname autoname = createAutoname();
 
-        Type type = (Type) ecmObjectRepository.findByObjectName("Document");
-
         Context context = new Context();
         context.setObjectName("Sample context");
         context.setEcmConfigObjects(List.of(autoname));
-        context.setType(type);
+        context.setType(documentType);
         context.setMatchRule("{ \"objectName\": \"It's me\" }");
         ecmObjectRepository.save(context);
 
         Context context2 = new Context();
         context2.setObjectName("Sample context 2");
         context2.setEcmConfigObjects(List.of(autoname));
-        context2.setType(type);
+        context2.setType(documentType);
         context2.setMatchRule("{ \"objectName\": \"It's me\" }");
         ecmObjectRepository.save(context2);
 

@@ -1,8 +1,10 @@
 package com.avispa.ecm.model;
 
+import java.util.Optional;
+
 /**
  * @author Rafał Hiszpański
  */
 public interface EcmObjectRepository<T extends EcmObject> extends EcmEntityRepository<T> {
-    T findByObjectName(String objectName);
+    Optional<T> findByObjectName(String objectName);
 }
