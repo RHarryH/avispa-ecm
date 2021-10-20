@@ -35,15 +35,10 @@ public class EcmConfiguration implements AsyncConfigurer {
     }
 
     @Bean
-    public FileStore getFileStore(@Value("${avispa.ecm.fileStoreName:defaultFileStore}") String fileStoreName,
-                                  @Value("${avispa.ecm.defaultFileStorePath}") String defaultFileStorePath) {
-        FileStore fileStore = fileStoreRepository.findByObjectName(fileStoreName);
-        if(null == fileStore) {
-            fileStore = fileStoreRepository.findByObjectName(fileStoreName);
-            if(null == fileStore) {
-                fileStore = createDefaultFileStore(fileStoreName, defaultFileStorePath);
-            }
-        }
+    public FileStore getFileStore(@Value("${avispa.ecm.fileStore.name:defaultFileStore}") String fileStoreName,
+                                  @Value("${avispa.ecm.fileStore.path:defaultFileStore}") String defaultFileStorePath) {
+        FileStore fileStore = fileStoreRepository.findByObjectName(fileStoreName)
+                .orElse(createFileStore(fileStoreName, defaultFileStorePath));
 
         createFileStorePath(fileStore);
 
@@ -51,22 +46,23 @@ public class EcmConfiguration implements AsyncConfigurer {
     }
 
     /**
-     * If defaultFileStorePath is relative path then it will be located in folder defined in user.home
-     * @param defaultFileStoreName
-     * @param defaultFileStorePath
+     * Creates new file store using provided file store name and file store path.
+     * If fileStorePath is relative path then it will be located in folder defined in user.home
+     * @param fileStoreName
+     * @param fileStorePath
      * @return
      */
-    private FileStore createDefaultFileStore(String defaultFileStoreName, String defaultFileStorePath) {
+    private FileStore createFileStore(String fileStoreName, String fileStorePath) {
         FileStore fileStore;
 
-        Path p = Paths.get(defaultFileStorePath);
+        Path p = Paths.get(fileStorePath);
         if (!p.isAbsolute()) {
-            defaultFileStorePath = Path.of(System.getProperty("user.home"), defaultFileStorePath).toString();
+            fileStorePath = Path.of(System.getProperty("user.home"), fileStorePath).toString();
         }
 
         fileStore = new FileStore();
-        fileStore.setObjectName(defaultFileStoreName);
-        fileStore.setRootPath(defaultFileStorePath);
+        fileStore.setObjectName(fileStoreName);
+        fileStore.setRootPath(fileStorePath);
         fileStoreRepository.save(fileStore);
 
         return fileStore;

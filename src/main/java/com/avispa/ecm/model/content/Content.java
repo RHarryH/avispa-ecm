@@ -2,6 +2,7 @@ package com.avispa.ecm.model.content;
 
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.document.Document;
+import com.avispa.ecm.model.format.Format;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +18,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.avispa.ecm.util.Formats.PDF;
-
 /**
  * @author Rafał Hiszpański
  */
@@ -27,8 +26,11 @@ import static com.avispa.ecm.util.Formats.PDF;
 @Slf4j
 public final class Content extends EcmObject {
 
+    @ManyToOne
+    @JoinColumn(nullable = false)
     @Setter
-    private String extension;
+    private Format format;
+
     private long size;
     @Setter
     private String fileStorePath; // path in the file store (physical path)
@@ -60,6 +62,6 @@ public final class Content extends EcmObject {
     }
 
     public boolean isPdf() {
-        return extension.equals(PDF);
+        return format.isPdf();
     }
 }
