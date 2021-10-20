@@ -16,6 +16,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 /**
@@ -55,6 +56,8 @@ public final class Content extends EcmObject {
     private void removeFile() {
         try {
             Files.delete(Path.of(fileStorePath));
+        } catch (NoSuchFileException e) {
+            log.error("'{}' content file does not exist", fileStorePath);
         } catch (IOException e) {
             log.error("Can't delete '{}' content file", fileStorePath, e);
             throw new IllegalStateException();
