@@ -1,4 +1,4 @@
-package com.avispa.ecm.model.configuration.autoname;
+package com.avispa.ecm.model.configuration.callable.autoname;
 
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.util.expression.ExpressionResolver;

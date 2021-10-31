@@ -1,4 +1,4 @@
-package com.avispa.ecm.model.configuration.autolink;
+package com.avispa.ecm.model.configuration.callable.autolink;
 
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.folder.Folder;

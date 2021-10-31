@@ -2,8 +2,9 @@ package com.avispa.ecm.model.context;
 
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.EcmObjectRepository;
+import com.avispa.ecm.model.configuration.callable.CallableConfigObject;
 import com.avispa.ecm.model.configuration.EcmConfigObject;
-import com.avispa.ecm.model.configuration.EcmConfigService;
+import com.avispa.ecm.model.configuration.callable.CallableConfigService;
 import com.avispa.ecm.model.document.Document;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -29,7 +30,7 @@ public class ContextService {
     private final EcmObjectRepository<EcmObject> ecmObjectRepository;
     private final ContextRepository contextRepository;
 
-    private final List<EcmConfigService> ecmConfigServices;
+    private final List<CallableConfigService> ecmConfigServices;
 
     /**
      * Automatically applies configurations of selected classes
@@ -39,7 +40,7 @@ public class ContextService {
      * @param <C>
      */
     @SafeVarargs
-    public final <T extends Document, C extends EcmConfigObject> void applyMatchingConfigurations(T object, Class<? extends C>... configs) {
+    public final <T extends Document, C extends CallableConfigObject> void applyMatchingConfigurations(T object, Class<? extends C>... configs) {
         List<Class<? extends C>> configsList = List.of(configs);
 
         List<EcmConfigObject> availableConfigurations = getFirstMatchingConfigurations(object).stream()
@@ -48,7 +49,7 @@ public class ContextService {
 
         debugLog("Configuration services {}", ecmConfigServices);
 
-        for (EcmConfigService ecmConfigService : ecmConfigServices) {
+        for (CallableConfigService ecmConfigService : ecmConfigServices) {
             Class<?> ecmConfigObject = getClassOfEcmConfigObjectSupportedByService(ecmConfigService);
 
             for (EcmConfigObject configObject : availableConfigurations) {
@@ -59,7 +60,7 @@ public class ContextService {
                     if (configsList.contains(configObject.getClass())) {
                         debugLog("Applying the configuration using {} service", ecmConfigService.getClass().getSimpleName());
 
-                        ecmConfigService.apply(configObject, object);
+                        ecmConfigService.apply((CallableConfigObject) configObject, object);
                     }
                 }
             }
@@ -141,7 +142,7 @@ public class ContextService {
      * @param ecmConfigService
      * @return
      */
-    private Class<?> getClassOfEcmConfigObjectSupportedByService(EcmConfigService ecmConfigService) {
+    private Class<?> getClassOfEcmConfigObjectSupportedByService(CallableConfigService ecmConfigService) {
         ResolvableType ecmConfigServicesType = ResolvableType.forClass(ecmConfigService.getClass());
         Class<?> ecmConfigObject = ecmConfigServicesType.getSuperType().getGeneric().resolve();
         if(null == ecmConfigObject) {
