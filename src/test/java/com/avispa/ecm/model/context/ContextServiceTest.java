@@ -2,17 +2,21 @@ package com.avispa.ecm.model.context;
 
 import com.avispa.ecm.model.EcmObjectRepository;
 import com.avispa.ecm.model.configuration.EcmConfigObject;
-import com.avispa.ecm.model.configuration.autolink.Autolink;
-import com.avispa.ecm.model.configuration.autoname.Autoname;
+import com.avispa.ecm.model.configuration.callable.autolink.Autolink;
+import com.avispa.ecm.model.configuration.callable.autolink.AutolinkService;
+import com.avispa.ecm.model.configuration.callable.autoname.Autoname;
+import com.avispa.ecm.model.configuration.callable.autoname.AutonameService;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeRepository;
+import com.avispa.ecm.util.expression.ExpressionResolver;
 import com.avispa.ecm.util.expression.SuperDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.transaction.Transactional;
@@ -26,7 +30,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Rafał Hiszpański
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@DataJpaTest
+@Import({ContextService.class,
+        // required to add service to list of available services
+        AutonameService.class,
+        ExpressionResolver.class})
 @Transactional // will rollback changes after each test
 class ContextServiceTest {
     @Autowired
@@ -172,6 +180,8 @@ class ContextServiceTest {
         context.setMatchRule("{ \"objectName\": \"It's me\" }");
         ecmObjectRepository.save(context);
 
+        //ReflectionTestUtils.setField(contextService, "ecmConfigServices", List.of(new AutolinkService(new ExpressionResolver(), )));
+
         contextService.applyMatchingConfigurations(document, Autoname.class);
 
         assertEquals("F/Extra field does not exist", document.getObjectName());
@@ -200,7 +210,7 @@ class ContextServiceTest {
     private ContextRepository contextRepository;
 
     @Test
-    void twoContexts() {
+    void manyContexts() {
         Autoname autoname = createAutoname();
         Autolink autolink = createAutolink();
 
@@ -218,7 +228,8 @@ class ContextServiceTest {
         context2.setMatchRule("{ \"objectName\": \"It's me\" }");
         ecmObjectRepository.save(context2);
 
-        assertEquals(2, contextRepository.findAll().size());
+        // this test includes OOTB configuration created during initialization
+        assertEquals(3, contextRepository.findAll().size());
     }
 
     @Test
@@ -239,7 +250,8 @@ class ContextServiceTest {
         context2.setMatchRule("{ \"objectName\": \"It's me\" }");
         ecmObjectRepository.save(context2);
 
-        assertEquals(2, contextRepository.findAll().size());
+        // this test includes OOTB configuration created during initialization
+        assertEquals(3, contextRepository.findAll().size());
     }
 
     private Document createDocument() {

@@ -36,12 +36,12 @@ insert into type (id, class_name) values (@ContextTypeId, 'com.avispa.ecm.model.
 -- add Autolink type
 SET @AutolinkTypeId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@AutolinkTypeId, 'Autolink', current_timestamp, current_timestamp, 0);
-insert into type (id, class_name) values (@AutolinkTypeId, 'com.avispa.ecm.model.configuration.autolink.Autolink');
+insert into type (id, class_name) values (@AutolinkTypeId, 'com.avispa.ecm.model.configuration.callable.autolink.Autolink');
 
 -- add Autoname type
 SET @AutonameTypeId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@AutonameTypeId, 'Autoname', current_timestamp, current_timestamp, 0);
-insert into type (id, class_name) values (@AutonameTypeId, 'com.avispa.ecm.model.configuration.autoname.Autoname');
+insert into type (id, class_name) values (@AutonameTypeId, 'Autoname');
 
 -- supported formats
 -- unknown
@@ -86,3 +86,34 @@ insert into format (id, description, mime_type, icon) values (@ZipFormatId, 'ZIP
 SET @RarFormatId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@RarFormatId, 'rar', current_timestamp, current_timestamp, 0);
 insert into format (id, description, mime_type, icon) values (@RarFormatId, 'RAR archive', 'application/vnd.rar', 'bi bi-file-earmark-zip');
+
+-- add Folder context
+SET @FolderContextId=random_uuid();
+insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@FolderContextId, 'Folder context', current_timestamp, current_timestamp, 0);
+insert into context (id, type_id) values (@FolderContextId, @FolderTypeId);
+
+-- folder property page
+SET @FolderPropertyPageId=random_uuid();
+insert into ecm_config_object (id, object_name, creation_date, modification_date, version) values (@FolderPropertyPageId, 'Folder property page', current_timestamp, current_timestamp, 0);
+insert into property_page (id) values (@FolderPropertyPageId);
+
+SET @FolderPropertyPageObjectNameId=random_uuid();
+insert into ecm_config_object (id, object_name, creation_date, modification_date, version) values (@FolderPropertyPageObjectNameId, 'Folder property page folder name', current_timestamp, current_timestamp, 0);
+insert into property (id, name, label, type, required) values (@FolderPropertyPageObjectNameId, 'objectName', 'Folder name', 'text', true);
+SET @FolderPropertyPagePathId=random_uuid();
+insert into ecm_config_object (id, object_name, creation_date, modification_date, version) values (@FolderPropertyPagePathId, 'Folder property page folder path', current_timestamp, current_timestamp, 0);
+insert into property (id, name, label, type, required) values (@FolderPropertyPagePathId, 'path', 'Folder path', 'text', true);
+SET @FolderPropertyPageCreationDateId=random_uuid();
+insert into ecm_config_object (id, object_name, creation_date, modification_date, version) values (@FolderPropertyPageCreationDateId, 'Folder property folder creation date', current_timestamp, current_timestamp, 0);
+insert into property (id, name, label, type, required) values (@FolderPropertyPageCreationDateId, 'creationDate', 'Creation date', 'text', true);
+SET @FolderPropertyPageModificationDateId=random_uuid();
+insert into ecm_config_object (id, object_name, creation_date, modification_date, version) values (@FolderPropertyPageModificationDateId, 'Folder property folder modification date', current_timestamp, current_timestamp, 0);
+insert into property (id, name, label, type, required) values (@FolderPropertyPageModificationDateId, 'modificationDate', 'Modification date', 'text', true);
+
+insert into property_page_properties (property_page_id, properties_id, properties_order) values (@FolderPropertyPageId, @FolderPropertyPageObjectNameId, 0);
+insert into property_page_properties (property_page_id, properties_id, properties_order) values (@FolderPropertyPageId, @FolderPropertyPagePathId, 1);
+insert into property_page_properties (property_page_id, properties_id, properties_order) values (@FolderPropertyPageId, @FolderPropertyPageCreationDateId, 2);
+insert into property_page_properties (property_page_id, properties_id, properties_order) values (@FolderPropertyPageId, @FolderPropertyPageModificationDateId, 3);
+
+-- assign property page to the Folder Context
+insert into context_ecm_config_objects (context_id, ecm_config_objects_id) values (@FolderContextId, @FolderPropertyPageId);
