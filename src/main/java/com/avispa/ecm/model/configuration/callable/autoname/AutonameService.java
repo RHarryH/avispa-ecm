@@ -1,6 +1,6 @@
-package com.avispa.ecm.model.configuration.autoname;
+package com.avispa.ecm.model.configuration.callable.autoname;
 
-import com.avispa.ecm.model.configuration.EcmConfigService;
+import com.avispa.ecm.model.configuration.callable.CallableConfigService;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.util.expression.ExpressionResolver;
 import com.avispa.ecm.util.reflect.PropertyUtils;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AutonameService extends EcmConfigService<Autoname> {
+public class AutonameService implements CallableConfigService<Autoname> {
 
     private final ExpressionResolver expressionResolver;
 

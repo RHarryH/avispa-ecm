@@ -1,12 +1,15 @@
 package com.avispa.ecm.model.configuration;
 
-import com.avispa.ecm.model.EcmObject;
+import com.avispa.ecm.model.EcmEntity;
 
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 /**
  * @author Rafał Hiszpański
  */
 @Entity
-public abstract class EcmConfigObject extends EcmObject {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class EcmConfigObject extends EcmEntity {
 }

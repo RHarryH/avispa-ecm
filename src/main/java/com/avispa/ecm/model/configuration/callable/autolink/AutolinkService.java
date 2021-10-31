@@ -1,6 +1,6 @@
-package com.avispa.ecm.model.configuration.autolink;
+package com.avispa.ecm.model.configuration.callable.autolink;
 
-import com.avispa.ecm.model.configuration.EcmConfigService;
+import com.avispa.ecm.model.configuration.callable.CallableConfigService;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.folder.Folder;
 import com.avispa.ecm.model.folder.FolderService;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class AutolinkService extends EcmConfigService<Autolink> {
+public class AutolinkService implements CallableConfigService<Autolink> {
 
     private final ExpressionResolver expressionResolver;
     private final FolderService folderService;
