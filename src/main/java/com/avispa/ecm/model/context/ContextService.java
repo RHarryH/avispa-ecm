@@ -30,7 +30,7 @@ public class ContextService {
     private final EcmObjectRepository<EcmObject> ecmObjectRepository;
     private final ContextRepository contextRepository;
 
-    private final List<CallableConfigService> ecmConfigServices;
+    private final List<CallableConfigService> callableConfigServices;
 
     /**
      * Automatically applies configurations of selected classes
@@ -47,9 +47,9 @@ public class ContextService {
                 .filter(e -> configsList.contains(e.getClass()))// filter only elements from the list
                 .collect(Collectors.toList());
 
-        debugLog("Configuration services {}", ecmConfigServices);
+        debugLog("Configuration services {}", callableConfigServices);
 
-        for (CallableConfigService ecmConfigService : ecmConfigServices) {
+        for (CallableConfigService ecmConfigService : callableConfigServices) {
             Class<?> ecmConfigObject = getClassOfEcmConfigObjectSupportedByService(ecmConfigService);
 
             for (EcmConfigObject configObject : availableConfigurations) {
@@ -139,16 +139,16 @@ public class ContextService {
     /**
      * Extracts configuration supported by provided service by checking what generic type is provided when
      * extending abstract class
-     * @param ecmConfigService
+     * @param callableConfigService
      * @return
      */
-    private Class<?> getClassOfEcmConfigObjectSupportedByService(CallableConfigService ecmConfigService) {
-        ResolvableType ecmConfigServicesType = ResolvableType.forClass(ecmConfigService.getClass());
-        Class<?> ecmConfigObject = ecmConfigServicesType.getSuperType().getGeneric().resolve();
+    private Class<?> getClassOfEcmConfigObjectSupportedByService(CallableConfigService callableConfigService) {
+        ResolvableType callableConfigServiceType = ResolvableType.forClass(callableConfigService.getClass());
+        Class<?> ecmConfigObject = callableConfigServiceType.getInterfaces()[0].getGeneric().resolve();
         if(null == ecmConfigObject) {
-            throw new IllegalStateException(String.format("Can't evaluate object of %s service", ecmConfigService.getClass().getSimpleName()));
+            throw new IllegalStateException(String.format("Can't evaluate object of %s service", callableConfigService.getClass().getSimpleName()));
         }
-        debugLog( "{} is applicable for {} configuration object", ecmConfigObject, ecmConfigService.getClass().getSimpleName());
+        debugLog( "{} is applicable for {} configuration object", ecmConfigObject, callableConfigService.getClass().getSimpleName());
         return ecmConfigObject;
     }
 
