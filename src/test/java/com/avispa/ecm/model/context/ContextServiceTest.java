@@ -198,8 +198,6 @@ class ContextServiceTest {
         context.setMatchRule("{ \"objectName\": \"It's me\" }");
         ecmObjectRepository.save(context);
 
-        //ReflectionTestUtils.setField(contextService, "ecmConfigServices", List.of(new AutolinkService(new ExpressionResolver(), )));
-
         contextService.applyMatchingConfigurations(document, Autoname.class);
 
         assertEquals("F/Extra field does not exist", document.getObjectName());

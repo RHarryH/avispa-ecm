@@ -31,7 +31,7 @@ public class ContextService {
     private final EcmObjectRepository<EcmObject> ecmObjectRepository;
     private final ContextRepository contextRepository;
 
-    private final List<CallableConfigService<CallableConfigObject>> callableConfigServices;
+    private final List<CallableConfigService> callableConfigServices;
 
     /**
      * Automatically applies configurations of selected classes
@@ -50,7 +50,7 @@ public class ContextService {
 
         debugLog("Configuration services {}", callableConfigServices);
 
-        for (CallableConfigService<CallableConfigObject> ecmConfigService : callableConfigServices) {
+        for (CallableConfigService ecmConfigService : callableConfigServices) {
             Class<?> ecmConfigObject = getClassOfEcmConfigObjectSupportedByService(ecmConfigService);
 
             for (EcmConfigObject configObject : availableConfigurations) {
