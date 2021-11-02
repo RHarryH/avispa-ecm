@@ -3,7 +3,6 @@ package com.avispa.ecm.model.context;
 import com.avispa.ecm.model.EcmObjectRepository;
 import com.avispa.ecm.model.configuration.EcmConfigObject;
 import com.avispa.ecm.model.configuration.callable.autolink.Autolink;
-import com.avispa.ecm.model.configuration.callable.autolink.AutolinkService;
 import com.avispa.ecm.model.configuration.callable.autoname.Autoname;
 import com.avispa.ecm.model.configuration.callable.autoname.AutonameService;
 import com.avispa.ecm.model.document.Document;
@@ -17,9 +16,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,12 +29,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Rafał Hiszpański
  */
 @ExtendWith(SpringExtension.class)
-@DataJpaTest
+@DataJpaTest(properties = "spring.datasource.initialization-mode=never")
+@Sql("/basic-configuration.sql")
 @Import({ContextService.class,
+        //EcmObjectRepository.class,
         // required to add service to list of available services
         AutonameService.class,
         ExpressionResolver.class})
-@Transactional // will rollback changes after each test
 class ContextServiceTest {
     @Autowired
     private EcmObjectRepository ecmObjectRepository;
@@ -229,7 +229,7 @@ class ContextServiceTest {
         ecmObjectRepository.save(context2);
 
         // this test includes OOTB configuration created during initialization
-        assertEquals(3, contextRepository.findAll().size());
+        assertEquals(2, contextRepository.findAll().size());
     }
 
     @Test
@@ -251,7 +251,7 @@ class ContextServiceTest {
         ecmObjectRepository.save(context2);
 
         // this test includes OOTB configuration created during initialization
-        assertEquals(3, contextRepository.findAll().size());
+        assertEquals(2, contextRepository.findAll().size());
     }
 
     private Document createDocument() {
