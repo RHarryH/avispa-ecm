@@ -2,7 +2,7 @@ package com.avispa.ecm.util.expression;
 
 import com.avispa.cms.util.expression.parser.ExpressionLexer;
 import com.avispa.cms.util.expression.parser.ExpressionParser;
-import com.avispa.ecm.model.document.Document;
+import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.util.expression.parser.ExpressionErrorListener;
 import com.avispa.ecm.util.expression.parser.ExpressionVisitor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ExpressionResolver {
-    public String resolve(Document document, String expression) {
+    public String resolve(EcmObject ecmObject, String expression) {
         try {
             // create lexer and get tokens
             Lexer lexer = new ExpressionLexer(CharStreams.fromString(expression));
@@ -33,7 +33,7 @@ public class ExpressionResolver {
             ParseTree tree = parser.start();
 
             // go through parse tree
-            ExpressionVisitor visitor = new ExpressionVisitor(document);
+            ExpressionVisitor visitor = new ExpressionVisitor(ecmObject);
 
             return visitor.visit(tree);
         } catch (ParseCancellationException e) {

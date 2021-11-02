@@ -1,6 +1,6 @@
 package com.avispa.ecm.util.expression.function.impl;
 
-import com.avispa.ecm.model.document.Document;
+import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.util.expression.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 public class Pad implements Function {
     @Override
-    public String resolve(Document document, String[] params) {
+    public String resolve(EcmObject ecmObject, String[] params) {
         if(params.length < 2) {
             throw new IllegalArgumentException("Require at least two attributes");
         }

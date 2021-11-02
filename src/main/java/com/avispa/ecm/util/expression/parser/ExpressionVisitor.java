@@ -2,7 +2,7 @@ package com.avispa.ecm.util.expression.parser;
 
 import com.avispa.cms.util.expression.parser.ExpressionBaseVisitor;
 import com.avispa.cms.util.expression.parser.ExpressionParser;
-import com.avispa.ecm.model.document.Document;
+import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.util.expression.FunctionFactory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,10 +12,10 @@ import java.util.List;
 @Slf4j
 public class ExpressionVisitor extends ExpressionBaseVisitor<String> {
 
-    private final Document document;
+    private final EcmObject ecmObject;
 
-    public ExpressionVisitor(Document document) {
-        this.document = document;
+    public ExpressionVisitor(EcmObject ecmObject) {
+        this.ecmObject = ecmObject;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ExpressionVisitor extends ExpressionBaseVisitor<String> {
             log.debug("Function params: {}", params);
         }
 
-        String returnedValue = FunctionFactory.resolve(functionName.substring(1), params.toArray(new String[0]), document);
+        String returnedValue = FunctionFactory.resolve(functionName.substring(1), params.toArray(new String[0]), ecmObject);
         if(null != returnedValue) {
             return returnedValue;
         } else {
