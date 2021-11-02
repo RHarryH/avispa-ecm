@@ -15,6 +15,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class ContextService {
     private final EcmObjectRepository<EcmObject> ecmObjectRepository;
     private final ContextRepository contextRepository;
 
-    private final List<CallableConfigService> callableConfigServices;
+    private final List<CallableConfigService<CallableConfigObject>> callableConfigServices;
 
     /**
      * Automatically applies configurations of selected classes
@@ -49,7 +50,7 @@ public class ContextService {
 
         debugLog("Configuration services {}", callableConfigServices);
 
-        for (CallableConfigService ecmConfigService : callableConfigServices) {
+        for (CallableConfigService<CallableConfigObject> ecmConfigService : callableConfigServices) {
             Class<?> ecmConfigObject = getClassOfEcmConfigObjectSupportedByService(ecmConfigService);
 
             for (EcmConfigObject configObject : availableConfigurations) {
@@ -84,7 +85,8 @@ public class ContextService {
     }
 
     /**
-     * Returns list of configurations matching for provided object.
+     * Returns list of configurations matching for provided object. It merges configurations from all matching
+     * contexts.
      * @param object object for which we want to find matching configuration
      * @param <T> type of object
      * @return
@@ -97,9 +99,9 @@ public class ContextService {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         return contexts.stream().filter(context -> matches(context, object, objectMapper))
-                .findFirst()
                 .map(Context::getEcmConfigObjects)
-                .orElse(Collections.emptyList());
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -116,7 +118,7 @@ public class ContextService {
         Class<? extends EcmObject> contextSupportedClass = context.getType().getClazz();
         Class<? extends EcmObject> inputObjectClass = object.getClass();
 
-        if(!inputObjectClass.isAssignableFrom(contextSupportedClass)) {
+        if(!contextSupportedClass.isAssignableFrom(inputObjectClass)) {
             log.info("{} is not {} or its subtype", inputObjectClass, contextSupportedClass);
             return false;
         }
@@ -142,7 +144,7 @@ public class ContextService {
      * @param callableConfigService
      * @return
      */
-    private Class<?> getClassOfEcmConfigObjectSupportedByService(CallableConfigService callableConfigService) {
+    private Class<?> getClassOfEcmConfigObjectSupportedByService(CallableConfigService<CallableConfigObject> callableConfigService) {
         ResolvableType callableConfigServiceType = ResolvableType.forClass(callableConfigService.getClass());
         Class<?> ecmConfigObject = callableConfigServiceType.getInterfaces()[0].getGeneric().resolve();
         if(null == ecmConfigObject) {
