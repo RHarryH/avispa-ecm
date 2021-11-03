@@ -16,9 +16,11 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Rafał Hiszpański
@@ -44,9 +46,9 @@ public class ContextService {
     public final <T extends Document, C extends CallableConfigObject> void applyMatchingConfigurations(T object, Class<? extends C>... configs) {
         List<Class<? extends C>> configsList = List.of(configs);
 
-        List<EcmConfigObject> availableConfigurations = getFirstMatchingConfigurations(object).stream()
+        Set<EcmConfigObject> availableConfigurations = getConfigurations(object).stream()
                 .filter(e -> configsList.contains(e.getClass()))// filter only elements from the list
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
         debugLog("Configuration services {}", callableConfigServices);
 
@@ -68,16 +70,30 @@ public class ContextService {
         }
     }
 
+    public <T extends EcmObject, C extends EcmConfigObject> Optional<C> getConfiguration(T object, Class<C> configurationType) {
+        return getMatchingConfigurations(object)
+                .collect(Collectors.groupingBy(EcmConfigObject::getClass)) // group by class name
+                .values().stream()
+                .map(list -> list.get(0))// for each list get only first element
+                .filter(configurationType::isInstance)
+                .map(configurationType::cast)
+                .findFirst();
+    }
+
     /**
      * Returns list of configurations matching for provided object.
      * If there are more than one configuration of the same type (for example two autolinkings) only first one will
      * be returned.
+     * The same configuration might occur in two cases:
+     * - there are two configurations in the same context - order of insertion matters (TODO: are you sure?)
+     * - there are two contexts having same configuration type - importance of context matters
+     * (cared by {@link #getMatchingConfigurations(EcmObject)})
      * @param object object for which we want to find matching configuration
      * @param <T> type of object
      * @return
      */
-    public <T extends EcmObject> List<EcmConfigObject> getFirstMatchingConfigurations(T object) {
-        return getMatchingConfigurations(object).stream()
+    public <T extends EcmObject> List<EcmConfigObject> getConfigurations(T object) {
+        return getMatchingConfigurations(object)
                 .collect(Collectors.groupingBy(EcmConfigObject::getClass)) // group by class name
                 .values().stream()
                 .map(list -> list.get(0))// for each list get only first element
@@ -85,23 +101,21 @@ public class ContextService {
     }
 
     /**
-     * Returns list of configurations matching for provided object. It merges configurations from all matching
+     * Returns stream of configurations matching for provided object. It merges configurations from all matching
      * contexts.
      * @param object object for which we want to find matching configuration
      * @param <T> type of object
      * @return
      */
-    public <T extends EcmObject> List<EcmConfigObject> getMatchingConfigurations(T object) {
-        List<Context> contexts = contextRepository.findAll();
+    private <T extends EcmObject> Stream<EcmConfigObject> getMatchingConfigurations(T object) {
+        List<Context> contexts = contextRepository.findAllByOrderByImportanceDesc();
 
         ObjectMapper objectMapper = new ObjectMapper();
-
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         return contexts.stream().filter(context -> matches(context, object, objectMapper))
                 .map(Context::getEcmConfigObjects)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                .flatMap(Collection::stream);
     }
 
     /**

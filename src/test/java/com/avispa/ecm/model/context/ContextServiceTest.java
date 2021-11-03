@@ -1,7 +1,5 @@
 package com.avispa.ecm.model.context;
 
-import com.avispa.ecm.model.EcmEntity;
-import com.avispa.ecm.model.EcmEntityRepository;
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.EcmObjectRepository;
 import com.avispa.ecm.model.configuration.EcmConfigObject;
@@ -9,12 +7,13 @@ import com.avispa.ecm.model.configuration.EcmConfigObjectRepository;
 import com.avispa.ecm.model.configuration.callable.autolink.Autolink;
 import com.avispa.ecm.model.configuration.callable.autoname.Autoname;
 import com.avispa.ecm.model.configuration.callable.autoname.AutonameService;
+import com.avispa.ecm.model.configuration.propertypage.PropertyPage;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeRepository;
 import com.avispa.ecm.util.expression.ExpressionResolver;
 import com.avispa.ecm.util.expression.SuperDocument;
-import org.junit.jupiter.api.BeforeAll;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +24,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -75,14 +75,9 @@ class ContextServiceTest {
         Document document = createDocument();
         Autoname autoname = createAutoname();
 
-        Context context = new Context();
-        context.setObjectName("Sample context");
-        context.setEcmConfigObjects(List.of(autoname));
-        context.setType(documentType);
-        context.setMatchRule("{ \"objectName\": \"It's me\" }");
-        ecmObjectRepository.save(context);
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname);
 
-        List<EcmConfigObject> configurations = contextService.getMatchingConfigurations(document);
+        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
 
         assertFalse(configurations.isEmpty());
         assertEquals(autoname.getId(), configurations.get(0).getId());
@@ -93,14 +88,9 @@ class ContextServiceTest {
         Document document = createDocument();
         Autoname autoname = createAutoname();
 
-        Context context = new Context();
-        context.setObjectName("Sample context");
-        context.setEcmConfigObjects(List.of(autoname));
-        context.setType(documentType);
-        context.setMatchRule("{ \"objectName\": \"It's me\", \"extraField\": \"Extra field\"}");
-        ecmObjectRepository.save(context);
+        createContext(documentType, "{ \"objectName\": \"It's me\", \"extraField\": \"Extra field\"}", autoname);
 
-        List<EcmConfigObject> configurations = contextService.getMatchingConfigurations(document);
+        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
 
         assertFalse(configurations.isEmpty());
         assertEquals(autoname.getId(), configurations.get(0).getId());
@@ -111,14 +101,9 @@ class ContextServiceTest {
         Document document = createDocument();
         Autoname autoname = createAutoname();
 
-        Context context = new Context();
-        context.setObjectName("Sample context");
-        context.setEcmConfigObjects(List.of(autoname));
-        context.setType(superDocumentType);
-        context.setMatchRule("{ \"objectName\": \"It's me\"}");
-        ecmObjectRepository.save(context);
+        createContext(superDocumentType, "{ \"objectName\": \"It's me\"}", autoname);
 
-        List<EcmConfigObject> configurations = contextService.getMatchingConfigurations(document);
+        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
 
         assertTrue(configurations.isEmpty());
     }
@@ -133,14 +118,9 @@ class ContextServiceTest {
         SuperDocument document = createSuperDocument();
         Autoname autoname = createAutoname();
 
-        Context context = new Context();
-        context.setObjectName("Sample context");
-        context.setEcmConfigObjects(List.of(autoname));
-        context.setType(documentType);
-        context.setMatchRule("{ \"objectName\": \"It's me\"}");
-        ecmObjectRepository.save(context);
+        createContext(documentType, "{ \"objectName\": \"It's me\"}", autoname);
 
-        List<EcmConfigObject> configurations = contextService.getMatchingConfigurations(document);
+        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
 
         assertFalse(configurations.isEmpty());
         assertEquals(autoname.getId(), configurations.get(0).getId());
@@ -151,14 +131,9 @@ class ContextServiceTest {
         Document document = createDocument();
         Autoname autoname = createAutoname();
 
-        Context context = new Context();
-        context.setObjectName("Sample context");
-        context.setEcmConfigObjects(List.of(autoname));
-        context.setType(documentType);
-        context.setMatchRule("{}");
-        ecmObjectRepository.save(context);
+        createContext(documentType, "{}", autoname);
 
-        List<EcmConfigObject> configurations = contextService.getMatchingConfigurations(document);
+        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
 
         assertFalse(configurations.isEmpty());
         assertEquals(autoname.getId(), configurations.get(0).getId());
@@ -174,14 +149,9 @@ class ContextServiceTest {
         Document document = createDocument("It's another me");
         Autoname autoname = createAutoname();
 
-        Context context = new Context();
-        context.setObjectName("Sample context");
-        context.setEcmConfigObjects(List.of(autoname));
-        context.setType(documentType);
-        context.setMatchRule("{ \"objectName\": \"It's me\"}");
-        ecmObjectRepository.save(context);
+        createContext(documentType, "{ \"objectName\": \"It's me\"}", autoname);
 
-        List<EcmConfigObject> configurations = contextService.getMatchingConfigurations(document);
+        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
 
         assertTrue(configurations.isEmpty());
     }
@@ -191,12 +161,7 @@ class ContextServiceTest {
         Document document = createDocument();
         Autoname autoname = createAutoname();
 
-        Context context = new Context();
-        context.setObjectName("Sample context");
-        context.setEcmConfigObjects(List.of(autoname));
-        context.setType(documentType);
-        context.setMatchRule("{ \"objectName\": \"It's me\" }");
-        ecmObjectRepository.save(context);
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname);
 
         contextService.applyMatchingConfigurations(document, Autoname.class);
 
@@ -204,22 +169,59 @@ class ContextServiceTest {
     }
 
     @Test
-    void givenContextWithTwoAutonameConfigurationAndAutolink_whenGetFirstMatchingConfigurations_thenReturnOnlyFirstAutonameAndAutolink() {
+    void givenContextWithTwoAutonameConfigurationAndAutolink_whenGetConfigurations_thenReturnOnlyFirstAutonameAndAutolink() {
         Document document = createDocument();
         Autoname autoname = createAutoname();
         Autoname autoname2 = createAutoname("Second sample autoname");
         Autolink autolink = createAutolink();
 
-        Context context = new Context();
-        context.setObjectName("Sample context");
-        context.setEcmConfigObjects(List.of(autoname, autolink, autoname2));
-        context.setType(documentType);
-        context.setMatchRule("{ \"objectName\": \"It's me\" }");
-        ecmObjectRepository.save(context);
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname, autolink, autoname2);
 
-        List<EcmConfigObject> configurations = contextService.getFirstMatchingConfigurations(document);
+        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
 
         assertEquals(2, configurations.size());
+    }
+
+    @Test
+    void givenContextsWithSameConfigType_whenGetConfigurations_thenReturnConfigFromHigherImportanceContext() {
+        Document document = createDocument();
+        Autoname autoname = createAutoname();
+        Autoname autoname2 = createAutoname("Second sample autoname");
+
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname);
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", 1, autoname2);
+
+        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
+
+        assertEquals(1, configurations.size());
+        assertTrue(configurations.contains(autoname2));
+    }
+
+    @Test
+    void givenContextWithMultipleConfigurations_whenGetConfiguration_thenReturnAutonaming() {
+        Document document = createDocument();
+        Autoname autoname = createAutoname();
+        Autolink autolink = createAutolink();
+
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname, autolink);
+
+        Optional<Autolink> autolinkConfig = contextService.getConfiguration(document, Autolink.class);
+
+        assertTrue(autolinkConfig.isPresent());
+        assertEquals(autolink,autolinkConfig.get());
+    }
+
+    @Test
+    void givenContextWithMultipleConfigurations_whenGetConfiguration_thenReturnEmptyOptional() {
+        Document document = createDocument();
+        Autoname autoname = createAutoname();
+        Autolink autolink = createAutolink();
+
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname, autolink);
+
+        Optional<PropertyPage> propertyPageConfig = contextService.getConfiguration(document, PropertyPage.class);
+
+        assertFalse(propertyPageConfig.isPresent());
     }
 
     @Autowired
@@ -230,21 +232,9 @@ class ContextServiceTest {
         Autoname autoname = createAutoname();
         Autolink autolink = createAutolink();
 
-        Context context = new Context();
-        context.setObjectName("Sample context");
-        context.setEcmConfigObjects(List.of(autoname));
-        context.setType(documentType);
-        context.setMatchRule("{ \"objectName\": \"It's me\" }");
-        ecmObjectRepository.save(context);
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname);
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", 1, autolink);
 
-        Context context2 = new Context();
-        context2.setObjectName("Sample context 2");
-        context2.setEcmConfigObjects(List.of(autolink));
-        context2.setType(documentType);
-        context2.setMatchRule("{ \"objectName\": \"It's me\" }");
-        ecmObjectRepository.save(context2);
-
-        // this test includes OOTB configuration created during initialization
         assertEquals(2, contextRepository.findAll().size());
     }
 
@@ -252,21 +242,9 @@ class ContextServiceTest {
     void configurationSharing() {
         Autoname autoname = createAutoname();
 
-        Context context = new Context();
-        context.setObjectName("Sample context");
-        context.setEcmConfigObjects(List.of(autoname));
-        context.setType(documentType);
-        context.setMatchRule("{ \"objectName\": \"It's me\" }");
-        ecmObjectRepository.save(context);
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname);
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", 1, autoname);
 
-        Context context2 = new Context();
-        context2.setObjectName("Sample context 2");
-        context2.setEcmConfigObjects(List.of(autoname));
-        context2.setType(documentType);
-        context2.setMatchRule("{ \"objectName\": \"It's me\" }");
-        ecmObjectRepository.save(context2);
-
-        // this test includes OOTB configuration created during initialization
         assertEquals(2, contextRepository.findAll().size());
     }
 
@@ -276,23 +254,11 @@ class ContextServiceTest {
         Autoname autoname = createAutoname();
         Autolink autolink = createAutolink();
 
-        Context context = new Context();
-        context.setObjectName("Sample context");
-        context.setEcmConfigObjects(List.of(autoname));
-        context.setType(documentType);
-        context.setMatchRule("{ \"objectName\": \"It's me\" }");
-        ecmObjectRepository.save(context);
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname);
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", 1, autolink);
 
-        Context context2 = new Context();
-        context2.setObjectName("Sample context 2");
-        context2.setEcmConfigObjects(List.of(autolink));
-        context2.setType(documentType);
-        context2.setMatchRule("{ \"objectName\": \"It's me\" }");
-        ecmObjectRepository.save(context2);
+        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
 
-        List<EcmConfigObject> configurations = contextService.getMatchingConfigurations(document);
-
-        // this test includes OOTB configuration created during initialization
         assertEquals(2, configurations.size());
     }
 
@@ -336,5 +302,19 @@ class ContextServiceTest {
         autolink.addRule("GHI");
         ecmConfigObjectRepository.save(autolink);
         return autolink;
+    }
+
+    private void createContext(Type objectType, String rule, EcmConfigObject... ecmConfigObjects) {
+        createContext(objectType, rule, 0, ecmConfigObjects);
+    }
+
+    private void createContext(Type objectType, String rule, int importance, EcmConfigObject... ecmConfigObjects) {
+        Context context = new Context();
+        context.setObjectName(RandomStringUtils.randomAlphanumeric(10));
+        context.setEcmConfigObjects(List.of(ecmConfigObjects));
+        context.setType(objectType);
+        context.setMatchRule(rule);
+        context.setImportance(importance);
+        ecmObjectRepository.save(context);
     }
 }
