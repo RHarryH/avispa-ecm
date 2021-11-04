@@ -9,7 +9,7 @@ import lombok.ToString;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.OrderColumn;
 import java.util.List;
 
@@ -21,7 +21,7 @@ import java.util.List;
 @Setter
 @ToString(callSuper = true)
 public class PropertyPage extends EcmConfigObject {
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @OrderColumn
     private List<Control> controls;
 }
