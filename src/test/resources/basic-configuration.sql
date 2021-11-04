@@ -46,7 +46,12 @@ insert into type (id, class_name) values (@AutonameTypeId, 'com.avispa.ecm.model
 -- add Property Page type
 SET @PropertyPageTypeId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@PropertyPageTypeId, 'Property Page', current_timestamp, current_timestamp, 0);
-insert into type (id, class_name) values (@PropertyPageTypeId, 'com.avispa.ecm.model.configuration.propertypage');
+insert into type (id, class_name) values (@PropertyPageTypeId, 'com.avispa.ecm.model.configuration.propertypage.PropertyPage');
+
+-- add Upsert type
+SET @UpsertTypeId=random_uuid();
+insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@UpsertTypeId, 'Upsert', current_timestamp, current_timestamp, 0);
+insert into type (id, class_name) values (@UpsertTypeId, 'com.avispa.ecm.model.configuration.upsert.Upsert');
 
 -- supported formats
 -- unknown
