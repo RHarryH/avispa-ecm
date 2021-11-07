@@ -53,49 +53,49 @@ SET @UpsertTypeId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@UpsertTypeId, 'Upsert', current_timestamp, current_timestamp, 0);
 insert into type (id, class_name) values (@UpsertTypeId, 'com.avispa.ecm.model.configuration.upsert.Upsert');
 
--- supported formats
+-- SUPPORTED FORMATS
 -- unknown
 SET @DefaultFormatId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@DefaultFormatId, 'Default format', current_timestamp, current_timestamp, 0);
-insert into format (id, description, mime_type, icon) values (@DefaultFormatId, 'Default format used when it is not officially supported by ECM', 'application/octet-stream', 'bi bi-file-earmark');
+insert into format (id, description, mime_type) values (@DefaultFormatId, 'Default format used when it is not officially supported by ECM', 'application/octet-stream');
 
 -- text formats
 SET @PdfFormatId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@PdfFormatId, 'pdf', current_timestamp, current_timestamp, 0);
-insert into format (id, description, mime_type, icon) values (@PdfFormatId, 'Adobe Portable Document Format (PDF)', 'application/pdf', 'bi bi-file-earmark-pdf');
+insert into format (id, description, mime_type) values (@PdfFormatId, 'Adobe Portable Document Format (PDF)', 'application/pdf');
 
 SET @OdtFormatId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@OdtFormatId, 'odt', current_timestamp, current_timestamp, 0);
-insert into format (id, description, mime_type, icon) values (@OdtFormatId, 'OpenDocument text document', 'application/vnd.oasis.opendocument.text', 'bi bi-file-richtext');
+insert into format (id, description, mime_type) values (@OdtFormatId, 'OpenDocument text document', 'application/vnd.oasis.opendocument.text');
 
 SET @RtfFormatId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@RtfFormatId, 'rtf', current_timestamp, current_timestamp, 0);
-insert into format (id, description, mime_type, icon) values (@RtfFormatId, 'Rich Text Format (RTF)', 'application/rtf', 'bi bi-file-richtext');
+insert into format (id, description, mime_type) values (@RtfFormatId, 'Rich Text Format (RTF)', 'application/rtf');
 
 SET @DocFormatId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@DocFormatId, 'doc', current_timestamp, current_timestamp, 0);
-insert into format (id, description, mime_type, icon) values (@DocFormatId, 'Microsoft Word', 'application/msword', 'bi bi-file-earmark-word');
+insert into format (id, description, mime_type) values (@DocFormatId, 'Microsoft Word', 'application/msword');
 
 SET @DocxFormatId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@DocxFormatId, 'docx', current_timestamp, current_timestamp, 0);
-insert into format (id, description, mime_type, icon) values (@DocxFormatId, 'Microsoft Word (OpenXML)', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'bi bi-file-earmark-word');
+insert into format (id, description, mime_type) values (@DocxFormatId, 'Microsoft Word (OpenXML)', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
 
 SET @CsvFormatId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@CsvFormatId, 'csv', current_timestamp, current_timestamp, 0);
-insert into format (id, description, mime_type, icon) values (@CsvFormatId, 'Comma-separated values (CSV)', 'text/csv', 'bi bi-file-earmark-text');
+insert into format (id, description, mime_type) values (@CsvFormatId, 'Comma-separated values (CSV)', 'text/csv');
 
 SET @TxtFormatId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@TxtFormatId, 'txt', current_timestamp, current_timestamp, 0);
-insert into format (id, description, mime_type, icon) values (@TxtFormatId, 'Text', 'text/plain', 'bi bi-file-earmark-text');
+insert into format (id, description, mime_type) values (@TxtFormatId, 'Text', 'text/plain');
 
 -- zipping formats
 SET @ZipFormatId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@ZipFormatId, 'zip', current_timestamp, current_timestamp, 0);
-insert into format (id, description, mime_type, icon) values (@ZipFormatId, 'ZIP archive', 'application/zip', 'bi bi-file-earmark-zip');
+insert into format (id, description, mime_type) values (@ZipFormatId, 'ZIP archive', 'application/zip');
 
 SET @RarFormatId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@RarFormatId, 'rar', current_timestamp, current_timestamp, 0);
-insert into format (id, description, mime_type, icon) values (@RarFormatId, 'RAR archive', 'application/vnd.rar', 'bi bi-file-earmark-zip');
+insert into format (id, description, mime_type) values (@RarFormatId, 'RAR archive', 'application/vnd.rar');
 
 -- FOLDER CONTEXT
 SET @FolderContextId=random_uuid();
