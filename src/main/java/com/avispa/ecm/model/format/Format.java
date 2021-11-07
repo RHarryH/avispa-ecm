@@ -19,7 +19,6 @@ public class Format extends EcmObject {
 
     private String description;
     private String mimeType;
-    private String icon;
 
     public String getExtension() {
         return getObjectName();
