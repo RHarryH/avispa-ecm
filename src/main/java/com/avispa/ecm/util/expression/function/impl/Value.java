@@ -11,16 +11,16 @@ import com.avispa.ecm.util.reflect.PropertyUtils;
  */
 public class Value extends ValueFunction {
     @Override
-    public String resolve(EcmEntity ecmEntity, String[] params) {
+    public String resolve(Object object, String[] params) {
         if(params.length < 1) {
             throw new IllegalArgumentException("Require one attribute");
         }
 
-        return getValue(ecmEntity, params[0]);
+        return getValue(object, params[0]);
     }
 
-    private String getValue(EcmEntity ecmEntity, String propertyName) {
-        Object value = PropertyUtils.getPropertyValue(ecmEntity, propertyName);
+    private String getValue(Object object, String propertyName) {
+        Object value = PropertyUtils.getPropertyValue(object, propertyName);
 
         return returnValue(propertyName, value);
     }

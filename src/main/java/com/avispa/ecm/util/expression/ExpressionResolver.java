@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ExpressionResolver {
-    public String resolve(EcmEntity ecmEntity, String expression) {
+    public String resolve(Object object, String expression) {
         try {
             // create lexer and get tokens
             Lexer lexer = new ExpressionLexer(CharStreams.fromString(expression));
@@ -33,7 +33,7 @@ public class ExpressionResolver {
             ParseTree tree = parser.start();
 
             // go through parse tree
-            ExpressionVisitor visitor = new ExpressionVisitor(ecmEntity);
+            ExpressionVisitor visitor = new ExpressionVisitor(object);
 
             return visitor.visit(tree);
         } catch (ParseCancellationException e) {
