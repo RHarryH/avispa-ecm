@@ -24,7 +24,7 @@ public class FunctionFactory {
 
     }
 
-    public static String resolve(String functionName, String[] functionParams, EcmEntity ecmEntity) {
+    public static String resolve(String functionName, String[] functionParams, Object object) {
         Function function;
 
         switch(functionName) {
@@ -45,11 +45,11 @@ public class FunctionFactory {
                 return null;
         }
 
-        return resolveFunction(ecmEntity, functionParams, function);
+        return resolveFunction(object, functionParams, function);
     }
 
-    private static String resolveFunction(EcmEntity ecmEntity, String[] functionParams, Function function) {
-        String r = function.resolve(ecmEntity, functionParams);
+    private static String resolveFunction(Object object, String[] functionParams, Function function) {
+        String r = function.resolve(object, functionParams);
 
         return Matcher.quoteReplacement(r); // runs quoteReplacement to escape slashes and dollar characters
     }

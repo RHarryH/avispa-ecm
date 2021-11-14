@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Default implements Function {
     @Override
-    public String resolve(EcmEntity ecmEntity, String[] params) {
+    public String resolve(Object object, String[] params) {
         if(params.length < 2) {
             throw new IllegalArgumentException("Require two attributes");
         }

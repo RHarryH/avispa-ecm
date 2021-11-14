@@ -18,16 +18,16 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class DateValue extends ValueFunction {
     @Override
-    public String resolve(EcmEntity ecmEntity, String[] params) {
+    public String resolve(Object object, String[] params) {
         if(params.length < 2) {
             throw new IllegalArgumentException("Require two attributes");
         }
 
-        return getValue(ecmEntity, params[0], params[1]);
+        return getValue(object, params[0], params[1]);
     }
 
-    private String getValue(EcmEntity ecmEntity, String propertyName, String format) {
-        Object value = PropertyUtils.getPropertyValue(ecmEntity, propertyName);
+    private String getValue(Object object, String propertyName, String format) {
+        Object value = PropertyUtils.getPropertyValue(object, propertyName);
 
         if(value instanceof LocalDateTime) {
             LocalDateTime localDateTime = (LocalDateTime) value;

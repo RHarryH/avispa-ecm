@@ -1,6 +1,5 @@
 package com.avispa.ecm.util.reflect;
 
-import com.avispa.ecm.model.EcmEntity;
 import lombok.extern.slf4j.Slf4j;
 
 import java.beans.BeanInfo;
@@ -55,22 +54,22 @@ public class PropertyUtils {
      * Retrieves value of property in provided object.
      *
      * It returns only properties, which have getter matching bean-standard.
-     * @param ecmEntity object from which we want to retrieve the value
+     * @param object object from which we want to retrieve the value
      * @param propertyName name of the property for which we want a value
      * @return value of the property
      * @throws Exception
      */
-    public static Object getPropertyValue(EcmEntity ecmEntity, String propertyName) {
+    public static Object getPropertyValue(Object object, String propertyName) {
         try {
-            BeanInfo info = getBeanInfo(ecmEntity);
+            BeanInfo info = getBeanInfo(object);
             for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
                 Method reader = pd.getReadMethod();
                 if (reader != null && !"class".equals(pd.getName()) && pd.getName().equals(propertyName)) {
-                    return getValue(ecmEntity, reader);
+                    return getValue(object, reader);
                 }
             }
         } catch(IntrospectionException e) {
-            log.error("Resolving '{}' property for '{}' entity has failed", propertyName, ecmEntity.getId(), e);
+            log.error("Resolving '{}' property from object of '{}' class has failed", propertyName, object.getClass().getSimpleName(), e);
         }
 
         return null;
@@ -89,22 +88,22 @@ public class PropertyUtils {
      * Sets value of property in provided object.
      *
      * It works only with classes, which have setter matching bean-standard.
-     * @param ecmEntity object to which we want to set the value
+     * @param object object to which we want to set the value
      * @param propertyName name of the property for which we want to set a value
      * @param propertyValue value to set
      * @throws Exception
      */
-    public static void setPropertyValue(EcmEntity ecmEntity, String propertyName, Object propertyValue) {
+    public static void setPropertyValue(Object object, String propertyName, Object propertyValue) {
         try {
-            BeanInfo info = getBeanInfo(ecmEntity);
+            BeanInfo info = getBeanInfo(object);
             for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
                 Method writer = pd.getWriteMethod();
                 if (writer != null && !"class".equals(pd.getName()) && pd.getName().equals(propertyName)) {
-                    setValue(ecmEntity, propertyValue, writer);
+                    setValue(object, propertyValue, writer);
                 }
             }
         } catch(IntrospectionException e) {
-            log.error("Resolving '{}' property for '{}' entity has failed", propertyName, ecmEntity.getId(), e);
+            log.error("Resolving '{}' property from object of '{}' class has failed", propertyName, object.getClass().getSimpleName(), e);
         }
     }
 
