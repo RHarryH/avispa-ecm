@@ -3,6 +3,8 @@ package com.avispa.ecm;
 import com.avispa.ecm.model.filestore.FileStore;
 import com.avispa.ecm.model.filestore.FileStoreRepository;
 import com.avispa.ecm.util.CustomAsyncExceptionHandler;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.jodconverter.office.LocalOfficeManager;
 import org.jodconverter.office.OfficeManager;
@@ -79,11 +81,19 @@ public class EcmConfiguration implements AsyncConfigurer {
 
     @Bean(name = "localOfficeManager", initMethod="start", destroyMethod = "stop")
     @ConditionalOnMissingBean(name = "localOfficeManager")
-    public OfficeManager gerLocalOfficeManager(@Value("${office.home:D:\\LibreOffice}") String officePath) {
+    public OfficeManager gerLocalOfficeManager(@Value("${office.home:C:\\Program Files\\LibreOffice}") String officePath) {
         return LocalOfficeManager.builder()
                 .officeHome(officePath)
                 .processManager("org.jodconverter.process.PureJavaProcessManager")
                 .build();
+    }
+
+    @Bean
+    public ObjectMapper getObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        return mapper;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.avispa.ecm.util.expression;
 
-import com.avispa.ecm.model.EcmObject;
+import com.avispa.ecm.model.EcmEntity;
 import com.avispa.ecm.util.expression.function.Function;
 import com.avispa.ecm.util.expression.function.impl.DateValue;
 import com.avispa.ecm.util.expression.function.impl.Default;
@@ -24,7 +24,7 @@ public class FunctionFactory {
 
     }
 
-    public static String resolve(String functionName, String[] functionParams, EcmObject ecmObject) {
+    public static String resolve(String functionName, String[] functionParams, EcmEntity ecmEntity) {
         Function function;
 
         switch(functionName) {
@@ -45,11 +45,11 @@ public class FunctionFactory {
                 return null;
         }
 
-        return resolveFunction(ecmObject, functionParams, function);
+        return resolveFunction(ecmEntity, functionParams, function);
     }
 
-    private static String resolveFunction(EcmObject ecmObject, String[] functionParams, Function function) {
-        String r = function.resolve(ecmObject, functionParams);
+    private static String resolveFunction(EcmEntity ecmEntity, String[] functionParams, Function function) {
+        String r = function.resolve(ecmEntity, functionParams);
 
         return Matcher.quoteReplacement(r); // runs quoteReplacement to escape slashes and dollar characters
     }

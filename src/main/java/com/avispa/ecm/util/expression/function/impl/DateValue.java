@@ -1,6 +1,6 @@
 package com.avispa.ecm.util.expression.function.impl;
 
-import com.avispa.ecm.model.EcmObject;
+import com.avispa.ecm.model.EcmEntity;
 import com.avispa.ecm.util.expression.function.ValueFunction;
 import com.avispa.ecm.util.reflect.PropertyUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -18,16 +18,16 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class DateValue extends ValueFunction {
     @Override
-    public String resolve(EcmObject ecmObject, String[] params) {
+    public String resolve(EcmEntity ecmEntity, String[] params) {
         if(params.length < 2) {
             throw new IllegalArgumentException("Require two attributes");
         }
 
-        return getValue(ecmObject, params[0], params[1]);
+        return getValue(ecmEntity, params[0], params[1]);
     }
 
-    private String getValue(EcmObject ecmObject, String propertyName, String format) {
-        Object value = PropertyUtils.getPropertyValue(ecmObject, propertyName);
+    private String getValue(EcmEntity ecmEntity, String propertyName, String format) {
+        Object value = PropertyUtils.getPropertyValue(ecmEntity, propertyName);
 
         if(value instanceof LocalDateTime) {
             LocalDateTime localDateTime = (LocalDateTime) value;
