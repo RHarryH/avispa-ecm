@@ -7,7 +7,7 @@ import com.avispa.ecm.model.configuration.EcmConfigObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigService;
 import com.avispa.ecm.model.document.Document;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +32,7 @@ public class ContextService {
 
     private final EcmObjectRepository<EcmObject> ecmObjectRepository;
     private final ContextRepository contextRepository;
+    private final ObjectMapper objectMapper;
 
     private final List<CallableConfigService> callableConfigServices;
 
@@ -70,9 +71,40 @@ public class ContextService {
         }
     }
 
+    /**
+     * Get desired configurations applicable for all objects of specified type (matching rule is empty)
+     * @param clazz object class
+     * @param configurationType desired types of configuration
+     * @param <T> object type
+     * @param <C> configuration type
+     * @return
+     */
+    public <T extends EcmObject, C extends EcmConfigObject> Optional<C> getConfiguration(Class<T> clazz, Class<C> configurationType) {
+        return filter(getMatchingConfigurations(clazz), configurationType);
+    }
+
+    /**
+     * Get desired configurations applicable for provided object (matching rule is empty)
+     * @param object object for which we want to get configuration
+     * @param configurationType desired types of configuration
+     * @param <T> object type
+     * @param <C> configuration type
+     * @return
+     */
     public <T extends EcmObject, C extends EcmConfigObject> Optional<C> getConfiguration(T object, Class<C> configurationType) {
-        return getMatchingConfigurations(object)
-                .collect(Collectors.groupingBy(EcmConfigObject::getClass)) // group by class name
+        return filter(getMatchingConfigurations(object), configurationType);
+    }
+
+    /**
+     * Filters returned configuration by desired types. If there are multiple configurations
+     * only first one is returned.
+     * @param stream
+     * @param configurationType
+     * @param <C>
+     * @return
+     */
+    private <C extends EcmConfigObject> Optional<C> filter(Stream<EcmConfigObject> stream, Class<C> configurationType) {
+        return stream.collect(Collectors.groupingBy(EcmConfigObject::getClass)) // group by class name
                 .values().stream()
                 .map(list -> list.get(0))// for each list get only first element
                 .filter(configurationType::isInstance)
@@ -110,12 +142,36 @@ public class ContextService {
     private <T extends EcmObject> Stream<EcmConfigObject> getMatchingConfigurations(T object) {
         List<Context> contexts = contextRepository.findAllByOrderByImportanceDesc();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        return contexts.stream().filter(context -> matches(context, object, objectMapper))
+        return contexts.stream().filter(context -> matches(context, object))
                 .map(Context::getEcmConfigObjects)
                 .flatMap(Collection::stream);
+    }
+
+    /**
+     * Returns stream of configurations matching for provided object. It merges configurations from all matching
+     * contexts. It returns only configuration applicable for all objects of specific type (matching
+     * rule is empty)
+     * @param clazz object for which we want to find matching configuration
+     * @param <T> type of object
+     * @return
+     */
+    private <T extends EcmObject> Stream<EcmConfigObject> getMatchingConfigurations(Class<T> clazz) {
+        List<Context> contexts = contextRepository.findAllByOrderByImportanceDesc();
+
+        return contexts.stream().filter(context -> context.getType().getClazz().equals(clazz))
+                .filter(this::hasEmptyMatchRule)
+                .map(Context::getEcmConfigObjects)
+                .flatMap(Collection::stream);
+    }
+
+    private boolean hasEmptyMatchRule(Context context) {
+        try {
+            JsonNode actualObj = objectMapper.readTree(context.getMatchRule());
+            return actualObj.isEmpty();
+        } catch (JsonProcessingException e) {
+            log.error("Can't parse {} context rule", context.getMatchRule(), e);
+        }
+        return false;
     }
 
     /**
@@ -124,11 +180,10 @@ public class ContextService {
      * rule exists in the repository
      * @param context context, which rules are checked
      * @param object object checked against the configuration
-     * @param objectMapper object mapper used to convert match rule to example of match object
      * @param <T> concrete type of EcmObject
      * @return true if context can be applied on the object
      */
-    private <T extends EcmObject> boolean matches(Context context, T object, ObjectMapper objectMapper) {
+    private <T extends EcmObject> boolean matches(Context context, T object) {
         Class<? extends EcmObject> contextSupportedClass = context.getType().getClazz();
         Class<? extends EcmObject> inputObjectClass = object.getClass();
 

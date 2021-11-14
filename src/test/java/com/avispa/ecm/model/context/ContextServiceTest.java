@@ -262,6 +262,20 @@ class ContextServiceTest {
         assertEquals(2, configurations.size());
     }
 
+    @Test
+    void givenGeneralAndSpecificContexts_whenGetMatchingConfigurations_thenReturnOnlyGeneralConfig() {
+        Autoname autoname = createAutoname();
+        Autoname autoname2 = createAutoname("Another autoname");
+
+        createContext(documentType, "{}", autoname);
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", 1, autoname2);
+
+        Optional<Autoname> configuration = contextService.getConfiguration(Document.class, Autoname.class);
+
+        assertTrue(configuration.isPresent());
+        assertEquals(autoname, configuration.get());
+    }
+
     private Document createDocument() {
         return createDocument("It's me");
     }
