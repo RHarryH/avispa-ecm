@@ -1,7 +1,7 @@
 package com.avispa.ecm.model.folder;
 
+import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.EcmObjectRepository;
-import com.avispa.ecm.model.document.Document;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -15,9 +15,9 @@ import java.util.UUID;
 public interface FolderRepository extends EcmObjectRepository<Folder> {
     Folder findFolderByObjectNameAndPath(String folderName, String path);
 
-    @Query("select d from Document d join Folder f on d.folder.id = f.id where f.id = ?1")
-    List<Document> findDocumentsByFolderId(UUID folderId);
+    @Query("select o from EcmObject o join Folder f on o.folder.id = f.id where f.id = ?1")
+    List<EcmObject> findObjectsByFolderId(UUID folderId);
 
-    @Query("select f from Folder f where f.ancestor.id = ?1")
+    @Query("select f from Folder f where f.folder.id = ?1")
     List<Folder> findNestedFoldersByFolderId(UUID folderId);
 }

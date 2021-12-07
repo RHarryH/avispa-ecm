@@ -1,5 +1,6 @@
 package com.avispa.ecm.util.expression;
 
+import com.avispa.ecm.util.SuperDocument;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;

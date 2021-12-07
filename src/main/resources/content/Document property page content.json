@@ -1,0 +1,23 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "label",
+        "expression": "'Properties of ' + $value('objectName') + ' document'"
+      },
+      {
+        "type": "separator"
+      },
+      {
+        "type": "text",
+        "label": "Creation date",
+        "property": "creationDate"
+      },
+      {
+        "type": "text",
+        "label": "Modification date",
+        "property": "modificationDate"
+      }
+    ]
+  }
+}

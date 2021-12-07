@@ -1,0 +1,36 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "textarea"
+      ]
+    },
+    "label": {
+      "type": "string"
+    },
+    "property": {
+      "type": "string"
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "rows": {
+      "type": "integer"
+    },
+    "cols": {
+      "type": "integer"
+    },
+    "minLength": {
+      "type": "integer"
+    },
+    "maxLength": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "type",
+    "property"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "number"
+      ]
+    },
+    "label": {
+      "type": "string"
+    },
+    "property": {
+      "type": "string"
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "min": {
+      "type": "number"
+    },
+    "max": {
+      "type": "number"
+    },
+    "step": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "type",
+    "property"
+  ]
+}

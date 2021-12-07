@@ -1,6 +1,6 @@
 package com.avispa.ecm.util.expression.function.impl;
 
-import com.avispa.ecm.util.expression.SuperDocument;
+import com.avispa.ecm.util.SuperDocument;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

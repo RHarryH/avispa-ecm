@@ -1,0 +1,32 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "columns"
+      ]
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "minItem": 1,
+        "oneOf": [
+          { "$ref": "combo-radio.json#" },
+          { "$ref": "label.json#" },
+          { "$ref": "money.json#" },
+          { "$ref": "number.json#" },
+          { "$ref": "property-control.json#" },
+          { "$ref": "separator.json#" },
+          { "$ref": "text.json#" },
+          { "$ref": "textarea.json#" }
+        ]
+      }
+    }
+  },
+  "required": [
+    "type",
+    "controls"
+  ]
+}

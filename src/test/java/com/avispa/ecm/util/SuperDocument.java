@@ -1,4 +1,4 @@
-package com.avispa.ecm.util.expression;
+package com.avispa.ecm.util;
 
 import com.avispa.ecm.model.document.Document;
 import lombok.Getter;

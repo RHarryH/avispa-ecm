@@ -1,5 +1,6 @@
 package com.avispa.ecm.model.folder;
 
+import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.document.DocumentRepository;
 import org.junit.jupiter.api.Test;
@@ -8,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Rafał Hiszpański
@@ -38,7 +39,7 @@ class FolderServiceTest {
         document2.setFolder(folder);
         documentRepository.save(document2);
 
-        List<Document> documents = folderService.getDocumentsInFolder(folder);
+        List<EcmObject> documents = folderService.getObjectsInFolder(folder);
         assertEquals(2, documents.size());
         assertEquals("Document1", documents.get(0).getObjectName());
         assertEquals("Document2", documents.get(1).getObjectName());

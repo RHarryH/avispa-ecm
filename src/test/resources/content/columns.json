@@ -1,0 +1,25 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "columns",
+        "controls": [
+          {
+            "type": "combo",
+            "label": "Combo test",
+            "property": "extraString",
+            "objectType": "SuperDocument",
+            "required": true
+          },
+          {
+            "type": "money",
+            "currency": "PLN",
+            "label": "Money test",
+            "property": "objectName",
+            "required": true
+          }
+        ]
+      }
+    ]
+  }
+}

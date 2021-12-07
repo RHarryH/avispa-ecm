@@ -1,7 +1,7 @@
 package com.avispa.ecm.model.configuration.callable.autoname;
 
+import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigService;
-import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.util.expression.ExpressionResolver;
 import com.avispa.ecm.util.reflect.PropertyUtils;
 import lombok.RequiredArgsConstructor;
@@ -22,17 +22,17 @@ public class AutonameService implements CallableConfigService<Autoname> {
 
     private final ExpressionResolver expressionResolver;
 
-    public void apply(Autoname autoname, Document contextDocument) {
-        log.info("Autonaming '{}' for '{}' document has started", autoname, contextDocument);
+    public void apply(Autoname autoname, EcmObject contextObject) {
+        log.info("Autonaming '{}' for '{}' object has started", autoname, contextObject);
 
         String propertyName = autoname.getPropertyName();
         if(Strings.isEmpty(propertyName)) {
             log.error("Property name must be provided!");
         }
 
-        String name = expressionResolver.resolve(contextDocument, autoname.getRule());
-        PropertyUtils.setPropertyValue(contextDocument, propertyName, name);
+        String name = expressionResolver.resolve(contextObject, autoname.getRule());
+        PropertyUtils.setPropertyValue(contextObject, propertyName, name);
 
-        log.info("Autonaming '{}' for '{}' document has completed", autoname, contextDocument);
+        log.info("Autonaming '{}' for '{}' object has completed", autoname, contextObject);
     }
 }
