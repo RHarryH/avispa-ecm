@@ -1,0 +1,16 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "label",
+        "expression": "'Test label ' + $value('objectName')"
+      },
+      {
+        "type": "text",
+        "label": "Text test",
+        "property": "objectName",
+        "minLength": 10
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "money",
+        "currency": "PLN",
+        "label": "Money test",
+        "property": "objectName",
+        "required": true
+      }
+    ]
+  }
+}

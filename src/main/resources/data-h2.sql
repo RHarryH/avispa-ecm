@@ -88,6 +88,10 @@ SET @TxtFormatId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@TxtFormatId, 'txt', current_timestamp, current_timestamp, 0);
 insert into format (id, description, mime_type) values (@TxtFormatId, 'Text', 'text/plain');
 
+SET @JsonFormatId=random_uuid();
+insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@JsonFormatId, 'json', current_timestamp, current_timestamp, 0);
+insert into format (id, description, mime_type) values (@JsonFormatId, 'JSON Format', 'application/json');
+
 -- zipping formats
 SET @ZipFormatId=random_uuid();
 insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@ZipFormatId, 'zip', current_timestamp, current_timestamp, 0);
@@ -109,57 +113,15 @@ insert into context (id, type_id, importance) values (@DocumentContextId, @Docum
 
 -- FOLDER PROPERTY PAGE
 SET @FolderPropertyPageId=random_uuid();
-insert into ecm_config_object (id, object_name, creation_date, modification_date, version) values (@FolderPropertyPageId, 'Folder property page', current_timestamp, current_timestamp, 0);
+insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@FolderPropertyPageId, 'Folder property page', current_timestamp, current_timestamp, 0);
+insert into ecm_config_object (id) values (@FolderPropertyPageId);
 insert into property_page (id) values (@FolderPropertyPageId);
-
--- add controls
-SET @FolderPropertyPageObjectNameId=random_uuid();
-insert into control (id, object_name, creation_date, modification_date, version, label, control_type, specific_control_type, required)
-    values (@FolderPropertyPageObjectNameId, 'Folder property page folder name', current_timestamp, current_timestamp, 0, '''Properties of "'' + $value(''objectName'') + ''" folder''', 'organization_control', 'label', true);
-SET @FolderPropertyPageSeparatorId=random_uuid();
-insert into control (id, object_name, creation_date, modification_date, version, label, control_type, specific_control_type, required)
-values (@FolderPropertyPageSeparatorId, 'Folder property page separator', current_timestamp, current_timestamp, 0, 'Separator', 'organization_control', 'separator', true);
-SET @FolderPropertyPagePathId=random_uuid();
-insert into control (id, object_name, creation_date, modification_date, version, name, label, control_type, specific_control_type, required)
-    values (@FolderPropertyPagePathId, 'Folder property page folder path', current_timestamp, current_timestamp, 0, 'path', 'Folder path', 'property_control', 'text', true);
-SET @FolderPropertyPageCreationDateId=random_uuid();
-insert into control (id, object_name, creation_date, modification_date, version, name, label, control_type, specific_control_type, required)
-    values (@FolderPropertyPageCreationDateId, 'Folder property folder creation date', current_timestamp, current_timestamp, 0, 'creationDate', 'Creation date', 'property_control', 'text', true);
-SET @FolderPropertyPageModificationDateId=random_uuid();
-insert into control (id, object_name, creation_date, modification_date, version, name, label, control_type, specific_control_type, required)
-    values (@FolderPropertyPageModificationDateId, 'Folder property folder modification date', current_timestamp, current_timestamp, 0, 'modificationDate', 'Modification date', 'property_control', 'text', true);
-
--- attach controls to property page
-insert into property_page_controls (property_page_id, controls_id, controls_order) values (@FolderPropertyPageId, @FolderPropertyPageObjectNameId, 0);
-insert into property_page_controls (property_page_id, controls_id, controls_order) values (@FolderPropertyPageId, @FolderPropertyPageSeparatorId, 1);
-insert into property_page_controls (property_page_id, controls_id, controls_order) values (@FolderPropertyPageId, @FolderPropertyPagePathId, 2);
-insert into property_page_controls (property_page_id, controls_id, controls_order) values (@FolderPropertyPageId, @FolderPropertyPageCreationDateId, 3);
-insert into property_page_controls (property_page_id, controls_id, controls_order) values (@FolderPropertyPageId, @FolderPropertyPageModificationDateId, 4);
 
 -- DOCUMENT PROPERTY PAGE
 SET @DocumentPropertyPageId=random_uuid();
-insert into ecm_config_object (id, object_name, creation_date, modification_date, version) values (@DocumentPropertyPageId, 'Document property page', current_timestamp, current_timestamp, 0);
+insert into ecm_object (id, object_name, creation_date, modification_date, version) values (@DocumentPropertyPageId, 'Document property page', current_timestamp, current_timestamp, 0);
+insert into ecm_config_object (id) values (@DocumentPropertyPageId);
 insert into property_page (id) values (@DocumentPropertyPageId);
-
--- add controls
-SET @DocumentPropertyPageObjectNameId=random_uuid();
-insert into control (id, object_name, creation_date, modification_date, version, label, control_type, specific_control_type, required)
-values (@DocumentPropertyPageObjectNameId, 'Document property page document name', current_timestamp, current_timestamp, 0, '''Properties of "'' + $value(''objectName'') + ''" document''', 'organization_control', 'label', true);
-SET @DocumentPropertyPageSeparatorId=random_uuid();
-insert into control (id, object_name, creation_date, modification_date, version, label, control_type, specific_control_type, required)
-values (@DocumentPropertyPageSeparatorId, 'Document property page separator', current_timestamp, current_timestamp, 0, 'Separator', 'organization_control', 'separator', true);
-SET @DocumentPropertyPageCreationDateId=random_uuid();
-insert into control (id, object_name, creation_date, modification_date, version, name, label, control_type, specific_control_type, required)
-values (@DocumentPropertyPageCreationDateId, 'Document property creation date', current_timestamp, current_timestamp, 0, 'creationDate', 'Creation date', 'property_control', 'text', true);
-SET @DocumentPropertyPageModificationDateId=random_uuid();
-insert into control (id, object_name, creation_date, modification_date, version, name, label, control_type, specific_control_type, required)
-values (@DocumentPropertyPageModificationDateId, 'Document property modification date', current_timestamp, current_timestamp, 0, 'modificationDate', 'Modification date', 'property_control', 'text', true);
-
--- attach controls to property page
-insert into property_page_controls (property_page_id, controls_id, controls_order) values (@DocumentPropertyPageId, @DocumentPropertyPageObjectNameId, 0);
-insert into property_page_controls (property_page_id, controls_id, controls_order) values (@DocumentPropertyPageId, @DocumentPropertyPageSeparatorId, 1);
-insert into property_page_controls (property_page_id, controls_id, controls_order) values (@DocumentPropertyPageId, @DocumentPropertyPageCreationDateId, 2);
-insert into property_page_controls (property_page_id, controls_id, controls_order) values (@DocumentPropertyPageId, @DocumentPropertyPageModificationDateId, 3);
 
 -- assign Folder Property Page to the Folder Context
 insert into context_ecm_config_objects (context_id, ecm_config_objects_id) values (@FolderContextId, @FolderPropertyPageId);

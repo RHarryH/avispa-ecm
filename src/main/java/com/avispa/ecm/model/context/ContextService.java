@@ -2,10 +2,9 @@ package com.avispa.ecm.model.context;
 
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.EcmObjectRepository;
-import com.avispa.ecm.model.configuration.callable.CallableConfigObject;
 import com.avispa.ecm.model.configuration.EcmConfigObject;
+import com.avispa.ecm.model.configuration.callable.CallableConfigObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigService;
-import com.avispa.ecm.model.document.Document;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +43,7 @@ public class ContextService {
      * @param <C>
      */
     @SafeVarargs
-    public final <T extends Document, C extends CallableConfigObject> void applyMatchingConfigurations(T object, Class<? extends C>... configs) {
+    public final <T extends EcmObject, C extends CallableConfigObject> void applyMatchingConfigurations(T object, Class<? extends C>... configs) {
         List<Class<? extends C>> configsList = List.of(configs);
 
         Set<EcmConfigObject> availableConfigurations = getConfigurations(object).stream()
@@ -53,7 +52,7 @@ public class ContextService {
 
         debugLog("Configuration services {}", callableConfigServices);
 
-        for (CallableConfigService ecmConfigService : callableConfigServices) {
+        for (CallableConfigService<CallableConfigObject> ecmConfigService : callableConfigServices) {
             Class<?> ecmConfigObject = getClassOfEcmConfigObjectSupportedByService(ecmConfigService);
 
             for (EcmConfigObject configObject : availableConfigurations) {

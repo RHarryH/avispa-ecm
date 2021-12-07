@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "readonly": {
+      "type": "boolean"
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "oneOf": [
+          { "$ref": "control/columns.json#" },
+          { "$ref": "control/combo-radio.json#" },
+          { "$ref": "control/label.json#" },
+          { "$ref": "control/money.json#" },
+          { "$ref": "control/number.json#" },
+          { "$ref": "control/property-control.json#" },
+          { "$ref": "control/separator.json#" },
+          { "$ref": "control/tabs.json#" },
+          { "$ref": "control/text.json#" },
+          { "$ref": "control/textarea.json#" }
+        ]
+      }
+    }
+  },
+  "required": [
+    "controls"
+  ]
+}

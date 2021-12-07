@@ -1,0 +1,13 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "combo",
+        "label": "Combo test",
+        "property": "extraString",
+        "objectType": "SuperDocument",
+        "required": true
+      }
+    ]
+  }
+}

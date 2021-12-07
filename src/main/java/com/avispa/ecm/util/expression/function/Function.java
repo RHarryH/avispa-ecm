@@ -1,7 +1,5 @@
 package com.avispa.ecm.util.expression.function;
 
-import com.avispa.ecm.model.EcmEntity;
-
 /**
  * @author Rafał Hiszpański
  */

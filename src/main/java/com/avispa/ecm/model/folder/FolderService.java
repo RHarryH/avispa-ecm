@@ -1,6 +1,6 @@
 package com.avispa.ecm.model.folder;
 
-import com.avispa.ecm.model.document.Document;
+import com.avispa.ecm.model.EcmObject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class FolderService {
         folder.setObjectName(name);
 
         folder.setPath(getFolderPath(name, ancestor));
-        folder.setAncestor(ancestor);
+        folder.setFolder(ancestor);
         return folderRepository.save(folder);
     }
 
@@ -48,8 +48,8 @@ public class FolderService {
         return folderRepository.findAll();
     }
 
-    public List<Document> getDocumentsInFolder(Folder folder) {
-        return folderRepository.findDocumentsByFolderId(folder.getId());
+    public List<EcmObject> getObjectsInFolder(Folder folder) {
+        return folderRepository.findObjectsByFolderId(folder.getId());
     }
 
     public List<Folder> getFoldersInFolder(Folder folder) {

@@ -1,6 +1,5 @@
 package com.avispa.ecm.util.expression.function.impl;
 
-import com.avispa.ecm.model.EcmEntity;
 import com.avispa.ecm.util.expression.function.Function;
 import org.apache.commons.lang3.StringUtils;
 

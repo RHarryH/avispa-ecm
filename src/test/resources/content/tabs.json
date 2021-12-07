@@ -1,0 +1,34 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "tabs",
+        "label": "Tabs test",
+        "tabs": [
+          {
+            "name": "Tab 1",
+            "controls": [
+              {
+                "type": "number",
+                "label": "Number test",
+                "property": "extraInt",
+                "min": 10
+              }
+            ]
+          },
+          {
+            "name": "Tab 2",
+            "controls": [
+              {
+                "type": "date",
+                "label": "Date test",
+                "property": "extraDate",
+                "required": true
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

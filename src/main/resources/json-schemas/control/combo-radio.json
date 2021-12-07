@@ -1,0 +1,54 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "combo", "radio"
+      ]
+    },
+    "label": {
+      "type": "string"
+    },
+    "property": {
+      "type": "string"
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "objectType": {
+      "type": "string",
+      "minLength": 1
+    },
+    "values": {
+      "type": "object",
+      "minProperties": 1,
+      "patternProperties": {
+        ".*": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "required": [
+        "type",
+        "label",
+        "property"
+      ]
+    },
+    {
+      "oneOf": [
+        {
+          "required": ["values"],
+          "not": { "required": ["objectType"] }
+        },
+        {
+          "required": ["objectType"],
+          "not": { "required": ["values"] }
+        }
+      ]
+    }
+  ]
+}

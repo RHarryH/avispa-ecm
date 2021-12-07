@@ -1,0 +1,12 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "textarea",
+        "label": "Textarea test",
+        "property": "extraString",
+        "rows": 25
+      }
+    ]
+  }
+}

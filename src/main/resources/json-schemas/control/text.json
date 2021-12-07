@@ -1,0 +1,33 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "email", "password", "text"
+      ]
+    },
+    "label": {
+      "type": "string"
+    },
+    "property": {
+      "type": "string"
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "pattern": {
+      "type": "string"
+    },
+    "minLength": {
+      "type": "integer"
+    },
+    "maxLength": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "type",
+    "property"
+  ]
+}

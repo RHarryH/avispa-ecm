@@ -1,0 +1,31 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "money"
+      ]
+    },
+    "label": {
+      "type": "string"
+    },
+    "property": {
+      "type": "string"
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "currency": {
+      "type": "string",
+      "enum": [
+        "PLN"
+      ]
+    }
+  },
+  "required": [
+    "type",
+    "property",
+    "currency"
+  ]
+}

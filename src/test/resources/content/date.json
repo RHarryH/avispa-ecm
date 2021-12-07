@@ -1,0 +1,12 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "date",
+        "label": "Date test",
+        "property": "extraDate",
+        "required": true
+      }
+    ]
+  }
+}

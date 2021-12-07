@@ -1,0 +1,28 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "label",
+        "expression": "'Properties of ' + $value('objectName') + ' folder'"
+      },
+      {
+        "type": "separator"
+      },
+      {
+        "type": "text",
+        "label": "Folder path",
+        "property": "path"
+      },
+      {
+        "type": "text",
+        "label": "Creation date",
+        "property": "creationDate"
+      },
+      {
+        "type": "text",
+        "label": "Modification date",
+        "property": "modificationDate"
+      }
+    ]
+  }
+}

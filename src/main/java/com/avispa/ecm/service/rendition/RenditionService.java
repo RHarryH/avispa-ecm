@@ -4,7 +4,6 @@ import com.avispa.ecm.model.content.Content;
 import com.avispa.ecm.model.content.ContentService;
 import com.avispa.ecm.model.filestore.FileStore;
 import com.avispa.ecm.model.format.Format;
-import com.avispa.ecm.model.format.FormatRepository;
 import com.documents4j.api.DocumentType;
 import com.documents4j.api.IConverter;
 import com.documents4j.job.LocalConverter;
@@ -83,7 +82,7 @@ public class RenditionService {
                 }
             }
 
-            contentService.createNewContent(PDF, content.getDocument(), renditionFileStorePath);
+            contentService.createNewContent(PDF, content.getRelatedObject(), renditionFileStorePath);
 
             log.info("PDF rendition generated successfully");
         } catch (Exception e) {

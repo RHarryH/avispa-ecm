@@ -1,7 +1,6 @@
 package com.avispa.ecm.model.content;
 
 import com.avispa.ecm.model.EcmObject;
-import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.format.Format;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +11,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PostRemove;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -37,12 +34,25 @@ public final class Content extends EcmObject {
     private String fileStorePath; // path in the file store (physical path)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="document_id", nullable=false)
+    @JoinColumn(name="related_object_id", nullable=false)
     @Setter
-    private Document document;
+    private EcmObject relatedObject;
 
-    @PrePersist
-    @PreUpdate
+    @Override
+    protected void prePersist() {
+        super.prePersist();
+        updateSize();
+    }
+
+    @Override
+    protected void preUpdate() {
+        super.preUpdate();
+        updateSize();
+    }
+
+    /**
+     * Automatically update content size
+     */
     private void updateSize() {
         try {
             size = Files.size(Path.of(fileStorePath));
@@ -60,7 +70,6 @@ public final class Content extends EcmObject {
             log.error("'{}' content file does not exist", fileStorePath);
         } catch (IOException e) {
             log.error("Can't delete '{}' content file", fileStorePath, e);
-            throw new IllegalStateException();
         }
     }
 
