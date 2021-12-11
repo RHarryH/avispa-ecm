@@ -9,7 +9,6 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -51,7 +50,6 @@ public abstract class EcmObject implements EcmEntity {
 
     @Getter
     @Setter
-    @Column(nullable = false)
     private String objectName;
 
     @Getter
