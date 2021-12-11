@@ -6,26 +6,31 @@
     "readonly": {
       "type": "boolean"
     },
-    "controls": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "oneOf": [
-          { "$ref": "control/columns.json#" },
-          { "$ref": "control/combo-radio.json#" },
-          { "$ref": "control/label.json#" },
-          { "$ref": "control/money.json#" },
-          { "$ref": "control/number.json#" },
-          { "$ref": "control/property-control.json#" },
-          { "$ref": "control/separator.json#" },
-          { "$ref": "control/tabs.json#" },
-          { "$ref": "control/text.json#" },
-          { "$ref": "control/textarea.json#" }
-        ]
-      }
+    "propertyPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "controls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "oneOf": [
+              { "$ref": "control/columns.json#" },
+              { "$ref": "control/combo-radio.json#" },
+              { "$ref": "control/label.json#" },
+              { "$ref": "control/money.json#" },
+              { "$ref": "control/number.json#" },
+              { "$ref": "control/property-control.json#" },
+              { "$ref": "control/separator.json#" },
+              { "$ref": "control/tabs.json#" },
+              { "$ref": "control/text.json#" },
+              { "$ref": "control/textarea.json#" }
+            ]
+          }
+        }
+      },
+      "required": ["controls"]
     }
   },
-  "required": [
-    "controls"
-  ]
+  "required": ["propertyPage"]
 }
