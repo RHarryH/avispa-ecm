@@ -1,7 +1,6 @@
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
 import com.avispa.ecm.model.EcmObject;
-import com.avispa.ecm.model.EcmObjectRepository;
 import com.avispa.ecm.model.configuration.propertypage.PropertyPage;
 import com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContent;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Columns;
@@ -18,12 +17,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -40,9 +40,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PropertyPageMapper {
     private final ExpressionResolver expressionResolver;
-    private final EcmObjectRepository<EcmObject> ecmObjectRepository;
     private final TypeRepository typeRepository;
     private final ObjectMapper objectMapper;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public PropertyPageContent convertToContent(PropertyPage propertyPage, Object object, boolean readonly) {
         PropertyPageContent propertyPageContent = getPropertyPageContent(propertyPage.getPrimaryContent()).orElseThrow();
@@ -126,8 +128,9 @@ public class PropertyPageMapper {
         if(StringUtils.isNotEmpty(comboRadio.getObjectType())) {
             Type type = typeRepository.findByTypeName(comboRadio.getObjectType());
             if (null != type) {
-                EcmObject sampleObject = createNew(type.getClazz());
-                Map<String, String> values = ecmObjectRepository.findAll(Example.of(sampleObject), Sort.by(Sort.Direction.ASC, "objectName")).stream()
+                SimpleJpaRepository<? extends EcmObject, Long> jpaRepository = getSimpleRepository(type);
+
+                Map<String, String> values = jpaRepository.findAll(Sort.by(Sort.Direction.ASC, "objectName")).stream()
                         .filter(ecmObject -> StringUtils.isNotEmpty(ecmObject.getObjectName())) // filter out incorrect customers with empty object name
                         .collect(Collectors.toMap(ecmObject -> ecmObject.getId().toString(), EcmObject::getObjectName));
 
@@ -141,18 +144,14 @@ public class PropertyPageMapper {
     }
 
     /**
-     * Creates empty instance of EcmObject or its subtype
-     * @param clazz
-     * @param <T>
+     * Creates simple repository for specific type. This will create repositories even for the
+     * abstract types allowing to get all concrete subtypes objects.
+     * @param type type for which we want to get repository
      * @return
      */
-    private <T extends EcmObject> T createNew(Class<T> clazz) {
-        T contextDto = null;
-        try {
-            contextDto = clazz.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-            log.error("Cannot instantiate EcmObject object", e);
-        }
-        return contextDto;
+    private SimpleJpaRepository<? extends EcmObject, Long> getSimpleRepository(Type type) {
+        SimpleJpaRepository<? extends EcmObject, Long> jpaRepository;
+        jpaRepository = new SimpleJpaRepository<>(type.getClazz(), entityManager);
+        return jpaRepository;
     }
 }
