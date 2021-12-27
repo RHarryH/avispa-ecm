@@ -27,6 +27,7 @@
               "type": "object",
               "minItem": 1,
               "oneOf": [
+                { "$ref": "columns.json#" },
                 { "$ref": "combo-radio.json#" },
                 { "$ref": "label.json#" },
                 { "$ref": "money.json#" },
