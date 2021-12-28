@@ -1,7 +1,5 @@
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
-import com.avispa.ecm.model.EcmObject;
-import com.avispa.ecm.model.EcmObjectRepository;
 import com.avispa.ecm.model.configuration.propertypage.PropertyPage;
 import com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContent;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Columns;
@@ -18,16 +16,18 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.Textarea;
 import com.avispa.ecm.model.content.Content;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.format.Format;
-import com.avispa.ecm.model.type.Type;
-import com.avispa.ecm.model.type.TypeRepository;
 import com.avispa.ecm.util.SuperDocument;
 import com.avispa.ecm.util.expression.ExpressionResolver;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.domain.Sort;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -38,34 +38,24 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Rafał Hiszpański
  */
 @Slf4j
+@ExtendWith(SpringExtension.class)
+@DataJpaTest(properties = "spring.datasource.initialization-mode=never")
+@Sql("/super-document-type.sql")
+@Import({PropertyPageMapper.class, ExpressionResolver.class})
 class PropertyPageMapperIntegrationTest {
-    private final PropertyPageMapper propertyPageMapper;
-    private final Document document;
+    private Document document;
 
-    PropertyPageMapperIntegrationTest() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    @Autowired
+    private PropertyPageMapper propertyPageMapper;
 
+    @BeforeEach
+    void init() {
         document = createSuperDocument();
-
-        EcmObjectRepository<EcmObject> ecmObjectRepository = mock(EcmObjectRepository.class);
-        when(ecmObjectRepository.findAll(any(), any(Sort.class))).thenReturn(List.of(document));
-
-        Type superDocumentType = new Type();
-        superDocumentType.setClazz(SuperDocument.class);
-
-        TypeRepository typeRepository = mock(TypeRepository.class);
-        when(typeRepository.findByTypeName(any())).thenReturn(superDocumentType);
-
-        propertyPageMapper = new PropertyPageMapper(new ExpressionResolver(), ecmObjectRepository, typeRepository, mapper);
     }
 
     private Document createSuperDocument() {
@@ -113,7 +103,7 @@ class PropertyPageMapperIntegrationTest {
         ComboRadio combo = (ComboRadio) controls.get(0);
         assertEquals("Combo test", combo.getLabel());
         assertEquals("extraString", combo.getProperty());
-        assertEquals("SuperDocument", combo.getObjectType());
+        assertEquals("Super Document", combo.getObjectType());
         assertTrue(combo.isRequired());
     }
 
