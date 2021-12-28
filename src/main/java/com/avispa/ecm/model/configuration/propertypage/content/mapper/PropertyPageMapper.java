@@ -131,7 +131,7 @@ public class PropertyPageMapper {
                 List<? extends EcmObject> ecmObjects = getEcmObjects(type);
 
                 Map<String, String> values = ecmObjects.stream()
-                        .filter(ecmObject -> StringUtils.isNotEmpty(ecmObject.getObjectName())) // filter out incorrect customers with empty object name
+                        .filter(ecmObject -> StringUtils.isNotEmpty(ecmObject.getObjectName())) // filter out incorrect values with empty object name
                         .collect(Collectors.toMap(ecmObject -> ecmObject.getId().toString(), EcmObject::getObjectName));
 
                 comboRadio.setValues(values);
