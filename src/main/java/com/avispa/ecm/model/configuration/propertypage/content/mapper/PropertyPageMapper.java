@@ -128,9 +128,9 @@ public class PropertyPageMapper {
         if(StringUtils.isNotEmpty(comboRadio.getObjectType())) {
             Type type = typeRepository.findByTypeName(comboRadio.getObjectType());
             if (null != type) {
-                SimpleJpaRepository<? extends EcmObject, Long> jpaRepository = getSimpleRepository(type);
+                List<? extends EcmObject> ecmObjects = getEcmObjects(type);
 
-                Map<String, String> values = jpaRepository.findAll(Sort.by(Sort.Direction.ASC, "objectName")).stream()
+                Map<String, String> values = ecmObjects.stream()
                         .filter(ecmObject -> StringUtils.isNotEmpty(ecmObject.getObjectName())) // filter out incorrect customers with empty object name
                         .collect(Collectors.toMap(ecmObject -> ecmObject.getId().toString(), EcmObject::getObjectName));
 
@@ -141,6 +141,11 @@ public class PropertyPageMapper {
         } else {
             log.info("Object type for combo/radio control is not provided. Values will be used.");
         }
+    }
+
+    private List<? extends EcmObject> getEcmObjects(Type type) {
+        SimpleJpaRepository<? extends EcmObject, Long> jpaRepository = getSimpleRepository(type);
+        return jpaRepository.findAll(Sort.by(Sort.Direction.ASC, "objectName"));
     }
 
     /**

@@ -8,7 +8,7 @@
             "type": "combo",
             "label": "Combo test",
             "property": "extraString",
-            "objectType": "SuperDocument",
+            "objectType": "Super Document",
             "required": true
           },
           {
