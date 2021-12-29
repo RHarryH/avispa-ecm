@@ -20,4 +20,12 @@ public interface FolderRepository extends EcmObjectRepository<Folder> {
 
     @Query("select f from Folder f where f.folder.id = ?1")
     List<Folder> findNestedFoldersByFolderId(UUID folderId);
+
+    List<Folder> findByFolderIsNull();
+
+    @Query("select o from EcmObject o join Folder f on o.folder.id = f.id where ?1 member f.ancestors")
+    List<EcmObject> findAllFoldersAndDocumentsDescend(Folder folder);
+
+    @Query("select o from EcmObject o where o.folder = ?1")
+    List<EcmObject> findAllFoldersAndDocuments(Folder folder);
 }
