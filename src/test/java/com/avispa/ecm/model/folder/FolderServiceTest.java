@@ -3,11 +3,14 @@ package com.avispa.ecm.model.folder;
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.document.DocumentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -15,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Rafał Hiszpański
  */
 @SpringBootTest
+@Slf4j
 class FolderServiceTest {
     private FolderService folderService;
     private DocumentRepository documentRepository;
@@ -43,5 +47,78 @@ class FolderServiceTest {
         assertEquals(2, documents.size());
         assertEquals("Document1", documents.get(0).getObjectName());
         assertEquals("Document2", documents.get(1).getObjectName());
+    }
+
+    @Test
+    void ancestorsTest() {
+        Folder root = folderService.createNewFolder("root", null);
+        Folder folder1_1 = folderService.createNewFolder("folder1.1", root);
+        Folder folder2_1 = folderService.createNewFolder("folder2.1", root);
+        Folder folder2_2 = folderService.createNewFolder("folder2.2", folder2_1);
+
+        assertEquals(Set.of("root"), getAncestorsNames(root));
+        assertEquals(Set.of("root", "folder1.1"), getAncestorsNames(folder1_1));
+        assertEquals(Set.of("root", "folder2.1"), getAncestorsNames(folder2_1));
+        assertEquals(Set.of("root", "folder2.1", "folder2.2"), getAncestorsNames(folder2_2));
+    }
+
+    private Set<String> getAncestorsNames(Folder folder) {
+        return folder.getAncestors().stream().map(EcmObject::getObjectName).collect(Collectors.toSet());
+    }
+
+    @Test
+    void getRootFolders() {
+        Folder root = folderService.createNewFolder("root", null);
+        Folder anotherRoot = folderService.createNewFolder("another root", null);
+
+        folderService.createNewFolder("folder", root);
+
+        List<Folder> folders = folderService.getRootFolders();
+
+        assertEquals(List.of(root, anotherRoot), folders);
+    }
+
+    @Test
+    void getAllFolderAndDocumentsTest() {
+        Folder root = folderService.createNewFolder("root", null);
+        Folder folder1_1 = folderService.createNewFolder("folder1.1", root);
+        Folder folder2_1 = folderService.createNewFolder("folder2.1", root);
+        Folder folder2_2 = folderService.createNewFolder("folder2.2", folder2_1);
+
+        Document document = new Document();
+        document.setObjectName("Document1");
+        document.setFolder(folder1_1);
+        documentRepository.save(document);
+
+        Document document2 = new Document();
+        document2.setObjectName("Document2");
+        document2.setFolder(folder2_2);
+        documentRepository.save(document2);
+
+        List<EcmObject> objects = folderService.getAllFoldersAndLinkedObjects(root, true);
+        Set<String> objectNames = objects.stream().map(EcmObject::getObjectName).collect(Collectors.toSet());
+        assertEquals(Set.of("folder1.1", "folder2.1", "folder2.2", "Document1", "Document2"), objectNames);
+    }
+
+    @Test
+    void getDirectFolderAndDocumentsTest() {
+        Folder root = folderService.createNewFolder("root", null);
+        Folder folder1_1 = folderService.createNewFolder("folder1.1", root);
+        Folder folder2_1 = folderService.createNewFolder("folder2.1", root);
+        Folder folder2_2 = folderService.createNewFolder("folder2.2", folder2_1);
+
+        Document document = new Document();
+        document.setObjectName("Document1");
+        document.setFolder(folder1_1);
+        documentRepository.save(document);
+
+        Document document2 = new Document();
+        document2.setObjectName("Document2");
+        document2.setFolder(folder2_2);
+        documentRepository.save(document2);
+
+        List<EcmObject> objects = folderService.getAllFoldersAndLinkedObjects(folder2_1, true);
+        Set<String> objectNames = objects.stream().map(EcmObject::getObjectName).collect(Collectors.toSet());
+        assertEquals(Set.of("folder2.2", "Document2"), objectNames);
     }
 }
