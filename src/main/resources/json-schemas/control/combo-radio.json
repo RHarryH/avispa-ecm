@@ -39,7 +39,7 @@
       ]
     },
     {
-      "oneOf": [
+      "anyOf": [
         {
           "required": ["values"],
           "not": { "required": ["objectType"] }
@@ -47,6 +47,9 @@
         {
           "required": ["objectType"],
           "not": { "required": ["values"] }
+        },
+        {
+          "not": { "required": ["objectType", "values"] }
         }
       ]
     }
