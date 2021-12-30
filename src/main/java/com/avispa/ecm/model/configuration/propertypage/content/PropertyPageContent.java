@@ -13,5 +13,6 @@ import java.util.List;
 @Setter
 public class PropertyPageContent {
     private boolean readonly;
+    private String size = "normal";
     private List<Control> controls;
 }

@@ -3,13 +3,19 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "readonly": {
-      "type": "boolean"
-    },
     "propertyPage": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "readonly": {
+          "type": "boolean"
+        },
+        "size": {
+          "type": "string",
+          "enum": [
+            "small", "normal", "large", "extra-large"
+          ]
+        },
         "controls": {
           "type": "array",
           "items": {
@@ -23,6 +29,7 @@
               { "$ref": "control/property-control.json#" },
               { "$ref": "control/separator.json#" },
               { "$ref": "control/tabs.json#" },
+              { "$ref": "control/table.json#" },
               { "$ref": "control/text.json#" },
               { "$ref": "control/textarea.json#" }
             ]
