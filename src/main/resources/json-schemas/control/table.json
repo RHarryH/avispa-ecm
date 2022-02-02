@@ -4,8 +4,14 @@
     "type": {
       "type": "string",
       "enum": [
-        "columns"
+        "table"
       ]
+    },
+    "label": {
+      "type": "string"
+    },
+    "property": {
+      "type": "string"
     },
     "controls": {
       "type": "array",
@@ -16,19 +22,17 @@
           { "$ref": "combo.json#" },
           { "$ref": "date.json#" },
           { "$ref": "datetime.json#" },
-          { "$ref": "label.json#" },
           { "$ref": "money.json#" },
           { "$ref": "number.json#" },
-          { "$ref": "radio.json#" },
-          { "$ref": "separator.json#" },
-          { "$ref": "text.json#" },
-          { "$ref": "textarea.json#" }
+          { "$ref": "text.json#" }
         ]
       }
     }
   },
   "required": [
     "type",
+    "label",
+    "property",
     "controls"
   ]
 }

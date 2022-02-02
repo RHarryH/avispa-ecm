@@ -7,7 +7,7 @@
           {
             "type": "combo",
             "label": "Combo test",
-            "property": "extraString",
+            "property": "objectName",
             "objectType": "Super Document",
             "required": true
           },

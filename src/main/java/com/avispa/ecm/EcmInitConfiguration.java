@@ -1,7 +1,5 @@
 package com.avispa.ecm;
 
-import com.avispa.ecm.model.EcmObjectRepository;
-import com.avispa.ecm.model.configuration.propertypage.PropertyPage;
 import com.avispa.ecm.model.configuration.propertypage.PropertyPageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

@@ -1,7 +1,5 @@
 package com.avispa.ecm.model;
 
-import com.avispa.ecm.util.Displayable;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,7 +7,7 @@ import java.util.UUID;
 /**
  * @author Rafał Hiszpański
  */
-public interface EcmEntity extends Serializable, Displayable {
+public interface EcmEntity extends Serializable {
     UUID getId();
     void setId(UUID id);
 

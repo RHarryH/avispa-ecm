@@ -4,7 +4,7 @@
     "type": {
       "type": "string",
       "enum": [
-        "money"
+        "date"
       ]
     },
     "label": {
@@ -16,17 +16,22 @@
     "required": {
       "type": "boolean"
     },
-    "currency": {
+    "min": {
       "type": "string",
-      "enum": [
-        "PLN"
-      ]
+      "pattern": "^[\\d]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][\\d]|3[0-2])$"
+    },
+    "max": {
+      "type": "string",
+      "pattern": "^[\\d]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][\\d]|3[0-2])$"
+    },
+    "step": {
+      "type": "number",
+      "min": 1
     }
   },
   "required": [
     "type",
     "label",
-    "property",
-    "currency"
+    "property"
   ]
 }

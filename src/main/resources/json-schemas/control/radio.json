@@ -4,7 +4,7 @@
     "type": {
       "type": "string",
       "enum": [
-        "combo", "radio"
+        "radio"
       ]
     },
     "label": {
@@ -20,14 +20,9 @@
       "type": "string",
       "minLength": 1
     },
-    "values": {
-      "type": "object",
-      "minProperties": 1,
-      "patternProperties": {
-        ".*": {
-          "type": "string"
-        }
-      }
+    "dictionary": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "allOf": [
@@ -39,17 +34,14 @@
       ]
     },
     {
-      "anyOf": [
+      "oneOf": [
         {
-          "required": ["values"],
+          "required": ["dictionary"],
           "not": { "required": ["objectType"] }
         },
         {
           "required": ["objectType"],
-          "not": { "required": ["values"] }
-        },
-        {
-          "not": { "required": ["objectType", "values"] }
+          "not": { "required": ["dictionary"] }
         }
       ]
     }

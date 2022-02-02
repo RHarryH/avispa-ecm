@@ -18,8 +18,8 @@ import lombok.Setter;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Columns.class, name = "columns"),
         @JsonSubTypes.Type(value = ComboRadio.class, name = "combo"),
-        @JsonSubTypes.Type(value = PropertyControl.class, name = "date"),
-        @JsonSubTypes.Type(value = PropertyControl.class, name = "datetime"),
+        @JsonSubTypes.Type(value = Date.class, name = "date"),
+        @JsonSubTypes.Type(value = Date.class, name = "datetime"),
         @JsonSubTypes.Type(value = Text.class, name = "email"),
         @JsonSubTypes.Type(value = Label.class, name = "label"),
         @JsonSubTypes.Type(value = Money.class, name = "money"),
@@ -27,6 +27,7 @@ import lombok.Setter;
         @JsonSubTypes.Type(value = Text.class, name = "password"),
         @JsonSubTypes.Type(value = ComboRadio.class, name = "radio"),
         @JsonSubTypes.Type(value = Separator.class, name = "separator"),
+        @JsonSubTypes.Type(value = Table.class, name = "table"),
         @JsonSubTypes.Type(value = Tabs.class, name = "tabs"),
         @JsonSubTypes.Type(value = Text.class, name = "text"),
         @JsonSubTypes.Type(value = Textarea.class, name = "textarea"),
