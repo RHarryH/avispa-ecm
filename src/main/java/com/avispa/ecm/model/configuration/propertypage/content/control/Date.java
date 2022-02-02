@@ -8,8 +8,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public abstract class PropertyControl extends Control {
-    private String label;
-    private String property;
-    private boolean required;
+public class Date extends PropertyControl {
+    private String min;
+    private String max;
+    private Integer step;
 }

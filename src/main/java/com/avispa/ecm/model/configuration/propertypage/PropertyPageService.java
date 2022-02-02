@@ -45,7 +45,7 @@ public class PropertyPageService {
             if(JsonValidator.validateJson(resource.getInputStream(), "/json-schemas/property-page-content.json")) {
                 contentService.loadContentTo(propertyPage, resource);
             } else {
-                log.error("Property page content wasn't loaded because it does not match JSON schema");
+                log.error("Property page content ({}) wasn't loaded because it does not match JSON schema", sourceFileLocation);
             }
         } catch (IOException e) {
             log.error("Can't load file from '{}'", sourceFileLocation);

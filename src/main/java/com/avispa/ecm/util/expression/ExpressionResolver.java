@@ -1,10 +1,9 @@
 package com.avispa.ecm.util.expression;
 
-import com.avispa.cms.util.expression.parser.ExpressionLexer;
-import com.avispa.cms.util.expression.parser.ExpressionParser;
-import com.avispa.ecm.model.EcmEntity;
 import com.avispa.ecm.util.expression.parser.ExpressionErrorListener;
-import com.avispa.ecm.util.expression.parser.ExpressionVisitor;
+import com.avispa.ecm.util.expression.parser.ExpressionLexer;
+import com.avispa.ecm.util.expression.parser.ExpressionParser;
+import com.avispa.ecm.util.expression.parser.ExpressionVisitorImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -33,7 +32,7 @@ public class ExpressionResolver {
             ParseTree tree = parser.start();
 
             // go through parse tree
-            ExpressionVisitor visitor = new ExpressionVisitor(object);
+            ExpressionVisitorImpl visitor = new ExpressionVisitorImpl(object);
 
             return visitor.visit(tree);
         } catch (ParseCancellationException e) {

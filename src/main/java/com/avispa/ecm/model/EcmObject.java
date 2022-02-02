@@ -71,11 +71,6 @@ public abstract class EcmObject implements EcmEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "relatedObject", cascade = CascadeType.ALL)
     private Set<Content> contents;
 
-    @Override
-    public String getDisplayValue() {
-        return objectName;
-    }
-
     /**
      * Returns true if document has PDF rendition or is already a pdf document
      * @return

@@ -1,5 +1,9 @@
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
+import com.avispa.ecm.model.EcmObjectRepository;
+import com.avispa.ecm.model.configuration.dictionary.Dictionary;
+import com.avispa.ecm.model.configuration.dictionary.DictionaryService;
+import com.avispa.ecm.model.configuration.dictionary.DictionaryValue;
 import com.avispa.ecm.model.configuration.propertypage.PropertyPage;
 import com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContent;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Columns;
@@ -10,6 +14,7 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.Money;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Number;
 import com.avispa.ecm.model.configuration.propertypage.content.control.PropertyControl;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Tab;
+import com.avispa.ecm.model.configuration.propertypage.content.control.Table;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Tabs;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Text;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Textarea;
@@ -35,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,16 +52,41 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest(properties = "spring.datasource.initialization-mode=never")
 @Sql("/super-document-type.sql")
-@Import({PropertyPageMapper.class, ExpressionResolver.class})
+@Import({PropertyPageMapper.class, ExpressionResolver.class, DictionaryService.class})
 class PropertyPageMapperIntegrationTest {
     private Document document;
 
     @Autowired
     private PropertyPageMapper propertyPageMapper;
 
+    @Autowired
+    private EcmObjectRepository<Dictionary> dictionaryRepository;
+
     @BeforeEach
     void init() {
         document = createSuperDocument();
+
+
+        Dictionary testDict = new Dictionary();
+        testDict.setObjectName("TestDict");
+
+        DictionaryValue dv1 = new DictionaryValue();
+        dv1.setKey("1");
+        dv1.setLabel("10");
+
+        DictionaryValue dv2 = new DictionaryValue();
+        dv2.setKey("2");
+        dv2.setLabel("20");
+
+        DictionaryValue dv3 = new DictionaryValue();
+        dv3.setKey("3");
+        dv3.setLabel("30");
+
+        testDict.addValue(dv1);
+        testDict.addValue(dv2);
+        testDict.addValue(dv3);
+
+        dictionaryRepository.save(testDict);
     }
 
     private Document createSuperDocument() {
@@ -183,7 +214,32 @@ class PropertyPageMapperIntegrationTest {
         ComboRadio radio = (ComboRadio) controls.get(0);
         assertEquals("Radio test", radio.getLabel());
         assertEquals("extraString", radio.getProperty());
-        assertEquals(Map.of("1", "10", "2", "20", "3", "30"), radio.getValues());
+
+        List<Map.Entry<String,String>> values = Map.of("1", "10", "2", "20", "3", "30").entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .collect(Collectors.toList());
+        assertEquals(values, radio.getValues());
+    }
+
+    @Test
+    void tableTest() {
+        // given
+        PropertyPage propertyPage = createPropertyPage("content/table.json");
+
+        // when
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+
+        // then
+        List<Control> controls = propertyPageContent.getControls();
+        assertEquals(1, controls.size());
+
+        assertTrue(controls.get(0) instanceof Table);
+        Table tabs = (Table) controls.get(0);
+        assertEquals("property", tabs.getProperty());
+        assertEquals(1, tabs.getControls().size());
+
+        Control control = tabs.getControls().get(0);
+        assertTrue(control instanceof Number);
     }
 
     @Test

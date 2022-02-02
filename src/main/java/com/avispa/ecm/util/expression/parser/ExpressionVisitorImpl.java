@@ -1,7 +1,5 @@
 package com.avispa.ecm.util.expression.parser;
 
-import com.avispa.cms.util.expression.parser.ExpressionBaseVisitor;
-import com.avispa.cms.util.expression.parser.ExpressionParser;
 import com.avispa.ecm.util.expression.FunctionFactory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class ExpressionVisitor extends ExpressionBaseVisitor<String> {
+public class ExpressionVisitorImpl extends ExpressionBaseVisitor<String> {
 
     private final Object object;
 
-    public ExpressionVisitor(Object object) {
+    public ExpressionVisitorImpl(Object object) {
         this.object = object;
     }
 

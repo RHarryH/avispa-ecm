@@ -28,12 +28,15 @@
               "minItem": 1,
               "oneOf": [
                 { "$ref": "columns.json#" },
-                { "$ref": "combo-radio.json#" },
+                { "$ref": "date.json#" },
+                { "$ref": "datetime.json#" },
+                { "$ref": "combo.json#" },
                 { "$ref": "label.json#" },
                 { "$ref": "money.json#" },
                 { "$ref": "number.json#" },
-                { "$ref": "property-control.json#" },
+                { "$ref": "radio.json#" },
                 { "$ref": "separator.json#" },
+                { "$ref": "table.json#"},
                 { "$ref": "text.json#" },
                 { "$ref": "textarea.json#" }
               ]

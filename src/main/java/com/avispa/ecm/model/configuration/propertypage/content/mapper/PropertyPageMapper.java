@@ -1,6 +1,8 @@
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
 import com.avispa.ecm.model.EcmObject;
+import com.avispa.ecm.model.configuration.dictionary.Dictionary;
+import com.avispa.ecm.model.configuration.dictionary.DictionaryService;
 import com.avispa.ecm.model.configuration.propertypage.PropertyPage;
 import com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContent;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Columns;
@@ -8,16 +10,17 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadi
 import com.avispa.ecm.model.configuration.propertypage.content.control.Control;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Label;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Tab;
+import com.avispa.ecm.model.configuration.propertypage.content.control.Table;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Tabs;
 import com.avispa.ecm.model.content.Content;
 import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeRepository;
 import com.avispa.ecm.util.expression.ExpressionResolver;
+import com.avispa.ecm.util.reflect.PropertyUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Component;
 
@@ -26,10 +29,11 @@ import javax.persistence.PersistenceContext;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +46,7 @@ public class PropertyPageMapper {
     private final ExpressionResolver expressionResolver;
     private final TypeRepository typeRepository;
     private final ObjectMapper objectMapper;
+    private final DictionaryService dictionaryService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -50,11 +55,7 @@ public class PropertyPageMapper {
         PropertyPageContent propertyPageContent = getPropertyPageContent(propertyPage.getPrimaryContent()).orElseThrow();
         propertyPageContent.setReadonly(readonly);
 
-        List<Control> aggregatedControls = new ArrayList<>();
-        aggregateControls(propertyPageContent.getControls(), aggregatedControls);
-
-        resolveLabelsExpressions(object, aggregatedControls);
-        loadDictionaries(aggregatedControls);
+        processControls(propertyPageContent.getControls(), object);
 
         return propertyPageContent;
     }
@@ -75,49 +76,33 @@ public class PropertyPageMapper {
         return Optional.empty();
     }
 
-    /**
-     * Aggregates controls from whole property page including nested ones
-     * @param controls input controls from current level of property page
-     * @param aggregatedControls result list
-     */
-    private void aggregateControls(List<Control> controls, List<Control> aggregatedControls) {
+    private void processControls(List<Control> controls, Object object) {
         for(Control control : controls) {
             if(control instanceof Columns) {
                 Columns columns = (Columns)control;
-                aggregateControls(columns.getControls(), aggregatedControls);
+                processControls(columns.getControls(), object);
             } else if(control instanceof Tabs) {
                 Tabs tabs = (Tabs)control;
                 for(Tab tab : tabs.getTabs()) {
-                    aggregateControls(tab.getControls(), aggregatedControls);
+                    processControls(tab.getControls(), object);
                 }
+            } else if(control instanceof Table) {
+                Table table = (Table)control;
+                processControls(table.getControls(), PropertyUtils.getPropertyValue(object, table.getProperty()));
             } else {
-                aggregatedControls.add(control);
+                processControl(control, object);
             }
         }
     }
 
-    /**
-     * Finds all Label controls and resolves expressions encoded in them
-     * @param object
-     * @param controls
-     */
-    private void resolveLabelsExpressions(Object object, List<Control> controls) {
-        controls.stream()
-                .filter(Label.class::isInstance)
-                .map(Label.class::cast)
-                .forEach(label -> label.setExpression(expressionResolver.resolve(object, label.getExpression())));
-    }
-
-    /**
-     * Finds all controls retrieving the data from the database and tries to retrieve that
-     * data
-     * @param controls
-     */
-    private void loadDictionaries(List<Control> controls) {
-        controls.stream()
-            .filter(ComboRadio.class::isInstance)
-            .map(ComboRadio.class::cast)
-            .forEach(this::loadDictionary);
+    private void processControl(Control control, Object object) {
+        if(control instanceof Label) {
+            Label label = (Label)control;
+            label.setExpression(expressionResolver.resolve(object, label.getExpression()));
+        } else if(control instanceof ComboRadio) {
+            ComboRadio comboRadio = (ComboRadio)control;
+            loadDictionary(comboRadio);
+        }
     }
 
     /**
@@ -126,26 +111,32 @@ public class PropertyPageMapper {
      */
     private void loadDictionary(ComboRadio comboRadio) {
         if(StringUtils.isNotEmpty(comboRadio.getObjectType())) {
-            Type type = typeRepository.findByTypeName(comboRadio.getObjectType());
-            if (null != type) {
-                List<? extends EcmObject> ecmObjects = getEcmObjects(type);
+            loadValuesFromObject(comboRadio);
+        } else if(StringUtils.isNotEmpty(comboRadio.getDictionary())){
+            loadValuesFromDictionary(comboRadio);
+        }
+    }
 
-                Map<String, String> values = ecmObjects.stream()
+    private void loadValuesFromObject(ComboRadio comboRadio) {
+        Type type = typeRepository.findByTypeName(comboRadio.getObjectType());
+        if (null != type) {
+            List<? extends EcmObject> ecmObjects = getEcmObjects(type);
+
+            List<Map.Entry<UUID, String>> values = ecmObjects.stream()
                         .filter(ecmObject -> StringUtils.isNotEmpty(ecmObject.getObjectName())) // filter out incorrect values with empty object name
-                        .collect(Collectors.toMap(ecmObject -> ecmObject.getId().toString(), EcmObject::getObjectName));
+                        .map(ecmObject -> new AbstractMap.SimpleEntry<>(ecmObject.getId(), ecmObject.getObjectName()))
+                        .sorted(Map.Entry.comparingByValue())
+                        .collect(Collectors.toList());
 
-                comboRadio.setValues(values);
-            } else {
-                log.error("Type '{}' was not found", comboRadio.getObjectType());
-            }
+            comboRadio.setValues(values);
         } else {
-            log.info("Object type for combo/radio control is not provided. Values will be used.");
+            log.error("Type '{}' was not found", comboRadio.getObjectType());
         }
     }
 
     private List<? extends EcmObject> getEcmObjects(Type type) {
         SimpleJpaRepository<? extends EcmObject, Long> jpaRepository = getSimpleRepository(type);
-        return jpaRepository.findAll(Sort.by(Sort.Direction.ASC, "objectName"));
+        return jpaRepository.findAll();
     }
 
     /**
@@ -158,5 +149,20 @@ public class PropertyPageMapper {
         SimpleJpaRepository<? extends EcmObject, Long> jpaRepository;
         jpaRepository = new SimpleJpaRepository<>(type.getClazz(), entityManager);
         return jpaRepository;
+    }
+
+    private void loadValuesFromDictionary(ComboRadio comboRadio) {
+        if(log.isDebugEnabled()) {
+            log.debug("Loading values from {} dictionary", comboRadio.getDictionary());
+        }
+        Dictionary dictionary = dictionaryService.getDictionary(comboRadio.getDictionary());
+
+        List<Map.Entry<UUID, String>> values = dictionary.getValues().stream()
+                    .filter(value -> StringUtils.isNotEmpty(value.getLabel())) // filter out incorrect values with label
+                    .map(value -> new AbstractMap.SimpleEntry<>(value.getId(), value.getLabel()))
+                    .sorted(Map.Entry.comparingByValue())
+                    .collect(Collectors.toList());
+
+        comboRadio.setValues(values);
     }
 }

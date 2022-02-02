@@ -5,11 +5,7 @@
         "type": "radio",
         "label": "Radio test",
         "property": "extraString",
-        "values": {
-          "1": "10",
-          "2": "20",
-          "3": "30"
-        },
+        "dictionary": "TestDict",
         "required": true
       }
     ]
