@@ -8,7 +8,6 @@ import lombok.Setter;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -22,8 +21,7 @@ import java.util.UUID;
 public class Dictionary extends EcmConfigObject {
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @OrderColumn(name = "order_no")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dictionary")
     @Setter(AccessLevel.NONE)
     private List<DictionaryValue> values;
 
