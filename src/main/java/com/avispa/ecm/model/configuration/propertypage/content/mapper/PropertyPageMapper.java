@@ -3,6 +3,7 @@ package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.configuration.dictionary.Dictionary;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryService;
+import com.avispa.ecm.model.configuration.dictionary.DictionaryValue;
 import com.avispa.ecm.model.configuration.propertypage.PropertyPage;
 import com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContent;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Columns;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.AbstractMap;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -124,8 +126,8 @@ public class PropertyPageMapper {
 
             List<Map.Entry<UUID, String>> values = ecmObjects.stream()
                         .filter(ecmObject -> StringUtils.isNotEmpty(ecmObject.getObjectName())) // filter out incorrect values with empty object name
+                        .sorted(Comparator.comparing(EcmObject::getObjectName))
                         .map(ecmObject -> new AbstractMap.SimpleEntry<>(ecmObject.getId(), ecmObject.getObjectName()))
-                        .sorted(Map.Entry.comparingByValue())
                         .collect(Collectors.toList());
 
             comboRadio.setValues(values);
@@ -159,8 +161,9 @@ public class PropertyPageMapper {
 
         List<Map.Entry<UUID, String>> values = dictionary.getValues().stream()
                     .filter(value -> StringUtils.isNotEmpty(value.getLabel())) // filter out incorrect values with label
+                    .sorted(comboRadio.isSortByLabel() ? Comparator.comparing(DictionaryValue::getLabel) : Comparator.comparing(EcmObject::getObjectName))
                     .map(value -> new AbstractMap.SimpleEntry<>(value.getId(), value.getLabel()))
-                    .sorted(Map.Entry.comparingByValue())
+                    //.sorted(getComparator(comboRadio))
                     .collect(Collectors.toList());
 
         comboRadio.setValues(values);
