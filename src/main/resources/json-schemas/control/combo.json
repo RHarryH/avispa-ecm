@@ -23,6 +23,9 @@
     "dictionary": {
       "type": "string",
       "minLength": 1
+    },
+    "sortByLabel": {
+      "type": "boolean"
     }
   },
   "allOf": [

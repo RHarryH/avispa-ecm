@@ -16,6 +16,7 @@ import java.util.UUID;
 public class ComboRadio extends PropertyControl {
     private String objectType;
     private String dictionary;
+    private boolean sortByLabel;
 
     @JsonIgnore
     private List<Map.Entry<UUID, String>> values;
