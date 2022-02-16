@@ -11,5 +11,6 @@ import lombok.Setter;
 public abstract class PropertyControl extends Control {
     private String label;
     private String property;
+    private String customValidationFunction;
     private boolean required;
 }

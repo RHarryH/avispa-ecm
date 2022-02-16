@@ -21,6 +21,10 @@
       "enum": [
         "PLN"
       ]
+    },
+    "customValidationFunction": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "required": [
