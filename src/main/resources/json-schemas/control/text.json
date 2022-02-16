@@ -17,13 +17,20 @@
       "type": "boolean"
     },
     "pattern": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "minLength": {
-      "type": "integer"
+      "type": "integer",
+      "minimum": 0
     },
     "maxLength": {
-      "type": "integer"
+      "type": "integer",
+      "minimum": 0
+    },
+    "customValidationFunction": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "required": [

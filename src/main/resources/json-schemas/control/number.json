@@ -24,6 +24,10 @@
     },
     "step": {
       "type": "number"
+    },
+    "customValidationFunction": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "required": [

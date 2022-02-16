@@ -17,16 +17,24 @@
       "type": "boolean"
     },
     "rows": {
-      "type": "integer"
+      "type": "integer",
+      "minimum": 0
     },
     "cols": {
-      "type": "integer"
+      "type": "integer",
+      "minimum": 0
     },
     "minLength": {
-      "type": "integer"
+      "type": "integer",
+      "minimum": 0
     },
     "maxLength": {
-      "type": "integer"
+      "type": "integer",
+      "minimum": 0
+    },
+    "customValidationFunction": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "required": [
