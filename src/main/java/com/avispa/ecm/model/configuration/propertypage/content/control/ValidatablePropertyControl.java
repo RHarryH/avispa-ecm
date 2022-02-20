@@ -8,9 +8,6 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public abstract class PropertyControl extends Control {
-    private String label;
-    private String property;
+public abstract class ValidatablePropertyControl extends PropertyControl {
     private CustomValidation customValidation;
-    private boolean required;
 }

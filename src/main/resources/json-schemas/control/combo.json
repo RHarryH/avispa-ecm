@@ -26,10 +26,6 @@
     },
     "sortByLabel": {
       "type": "boolean"
-    },
-    "customValidationFunction": {
-      "type": "string",
-      "minLength": 1
     }
   },
   "allOf": [

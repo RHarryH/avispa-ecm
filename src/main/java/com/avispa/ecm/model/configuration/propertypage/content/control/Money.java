@@ -8,6 +8,6 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class Money extends PropertyControl {
+public class Money extends ValidatablePropertyControl {
     private String currency;
 }
