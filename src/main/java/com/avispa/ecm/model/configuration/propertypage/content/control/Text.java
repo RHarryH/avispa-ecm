@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class Text extends PropertyControl {
+public class Text extends ValidatablePropertyControl {
     private String pattern;
 
     private Integer minLength;

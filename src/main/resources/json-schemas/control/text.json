@@ -28,9 +28,19 @@
       "type": "integer",
       "minimum": 0
     },
-    "customValidationFunction": {
-      "type": "string",
-      "minLength": 1
+    "customValidation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "function": {
+          "type": "string",
+          "pattern": "^[_$a-zA-Z][_$a-zA-Z0-9]+$"
+        },
+        "message": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9 !?]+$"
+        }
+      }
     }
   },
   "required": [
