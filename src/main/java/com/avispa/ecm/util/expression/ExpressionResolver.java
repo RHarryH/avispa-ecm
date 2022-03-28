@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.ConsoleErrorListener;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,6 +22,13 @@ import org.springframework.stereotype.Component;
 public class ExpressionResolver {
     public String resolve(Object object, String expression) {
         try {
+            if(StringUtils.isEmpty(expression)) {
+                if(log.isWarnEnabled()) {
+                    log.warn("Expression is empty");
+                }
+                return expression;
+            }
+
             // create lexer and get tokens
             Lexer lexer = new ExpressionLexer(CharStreams.fromString(expression));
             CommonTokenStream tokens = new CommonTokenStream(lexer);

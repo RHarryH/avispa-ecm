@@ -16,7 +16,7 @@
     "required": {
       "type": "boolean"
     },
-    "objectType": {
+    "typeName": {
       "type": "string",
       "minLength": 1
     },
@@ -40,10 +40,10 @@
       "oneOf": [
         {
           "required": ["dictionary"],
-          "not": { "required": ["objectType"] }
+          "not": { "required": ["typeName"] }
         },
         {
-          "required": ["objectType"],
+          "required": ["typeName"],
           "not": { "required": ["dictionary"] }
         }
       ]

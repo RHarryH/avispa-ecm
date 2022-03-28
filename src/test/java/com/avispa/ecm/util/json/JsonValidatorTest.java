@@ -26,7 +26,6 @@ class JsonValidatorTest {
     })
     void validatePropertyPageSchema(String jsonFilePath) {
         validate(jsonFilePath);
-
     }
 
     private void validate(String jsonFilePath) {

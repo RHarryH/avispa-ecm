@@ -103,6 +103,7 @@ public class PropertyPageMapper {
             label.setExpression(expressionResolver.resolve(object, label.getExpression()));
         } else if(control instanceof ComboRadio) {
             ComboRadio comboRadio = (ComboRadio)control;
+            comboRadio.setTypeName(expressionResolver.resolve(object, comboRadio.getTypeName()));
             loadDictionary(comboRadio);
         }
     }
@@ -112,7 +113,7 @@ public class PropertyPageMapper {
      * @param comboRadio
      */
     private void loadDictionary(ComboRadio comboRadio) {
-        if(StringUtils.isNotEmpty(comboRadio.getObjectType())) {
+        if(StringUtils.isNotEmpty(comboRadio.getTypeName())) {
             loadValuesFromObject(comboRadio);
         } else if(StringUtils.isNotEmpty(comboRadio.getDictionary())){
             loadValuesFromDictionary(comboRadio);
@@ -120,7 +121,7 @@ public class PropertyPageMapper {
     }
 
     private void loadValuesFromObject(ComboRadio comboRadio) {
-        Type type = typeRepository.findByTypeName(comboRadio.getObjectType());
+        Type type = typeRepository.findByTypeName(comboRadio.getTypeName());
         if (null != type) {
             List<? extends EcmObject> ecmObjects = getEcmObjects(type);
 
@@ -132,7 +133,7 @@ public class PropertyPageMapper {
 
             comboRadio.setValues(values);
         } else {
-            log.error("Type '{}' was not found", comboRadio.getObjectType());
+            log.error("Type '{}' was not found", comboRadio.getTypeName());
         }
     }
 

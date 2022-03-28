@@ -14,7 +14,7 @@ import java.util.UUID;
 @Getter
 @Setter
 public class ComboRadio extends PropertyControl {
-    private String objectType;
+    private String typeName;
     private String dictionary;
     private boolean sortByLabel;
 
