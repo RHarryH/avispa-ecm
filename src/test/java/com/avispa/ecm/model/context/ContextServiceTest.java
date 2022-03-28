@@ -318,15 +318,15 @@ class ContextServiceTest {
         return autolink;
     }
 
-    private void createContext(Type objectType, String rule, EcmConfigObject... ecmConfigObjects) {
-        createContext(objectType, rule, 0, ecmConfigObjects);
+    private void createContext(Type type, String rule, EcmConfigObject... ecmConfigObjects) {
+        createContext(type, rule, 0, ecmConfigObjects);
     }
 
-    private void createContext(Type objectType, String rule, int importance, EcmConfigObject... ecmConfigObjects) {
+    private void createContext(Type type, String rule, int importance, EcmConfigObject... ecmConfigObjects) {
         Context context = new Context();
         context.setObjectName(RandomStringUtils.randomAlphanumeric(10));
         context.setEcmConfigObjects(List.of(ecmConfigObjects));
-        context.setType(objectType);
+        context.setType(type);
         context.setMatchRule(rule);
         context.setImportance(importance);
         ecmObjectRepository.save(context);

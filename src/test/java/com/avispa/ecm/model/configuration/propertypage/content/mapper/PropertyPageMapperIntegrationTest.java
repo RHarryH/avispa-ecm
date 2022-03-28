@@ -134,7 +134,7 @@ class PropertyPageMapperIntegrationTest {
         ComboRadio combo = (ComboRadio) controls.get(0);
         assertEquals("Combo test", combo.getLabel());
         assertEquals("extraString", combo.getProperty());
-        assertEquals("Super Document", combo.getObjectType());
+        assertEquals("Super Document", combo.getTypeName());
         assertTrue(combo.isRequired());
     }
 
@@ -215,10 +215,8 @@ class PropertyPageMapperIntegrationTest {
         assertEquals("Radio test", radio.getLabel());
         assertEquals("extraString", radio.getProperty());
 
-        List<Map.Entry<String,String>> values = Map.of("1", "10", "2", "20", "3", "30").entrySet().stream()
-                .sorted(Map.Entry.comparingByValue())
-                .collect(Collectors.toList());
-        assertEquals(values, radio.getValues());
+        List<String> values = List.of("10", "20", "30");
+        assertEquals(values, radio.getValues().stream().map(Map.Entry::getValue).collect(Collectors.toList()));
     }
 
     @Test

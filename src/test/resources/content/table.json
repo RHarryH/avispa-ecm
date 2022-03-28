@@ -3,6 +3,7 @@
     "controls": [
       {
         "type": "table",
+        "label": "Test table",
         "property": "property",
         "controls": [
           {

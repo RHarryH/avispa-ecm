@@ -5,7 +5,7 @@
         "type": "combo",
         "label": "Combo test",
         "property": "extraString",
-        "objectType": "Super Document",
+        "typeName": "Super Document",
         "required": true
       }
     ]

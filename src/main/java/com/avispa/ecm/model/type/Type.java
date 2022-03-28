@@ -15,6 +15,6 @@ import javax.persistence.Entity;
 @Getter
 @Setter
 public class Type extends EcmObject {
-    @Column(name = "class_name", nullable = false)
+    @Column(name = "class_name", nullable = false, unique = true)
     private Class<? extends EcmObject> clazz;
 }
