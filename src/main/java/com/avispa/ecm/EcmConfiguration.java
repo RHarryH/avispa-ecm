@@ -81,7 +81,7 @@ public class EcmConfiguration implements AsyncConfigurer {
 
     @Bean(name = "localOfficeManager", initMethod="start", destroyMethod = "stop")
     @ConditionalOnMissingBean(name = "localOfficeManager")
-    public OfficeManager gerLocalOfficeManager(@Value("${office.home:C:\\Program Files\\LibreOffice}") String officePath) {
+    public OfficeManager gerLocalOfficeManager(@Value("${avispa.ecm.office.home:C:\\Program Files\\LibreOffice}") String officePath) {
         return LocalOfficeManager.builder()
                 .officeHome(officePath)
                 .processManager("org.jodconverter.process.PureJavaProcessManager")

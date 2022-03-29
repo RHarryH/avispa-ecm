@@ -39,8 +39,8 @@ public class RenditionService {
     private final FileStore fileStore;
     private final ContentService contentService;
 
-    @Value("${rendition.office.always:true}")
-    private boolean renditionOfficeAlways;
+    @Value("${avispa.ecm.rendition.use-always-office:true}")
+    private boolean renditionUseAlwaysOffice;
 
     /**
      * Generate PDF rendition based on the input file
@@ -64,7 +64,7 @@ public class RenditionService {
                 OutputStream outputStream = new FileOutputStream(renditionFileStorePath.toString())) {
                 String extension = format.getExtension();
 
-                if (renditionOfficeAlways) {
+                if (renditionUseAlwaysOffice) {
                     generateUsingSoffice(extension, inputStream, outputStream);
                 } else {
                     switch (extension) {
