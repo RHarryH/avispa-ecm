@@ -37,8 +37,8 @@ public class EcmConfiguration implements AsyncConfigurer {
     }
 
     @Bean
-    public FileStore getFileStore(@Value("${avispa.ecm.fileStore.name:defaultFileStore}") String fileStoreName,
-                                  @Value("${avispa.ecm.fileStore.path:defaultFileStore}") String defaultFileStorePath) {
+    public FileStore getFileStore(@Value("${avispa.ecm.file-store.name:defaultFileStore}") String fileStoreName,
+                                  @Value("${avispa.ecm.file-store.path:defaultFileStore}") String defaultFileStorePath) {
         FileStore fileStore = fileStoreRepository.findByObjectName(fileStoreName)
                 .orElse(createFileStore(fileStoreName, defaultFileStorePath));
 
