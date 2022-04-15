@@ -49,6 +49,13 @@ public class Dictionary extends EcmConfigObject {
                 .orElse("UNKNOWN COLUMN");
     }
 
+    public DictionaryValue getValue(String key) {
+        return values.stream()
+                .filter(dictionaryValue -> dictionaryValue.getKey().equals(key))
+                .findFirst()
+                .orElse(null);
+    }
+
     public void addValue(DictionaryValue value) {
         if(null == this.values) {
             this.values = new ArrayList<>();

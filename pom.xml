@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.4.RELEASE</version>
+        <version>2.5.12</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.avispa</groupId>
@@ -37,6 +37,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-json</artifactId>
         </dependency>
 
         <dependency>
@@ -72,43 +76,36 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>5.5.2</version>
+            <version>5.6</version>
         </dependency>
 
         <!-- DOCX2PDF conversion -->
         <dependency>
             <groupId>com.documents4j</groupId>
             <artifactId>documents4j-local</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.7</version>
         </dependency>
         <dependency>
             <groupId>com.documents4j</groupId>
             <artifactId>documents4j-transformer-msoffice-word</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.7</version>
         </dependency>
         <dependency>
             <groupId>com.documents4j</groupId>
             <artifactId>documents4j-util-all</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.7</version>
         </dependency>
         <dependency>
             <groupId>com.documents4j</groupId>
             <artifactId>documents4j-util-standalone</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.7</version>
         </dependency>
 
         <!-- ODT2PDF conversion -->
         <dependency>
             <groupId>org.jodconverter</groupId>
             <artifactId>jodconverter-local</artifactId>
-            <version>4.2.2</version>
-        </dependency>
-
-        <!-- Jackson library for processing JSONs -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.11.2</version>
+            <version>4.4.2</version>
         </dependency>
 
         <!-- JSON Schema -->
@@ -130,6 +127,12 @@
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
             <version>4.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
         </dependency>
     </dependencies>
 

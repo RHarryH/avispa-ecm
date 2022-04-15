@@ -1,21 +1,22 @@
 package com.avispa.ecm.model.context;
 
 import com.avispa.ecm.model.EcmObject;
-import com.avispa.ecm.model.EcmObjectRepository;
 import com.avispa.ecm.model.configuration.EcmConfigObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ResolvableType;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,7 +30,6 @@ import java.util.stream.Stream;
 @Slf4j
 public class ContextService {
 
-    private final EcmObjectRepository<EcmObject> ecmObjectRepository;
     private final ContextRepository contextRepository;
     private final ObjectMapper objectMapper;
 
@@ -139,7 +139,7 @@ public class ContextService {
      * @return
      */
     private <T extends EcmObject> Stream<EcmConfigObject> getMatchingConfigurations(T object) {
-        List<Context> contexts = contextRepository.findAllByOrderByImportanceDesc();
+        List<Context> contexts = contextRepository.findAllByOrderByImportanceAsc();
 
         return contexts.stream().filter(context -> matches(context, object))
                 .map(Context::getEcmConfigObjects)
@@ -155,7 +155,7 @@ public class ContextService {
      * @return
      */
     private <T extends EcmObject> Stream<EcmConfigObject> getMatchingConfigurations(Class<T> clazz) {
-        List<Context> contexts = contextRepository.findAllByOrderByImportanceDesc();
+        List<Context> contexts = contextRepository.findAllByOrderByImportanceAsc();
 
         return contexts.stream().filter(context -> context.getType().getClazz().equals(clazz))
                 .filter(this::hasEmptyMatchRule)
@@ -192,13 +192,16 @@ public class ContextService {
         }
 
         try {
-            EcmObject sampleObject = objectMapper.readValue(context.getMatchRule(), object.getClass());
-            sampleObject.setId(object.getId());
+            TypeReference<HashMap<String, Object>> typeRef = new TypeReference<>() {};
+            // convert JSON object to EcmObject of <T> type to eliminate fields not applicable to <T> type
+            EcmObject queryObject = objectMapper.readValue(context.getMatchRule(), object.getClass());
 
-            return ecmObjectRepository.exists(
-                    Example.of(sampleObject)
-            );
-        } catch (JsonProcessingException e) {
+            // convert to maps
+            Map<String, Object> query = objectMapper.convertValue(queryObject, typeRef);
+            Map<String, Object> reference = objectMapper.convertValue(object, typeRef);
+
+            return reference.entrySet().containsAll(query.entrySet());
+         } catch (JsonProcessingException e) {
             log.error(context.getMatchRule());
             log.error(String.format("Error when trying to match document '%s' with sample of '%s'", object.getId(), context.getMatchRule()), e);
         }

@@ -11,7 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
@@ -33,7 +33,7 @@ public class Context extends EcmObject {
     @Column(nullable = false, columnDefinition = "varchar(255) default '{}'")
     private String matchRule;
 
-    @Column(nullable = false, unique = true)
-    @Min(value = 0L, message = "The value must be positive")
-    private int importance;
+    @Column(nullable = false)
+    @PositiveOrZero
+    private int importance; // lower = more important
 }

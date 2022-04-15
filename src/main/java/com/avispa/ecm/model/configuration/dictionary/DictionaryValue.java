@@ -1,6 +1,7 @@
 package com.avispa.ecm.model.configuration.dictionary;
 
 import com.avispa.ecm.model.configuration.EcmConfigObject;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +30,7 @@ public class DictionaryValue extends EcmConfigObject {
 
     //private boolean enabled;
 
+    @JsonIgnore
     public void setKey(String key) {
         setObjectName(key);
     }
