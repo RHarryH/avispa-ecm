@@ -2,6 +2,8 @@ package com.avispa.ecm.model;
 
 import com.avispa.ecm.model.content.Content;
 import com.avispa.ecm.model.folder.Folder;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -32,6 +34,9 @@ import java.util.UUID;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "ecm_object")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public abstract class EcmObject implements EcmEntity {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -85,7 +90,8 @@ public abstract class EcmObject implements EcmEntity {
      * @return
      */
     public Content getPrimaryContent() {
-        return contents.stream().filter(Content::isPdf).findFirst().orElse(contents.stream().findFirst().orElseThrow());
+        return null == contents ? null :
+                contents.stream().filter(Content::isPdf).findFirst().orElse(contents.stream().findFirst().orElse(null));
     }
 
     @PrePersist

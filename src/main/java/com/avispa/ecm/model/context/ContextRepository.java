@@ -8,5 +8,5 @@ import java.util.List;
  * @author Rafał Hiszpański
  */
 public interface ContextRepository extends EcmObjectRepository<Context> {
-    List<Context> findAllByOrderByImportanceDesc();
+    List<Context> findAllByOrderByImportanceAsc();
 }

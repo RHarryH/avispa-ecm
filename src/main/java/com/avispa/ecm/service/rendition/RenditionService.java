@@ -9,10 +9,10 @@ import com.documents4j.api.IConverter;
 import com.documents4j.job.LocalConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jodconverter.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.document.DocumentFormat;
-import org.jodconverter.office.OfficeException;
-import org.jodconverter.office.OfficeManager;
+import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.core.document.DocumentFormat;
+import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.OfficeManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -101,7 +101,7 @@ public class RenditionService {
         final DocumentFormat targetFormat =
                 DefaultDocumentFormatRegistry.getFormatByExtension(PDF);
 
-        org.jodconverter.LocalConverter
+        org.jodconverter.local.LocalConverter
                 .make(officeManager)
                 .convert(inputStream)
                 .as(DefaultDocumentFormatRegistry.getFormatByExtension(

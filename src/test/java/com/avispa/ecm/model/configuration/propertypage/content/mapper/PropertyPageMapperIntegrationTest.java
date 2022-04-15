@@ -26,13 +26,12 @@ import com.avispa.ecm.util.expression.ExpressionResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -49,8 +48,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Rafał Hiszpański
  */
 @Slf4j
-@ExtendWith(SpringExtension.class)
 @DataJpaTest(properties = "spring.datasource.initialization-mode=never")
+@AutoConfigureJson
 @Sql("/super-document-type.sql")
 @Import({PropertyPageMapper.class, ExpressionResolver.class, DictionaryService.class})
 class PropertyPageMapperIntegrationTest {
