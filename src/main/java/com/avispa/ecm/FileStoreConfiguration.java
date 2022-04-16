@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.AsyncConfigurer;
-import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,9 +18,8 @@ import java.nio.file.Paths;
  */
 @Configuration
 @RequiredArgsConstructor
-@EnableAsync
 @Slf4j
-public class FileStoreConfiguration implements AsyncConfigurer {
+public class FileStoreConfiguration {
     private final FileStoreRepository fileStoreRepository;
 
     @Bean
