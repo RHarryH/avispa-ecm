@@ -43,6 +43,14 @@
             <artifactId>spring-boot-starter-json</artifactId>
         </dependency>
 
+        <!-- Required to prevent serialization of lazy loaded collections -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-hibernate5</artifactId>
+            <version>2.12.6</version> <!-- has to match with Jackson version in spring-boot-starter-json -->
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>

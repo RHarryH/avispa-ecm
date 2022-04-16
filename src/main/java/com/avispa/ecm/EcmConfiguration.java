@@ -2,6 +2,7 @@ package com.avispa.ecm;
 
 import com.avispa.ecm.util.CustomAsyncExceptionHandler;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,8 @@ public class EcmConfiguration implements AsyncConfigurer {
         return new Jackson2ObjectMapperBuilder()
                 .serializers(LOCAL_DATETIME_SERIALIZER)
                 .deserializers(LOCAL_DATETIME_DESERIALIZER)
-                .serializationInclusion(JsonInclude.Include.NON_NULL);
+                .serializationInclusion(JsonInclude.Include.NON_NULL)
+                .modulesToInstall(Hibernate5Module.class); // disables serialization of lazy collections
     }
 
     @Override
