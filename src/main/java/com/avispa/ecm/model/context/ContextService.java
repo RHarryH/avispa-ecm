@@ -1,6 +1,7 @@
 package com.avispa.ecm.model.context;
 
 import com.avispa.ecm.model.EcmObject;
+import com.avispa.ecm.model.EcmObjectRepository;
 import com.avispa.ecm.model.configuration.EcmConfigObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigService;
@@ -138,39 +139,18 @@ public class ContextService {
      * @param <T> type of object
      * @return
      */
+    @SuppressWarnings("java:S3864")
     private <T extends EcmObject> Stream<EcmConfigObject> getMatchingConfigurations(T object) {
         List<Context> contexts = contextRepository.findAllByOrderByImportanceAsc();
 
         return contexts.stream().filter(context -> matches(context, object))
+                .peek(context -> {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Matched context: '{}'", context.getObjectName());
+                    }
+                })
                 .map(Context::getEcmConfigObjects)
                 .flatMap(Collection::stream);
-    }
-
-    /**
-     * Returns stream of configurations matching for provided object. It merges configurations from all matching
-     * contexts. It returns only configuration applicable for all objects of specific type (matching
-     * rule is empty)
-     * @param clazz object for which we want to find matching configuration
-     * @param <T> type of object
-     * @return
-     */
-    private <T extends EcmObject> Stream<EcmConfigObject> getMatchingConfigurations(Class<T> clazz) {
-        List<Context> contexts = contextRepository.findAllByOrderByImportanceAsc();
-
-        return contexts.stream().filter(context -> context.getType().getClazz().equals(clazz))
-                .filter(this::hasEmptyMatchRule)
-                .map(Context::getEcmConfigObjects)
-                .flatMap(Collection::stream);
-    }
-
-    private boolean hasEmptyMatchRule(Context context) {
-        try {
-            JsonNode actualObj = objectMapper.readTree(context.getMatchRule());
-            return actualObj.isEmpty();
-        } catch (JsonProcessingException e) {
-            log.error("Can't parse {} context rule", context.getMatchRule(), e);
-        }
-        return false;
     }
 
     /**
@@ -200,12 +180,45 @@ public class ContextService {
             Map<String, Object> query = objectMapper.convertValue(queryObject, typeRef);
             Map<String, Object> reference = objectMapper.convertValue(object, typeRef);
 
-            return reference.entrySet().containsAll(query.entrySet());
-         } catch (JsonProcessingException e) {
+            boolean matches = reference.entrySet().containsAll(query.entrySet());
+
+            if(log.isDebugEnabled()) {
+                log.debug("Query '{}' matches in '{}' reference: {}", query, reference, matches);
+            }
+
+            return matches;
+        } catch (JsonProcessingException e) {
             log.error(context.getMatchRule());
-            log.error(String.format("Error when trying to match document '%s' with sample of '%s'", object.getId(), context.getMatchRule()), e);
+            log.error("Error when trying to match object '{}}' with sample of '{}}'", object.getId(), context.getMatchRule(), e);
         }
 
+        return false;
+    }
+
+    /**
+     * Returns stream of configurations matching for provided object. It merges configurations from all matching
+     * contexts. It returns only configuration applicable for all objects of specific type (matching
+     * rule is empty)
+     * @param clazz object for which we want to find matching configuration
+     * @param <T> type of object
+     * @return
+     */
+    private <T extends EcmObject> Stream<EcmConfigObject> getMatchingConfigurations(Class<T> clazz) {
+        List<Context> contexts = contextRepository.findAllByOrderByImportanceAsc();
+
+        return contexts.stream().filter(context -> context.getType().getClazz().equals(clazz))
+                .filter(this::hasEmptyMatchRule)
+                .map(Context::getEcmConfigObjects)
+                .flatMap(Collection::stream);
+    }
+
+    private boolean hasEmptyMatchRule(Context context) {
+        try {
+            JsonNode actualObj = objectMapper.readTree(context.getMatchRule());
+            return actualObj.isEmpty();
+        } catch (JsonProcessingException e) {
+            log.error("Can't parse {} context rule", context.getMatchRule(), e);
+        }
         return false;
     }
 
