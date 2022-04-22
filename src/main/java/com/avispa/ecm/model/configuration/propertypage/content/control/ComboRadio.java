@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author Rafał Hiszpański
@@ -19,5 +18,5 @@ public class ComboRadio extends PropertyControl {
     private boolean sortByLabel;
 
     @JsonIgnore
-    private List<Map.Entry<UUID, String>> values;
+    private List<Map.Entry<String, String>> values;
 }

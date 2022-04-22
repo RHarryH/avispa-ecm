@@ -35,7 +35,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -125,10 +124,10 @@ public class PropertyPageMapper {
         if (null != type) {
             List<? extends EcmObject> ecmObjects = getEcmObjects(type);
 
-            List<Map.Entry<UUID, String>> values = ecmObjects.stream()
+            List<Map.Entry<String, String>> values = ecmObjects.stream()
                         .filter(ecmObject -> StringUtils.isNotEmpty(ecmObject.getObjectName())) // filter out incorrect values with empty object name
                         .sorted(Comparator.comparing(EcmObject::getObjectName))
-                        .map(ecmObject -> new AbstractMap.SimpleEntry<>(ecmObject.getId(), ecmObject.getObjectName()))
+                        .map(ecmObject -> new AbstractMap.SimpleEntry<>(ecmObject.getId().toString(), ecmObject.getObjectName()))
                         .collect(Collectors.toList());
 
             comboRadio.setValues(values);
@@ -160,12 +159,12 @@ public class PropertyPageMapper {
         }
         Dictionary dictionary = dictionaryService.getDictionary(comboRadio.getDictionary());
 
-        List<Map.Entry<UUID, String>> values = dictionary.getValues().stream()
-                    .filter(value -> StringUtils.isNotEmpty(value.getLabel())) // filter out incorrect values with label
-                    .sorted(comboRadio.isSortByLabel() ? Comparator.comparing(DictionaryValue::getLabel) : Comparator.comparing(EcmObject::getObjectName))
-                    .map(value -> new AbstractMap.SimpleEntry<>(value.getId(), value.getLabel()))
-                    //.sorted(getComparator(comboRadio))
-                    .collect(Collectors.toList());
+        List<Map.Entry<String, String>> values = dictionary.getValues().stream()
+                .filter(value -> StringUtils.isNotEmpty(value.getLabel())) // filter out incorrect values with label
+                .sorted(comboRadio.isSortByLabel() ? Comparator.comparing(DictionaryValue::getLabel) : Comparator.comparing(EcmObject::getObjectName))
+                .map(value -> new AbstractMap.SimpleEntry<>(value.getKey(), value.getLabel()))
+                //.sorted(getComparator(comboRadio))
+                .collect(Collectors.toList());
 
         comboRadio.setValues(values);
     }
