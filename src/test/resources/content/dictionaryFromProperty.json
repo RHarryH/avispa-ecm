@@ -2,8 +2,8 @@
   "propertyPage": {
     "controls": [
       {
-        "type": "radio",
-        "label": "Radio test",
+        "type": "combo",
+        "label": "Combo test",
         "property": "extraField",
         "dictionary": "TestDict",
         "required": true

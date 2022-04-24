@@ -4,8 +4,7 @@
       {
         "type": "combo",
         "label": "Combo test",
-        "property": "extraField",
-        "typeName": "Super Document",
+        "property": "objectName",
         "required": true
       }
     ]

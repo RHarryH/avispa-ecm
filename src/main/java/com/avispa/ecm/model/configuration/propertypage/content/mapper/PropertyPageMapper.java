@@ -17,7 +17,6 @@ import com.avispa.ecm.model.content.Content;
 import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeRepository;
 import com.avispa.ecm.util.expression.ExpressionResolver;
-import com.avispa.ecm.util.reflect.PropertyUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +29,8 @@ import javax.persistence.PersistenceContext;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.AbstractMap;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,11 +51,11 @@ public class PropertyPageMapper {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public PropertyPageContent convertToContent(PropertyPage propertyPage, Object object, boolean readonly) {
+    public PropertyPageContent convertToContent(PropertyPage propertyPage, Object context, boolean readonly) {
         PropertyPageContent propertyPageContent = getPropertyPageContent(propertyPage.getPrimaryContent()).orElseThrow();
         propertyPageContent.setReadonly(readonly);
 
-        processControls(propertyPageContent.getControls(), object);
+        processControls(propertyPageContent.getControls(), context);
 
         return propertyPageContent;
     }
@@ -77,45 +76,60 @@ public class PropertyPageMapper {
         return Optional.empty();
     }
 
-    private void processControls(List<Control> controls, Object object) {
+    private void processControls(List<Control> controls, Object context) {
         for(Control control : controls) {
             if(control instanceof Columns) {
                 Columns columns = (Columns)control;
-                processControls(columns.getControls(), object);
+                processControls(columns.getControls(), context);
             } else if(control instanceof Tabs) {
                 Tabs tabs = (Tabs)control;
                 for(Tab tab : tabs.getTabs()) {
-                    processControls(tab.getControls(), object);
+                    processControls(tab.getControls(), context);
                 }
             } else if(control instanceof Table) {
                 Table table = (Table)control;
-                processControls(table.getControls(), PropertyUtils.getPropertyValue(object, table.getProperty()));
+                processTableControls(table.getControls(), table.getPropertyType());
             } else {
-                processControl(control, object);
+                processControl(control, context);
             }
         }
     }
 
-    private void processControl(Control control, Object object) {
+    private void processTableControls(List<Control> controls, String type) {
+        controls.stream()
+                .filter(ComboRadio.class::isInstance)
+                .map(ComboRadio.class::cast)
+                .forEach(comboRadio -> {
+                    if(StringUtils.isNotEmpty(comboRadio.getTypeName())) {
+                        log.info("Type name for tables is ignored. Use dictionaries only.");
+                        comboRadio.setTypeName("");
+                    }
+                    loadDictionary(comboRadio, typeRepository.findByTypeName(type).getClazz());
+                });
+    }
+
+    private void processControl(Control control, Object context) {
         if(control instanceof Label) {
             Label label = (Label)control;
-            label.setExpression(expressionResolver.resolve(object, label.getExpression()));
+            label.setExpression(expressionResolver.resolve(context, label.getExpression()));
         } else if(control instanceof ComboRadio) {
             ComboRadio comboRadio = (ComboRadio)control;
-            comboRadio.setTypeName(expressionResolver.resolve(object, comboRadio.getTypeName()));
-            loadDictionary(comboRadio);
+            comboRadio.setTypeName(expressionResolver.resolve(context, comboRadio.getTypeName()));
+            loadDictionary(comboRadio, context.getClass());
         }
     }
 
     /**
      * Loads dictionary used by combo boxes and radio buttons
      * @param comboRadio
+     * @param contextClass
      */
-    private void loadDictionary(ComboRadio comboRadio) {
+    private void loadDictionary(ComboRadio comboRadio, Class<?> contextClass) {
         if(StringUtils.isNotEmpty(comboRadio.getTypeName())) {
             loadValuesFromObject(comboRadio);
-        } else if(StringUtils.isNotEmpty(comboRadio.getDictionary())){
-            loadValuesFromDictionary(comboRadio);
+        } else {
+            Dictionary dictionary = getDictionary(comboRadio, contextClass);
+            loadValuesFromDictionary(comboRadio, dictionary);
         }
     }
 
@@ -124,11 +138,10 @@ public class PropertyPageMapper {
         if (null != type) {
             List<? extends EcmObject> ecmObjects = getEcmObjects(type);
 
-            List<Map.Entry<String, String>> values = ecmObjects.stream()
-                        .filter(ecmObject -> StringUtils.isNotEmpty(ecmObject.getObjectName())) // filter out incorrect values with empty object name
-                        .sorted(Comparator.comparing(EcmObject::getObjectName))
-                        .map(ecmObject -> new AbstractMap.SimpleEntry<>(ecmObject.getId().toString(), ecmObject.getObjectName()))
-                        .collect(Collectors.toList());
+            Map<String, String> values = ecmObjects.stream()
+                    .filter(ecmObject -> StringUtils.isNotEmpty(ecmObject.getObjectName())) // filter out incorrect values with empty object name
+                    .sorted(Comparator.comparing(EcmObject::getObjectName))
+                    .collect(Collectors.toMap(ecmObject -> ecmObject.getId().toString(), EcmObject::getObjectName, (x, y) -> x, LinkedHashMap::new));
 
             comboRadio.setValues(values);
         } else {
@@ -153,18 +166,33 @@ public class PropertyPageMapper {
         return jpaRepository;
     }
 
-    private void loadValuesFromDictionary(ComboRadio comboRadio) {
-        if(log.isDebugEnabled()) {
-            log.debug("Loading values from {} dictionary", comboRadio.getDictionary());
-        }
-        Dictionary dictionary = dictionaryService.getDictionary(comboRadio.getDictionary());
+    private Dictionary getDictionary(ComboRadio comboRadio, Class<?> contextClass) {
+        String dictionaryName = comboRadio.getDictionary();
 
-        List<Map.Entry<String, String>> values = dictionary.getValues().stream()
-                .filter(value -> StringUtils.isNotEmpty(value.getLabel())) // filter out incorrect values with label
-                .sorted(comboRadio.isSortByLabel() ? Comparator.comparing(DictionaryValue::getLabel) : Comparator.comparing(EcmObject::getObjectName))
-                .map(value -> new AbstractMap.SimpleEntry<>(value.getKey(), value.getLabel()))
-                //.sorted(getComparator(comboRadio))
-                .collect(Collectors.toList());
+        // if dictionary was not retrieved from property page, try with annotation
+        if(StringUtils.isEmpty(dictionaryName)) {
+            dictionaryName = dictionaryService.getDictionaryNameFromAnnotation(contextClass, comboRadio.getProperty());
+        }
+
+        // if dictionary name is still not resolved throw an exception
+        if(StringUtils.isEmpty(dictionaryName)) {
+            throw new IllegalStateException(
+                    String.format("Dictionary is not specified in property page configuration or using annotation in entity definition. Related property: '%s'", comboRadio.getProperty())
+            );
+        }
+
+        return dictionaryService.getDictionary(dictionaryName);
+    }
+
+    private void loadValuesFromDictionary(ComboRadio comboRadio, Dictionary dictionary) {
+        if(log.isDebugEnabled()) {
+            log.debug("Loading values from {} dictionary", dictionary.getObjectName());
+        }
+
+        Map<String, String> values = dictionary.getValues().stream()
+                .filter(value -> StringUtils.isNotEmpty(value.getLabel())) // filter out incorrect values with empty object name
+                .sorted(Comparator.comparing(EcmObject::getObjectName))
+                .collect(Collectors.toMap(DictionaryValue::getKey, DictionaryValue::getLabel, (x, y) -> x, LinkedHashMap::new));
 
         comboRadio.setValues(values);
     }

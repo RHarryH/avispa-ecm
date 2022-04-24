@@ -11,7 +11,8 @@
       "type": "string"
     },
     "property": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9.]*$"
     },
     "required": {
       "type": "boolean"
@@ -37,7 +38,7 @@
       ]
     },
     {
-      "oneOf": [
+      "anyOf": [
         {
           "required": ["dictionary"],
           "not": { "required": ["typeName"] }
@@ -45,6 +46,9 @@
         {
           "required": ["typeName"],
           "not": { "required": ["dictionary"] }
+        },
+        {
+          "not": { "required": ["dictionary", "typeName"] }
         }
       ]
     }

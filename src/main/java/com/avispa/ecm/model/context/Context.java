@@ -35,5 +35,5 @@ public class Context extends EcmObject {
 
     @Column(nullable = false)
     @PositiveOrZero
-    private int importance; // lower = more important
+    private int importance; // higher = more important
 }

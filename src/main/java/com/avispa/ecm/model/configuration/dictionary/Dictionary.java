@@ -4,6 +4,8 @@ import com.avispa.ecm.model.configuration.EcmConfigObject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -18,6 +20,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
+@Slf4j
 public class Dictionary extends EcmConfigObject {
     private String description;
 
@@ -26,6 +29,10 @@ public class Dictionary extends EcmConfigObject {
     private List<DictionaryValue> values;
 
     public String getLabel(String key) {
+        if (isEmpty()) {
+            return null;
+        }
+
         return values.stream()
                 .filter(dictionaryValue -> dictionaryValue.getKey().equals(key))
                 .map(DictionaryValue::getLabel)
@@ -34,6 +41,10 @@ public class Dictionary extends EcmConfigObject {
     }
 
     public String getColumnValue(String key, String columnName) {
+        if (isEmpty()) {
+            return null;
+        }
+
         return values.stream()
                 .filter(dictionaryValue -> dictionaryValue.getKey().equals(key))
                 .map(dictionaryValue -> dictionaryValue.getColumns().get(columnName))
@@ -42,6 +53,10 @@ public class Dictionary extends EcmConfigObject {
     }
 
     public String getColumnValue(UUID valueId, String columnName) {
+        if (isEmpty()) {
+            return null;
+        }
+
         return values.stream()
                 .filter(dictionaryValue -> dictionaryValue.getId().equals(valueId))
                 .map(dictionaryValue -> dictionaryValue.getColumns().get(columnName))
@@ -50,10 +65,23 @@ public class Dictionary extends EcmConfigObject {
     }
 
     public DictionaryValue getValue(String key) {
+        if (isEmpty()) {
+            return null;
+        }
+
         return values.stream()
                 .filter(dictionaryValue -> dictionaryValue.getKey().equals(key))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public boolean isEmpty() {
+        if(CollectionUtils.isEmpty(values)) {
+            log.warn("Dictionary {} is empty", getObjectName());
+            return true;
+        }
+
+        return false;
     }
 
     public void addValue(DictionaryValue value) {
