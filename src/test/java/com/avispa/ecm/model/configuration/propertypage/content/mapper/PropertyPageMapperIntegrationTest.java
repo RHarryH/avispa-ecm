@@ -21,6 +21,8 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.Textarea;
 import com.avispa.ecm.model.content.Content;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.format.Format;
+import com.avispa.ecm.model.type.Type;
+import com.avispa.ecm.model.type.TypeRepository;
 import com.avispa.ecm.util.SuperDocument;
 import com.avispa.ecm.util.expression.ExpressionResolver;
 import lombok.extern.slf4j.Slf4j;
@@ -29,63 +31,94 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Rafał Hiszpański
  */
 @Slf4j
-@DataJpaTest(properties = "spring.datasource.initialization-mode=never")
+@DataJpaTest
 @AutoConfigureJson
-@Sql("/super-document-type.sql")
 @Import({PropertyPageMapper.class, ExpressionResolver.class, DictionaryService.class})
 class PropertyPageMapperIntegrationTest {
     private Document document;
 
-    @Autowired
-    private PropertyPageMapper propertyPageMapper;
+    @MockBean
+    private TypeRepository typeRepository;
+
+    @MockBean
+    private EcmObjectRepository<Dictionary> dictionaryRepository;
 
     @Autowired
-    private EcmObjectRepository<Dictionary> dictionaryRepository;
+    private PropertyPageMapper propertyPageMapper;
 
     @BeforeEach
     void init() {
         document = createSuperDocument();
 
+        // first dictionary
+        {
+            Dictionary testDict = new Dictionary();
+            testDict.setObjectName("TestDict");
 
-        Dictionary testDict = new Dictionary();
-        testDict.setObjectName("TestDict");
+            DictionaryValue dv1 = new DictionaryValue();
+            dv1.setKey("1");
+            dv1.setLabel("10");
 
-        DictionaryValue dv1 = new DictionaryValue();
-        dv1.setKey("1");
-        dv1.setLabel("10");
+            DictionaryValue dv2 = new DictionaryValue();
+            dv2.setKey("2");
+            dv2.setLabel("20");
 
-        DictionaryValue dv2 = new DictionaryValue();
-        dv2.setKey("2");
-        dv2.setLabel("20");
+            DictionaryValue dv3 = new DictionaryValue();
+            dv3.setKey("3");
+            dv3.setLabel("30");
 
-        DictionaryValue dv3 = new DictionaryValue();
-        dv3.setKey("3");
-        dv3.setLabel("30");
+            testDict.addValue(dv1);
+            testDict.addValue(dv2);
+            testDict.addValue(dv3);
 
-        testDict.addValue(dv1);
-        testDict.addValue(dv2);
-        testDict.addValue(dv3);
+            when(dictionaryRepository.findByObjectName("TestDict")).thenReturn(Optional.of(testDict));
+        }
 
-        dictionaryRepository.save(testDict);
+        // second dictionary
+        {
+            Dictionary testDict = new Dictionary();
+            testDict.setObjectName("TestDict2");
+
+            DictionaryValue dv1 = new DictionaryValue();
+            dv1.setKey("a");
+            dv1.setLabel("A");
+
+            DictionaryValue dv2 = new DictionaryValue();
+            dv2.setKey("b");
+            dv2.setLabel("B");
+
+            testDict.addValue(dv1);
+            testDict.addValue(dv2);
+
+            when(dictionaryRepository.findByObjectName("TestDict2")).thenReturn(Optional.of(testDict));
+        }
+
+        Type type = new Type();
+        type.setObjectName("Super Document");
+        type.setClazz(SuperDocument.class);
+
+        when(typeRepository.findByTypeName("Super Document")).thenReturn(type);
     }
 
     private Document createSuperDocument() {
@@ -132,7 +165,7 @@ class PropertyPageMapperIntegrationTest {
         assertTrue(controls.get(0) instanceof ComboRadio);
         ComboRadio combo = (ComboRadio) controls.get(0);
         assertEquals("Combo test", combo.getLabel());
-        assertEquals("extraString", combo.getProperty());
+        assertEquals("extraField", combo.getProperty());
         assertEquals("Super Document", combo.getTypeName());
         assertTrue(combo.isRequired());
     }
@@ -212,10 +245,10 @@ class PropertyPageMapperIntegrationTest {
         assertTrue(controls.get(0) instanceof ComboRadio);
         ComboRadio radio = (ComboRadio) controls.get(0);
         assertEquals("Radio test", radio.getLabel());
-        assertEquals("extraString", radio.getProperty());
+        assertEquals("extraField", radio.getProperty());
 
-        List<String> values = List.of("10", "20", "30");
-        assertEquals(values, radio.getValues().stream().map(Map.Entry::getValue).collect(Collectors.toList()));
+        Map<String, String> values = Map.of("1", "10", "2", "20", "3", "30");
+        assertEquals(values, radio.getValues());
     }
 
     @Test
@@ -280,7 +313,7 @@ class PropertyPageMapperIntegrationTest {
         assertTrue(controls.get(0) instanceof Textarea);
         Textarea textarea = (Textarea) controls.get(0);
         assertEquals("Textarea test", textarea.getLabel());
-        assertEquals("extraString", textarea.getProperty());
+        assertEquals("extraField", textarea.getProperty());
         assertEquals(25, textarea.getRows());
     }
 
@@ -299,6 +332,58 @@ class PropertyPageMapperIntegrationTest {
         assertTrue(controls.get(0) instanceof Label);
         assertTrue(controls.get(1) instanceof Text);
     }
+
+    @Test
+    void resolveDictionaryFromPropertyPageConfiguration() {
+        // given
+        PropertyPage propertyPage = createPropertyPage("content/dictionaryFromProperty.json");
+
+        // when
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+
+        // then
+        ComboRadio combo = (ComboRadio) propertyPageContent.getControls().get(0);
+        Map<String, String> values = Map.of("1", "10", "2", "20", "3", "30");
+        assertEquals(values, combo.getValues());
+    }
+
+    @Test
+    void resolveDictionaryFromFieldAnnotation() {
+        // given
+        PropertyPage propertyPage = createPropertyPage("content/dictionaryFromAnnotation.json");
+
+        // when
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+
+        // then
+        ComboRadio combo = (ComboRadio) propertyPageContent.getControls().get(0);
+        Map<String, String> values = Map.of("1", "10", "2", "20", "3", "30");
+        assertEquals(values, combo.getValues());
+    }
+
+    @Test
+    void dictionaryNotSpecified() {
+        // given
+        PropertyPage propertyPage = createPropertyPage("content/dictionaryNotSpecified.json");
+
+        // when
+        assertThrows(IllegalStateException.class, () -> propertyPageMapper.convertToContent(propertyPage, document, true));
+    }
+
+    @Test
+    void dictionaryFromPropertyPageHasHigherImportance() {
+        // given
+        PropertyPage propertyPage = createPropertyPage("content/dictionaryOverride.json");
+
+        // when
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+
+        // then
+        ComboRadio combo = (ComboRadio) propertyPageContent.getControls().get(0);
+        Map<String, String> values = Map.of("a", "A", "b", "B");
+        assertEquals(values, combo.getValues());
+    }
+
 
     private PropertyPage createPropertyPage(String contentPath) {
         PropertyPage propertyPage = new PropertyPage();

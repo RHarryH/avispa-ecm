@@ -1,7 +1,6 @@
 package com.avispa.ecm.model.context;
 
 import com.avispa.ecm.model.EcmObject;
-import com.avispa.ecm.model.EcmObjectRepository;
 import com.avispa.ecm.model.configuration.EcmConfigObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigService;
@@ -141,7 +140,7 @@ public class ContextService {
      */
     @SuppressWarnings("java:S3864")
     private <T extends EcmObject> Stream<EcmConfigObject> getMatchingConfigurations(T object) {
-        List<Context> contexts = contextRepository.findAllByOrderByImportanceAsc();
+        List<Context> contexts = contextRepository.findAllByOrderByImportanceDesc();
 
         return contexts.stream().filter(context -> matches(context, object))
                 .peek(context -> {
@@ -204,7 +203,7 @@ public class ContextService {
      * @return
      */
     private <T extends EcmObject> Stream<EcmConfigObject> getMatchingConfigurations(Class<T> clazz) {
-        List<Context> contexts = contextRepository.findAllByOrderByImportanceAsc();
+        List<Context> contexts = contextRepository.findAllByOrderByImportanceDesc();
 
         return contexts.stream().filter(context -> context.getType().getClazz().equals(clazz))
                 .filter(this::hasEmptyMatchRule)

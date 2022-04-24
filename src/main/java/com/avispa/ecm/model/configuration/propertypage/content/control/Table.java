@@ -12,6 +12,7 @@ import java.util.List;
 @Setter
 public class Table extends PropertyControl {
     private List<Control> controls;
+    private String propertyType;
 
     public Table() {
         this.setRequired(true); // table (and actually it's content) is always required

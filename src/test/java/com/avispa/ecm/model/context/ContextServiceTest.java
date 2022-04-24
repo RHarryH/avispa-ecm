@@ -187,8 +187,8 @@ class ContextServiceTest {
         Autoname autoname = createAutoname();
         Autoname autoname2 = createAutoname("Second sample autoname");
 
-        createContext(documentType, "{ \"objectName\": \"It's me\" }", 1, autoname);
-        createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname2);
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname);
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", 1, autoname2);
 
         List<EcmConfigObject> configurations = contextService.getConfigurations(document);
 

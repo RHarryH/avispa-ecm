@@ -11,6 +11,10 @@
       "type": "string"
     },
     "property": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9.]*$"
+    },
+    "propertyType": {
       "type": "string"
     },
     "controls": {
@@ -33,6 +37,7 @@
     "type",
     "label",
     "property",
+    "propertyType",
     "controls"
   ]
 }

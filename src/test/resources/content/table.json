@@ -5,6 +5,7 @@
         "type": "table",
         "label": "Test table",
         "property": "property",
+        "propertyType": "TestType",
         "controls": [
           {
             "type": "number",
