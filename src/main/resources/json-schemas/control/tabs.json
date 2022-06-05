@@ -14,7 +14,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "minItem": 1,
+        "minItems": 1,
         "additionalProperties": false,
         "properties": {
           "name": {
@@ -25,7 +25,7 @@
             "type": "array",
             "items": {
               "type": "object",
-              "minItem": 1,
+              "minItems": 1,
               "oneOf": [
                 { "$ref": "columns.json#" },
                 { "$ref": "date.json#" },

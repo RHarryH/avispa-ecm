@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Rafał Hiszpański
@@ -47,7 +47,7 @@ class AutonameServiceTest {
     @Test
     void simpleTest() {
         Autoname autoname = new Autoname();
-        autoname.setRule("NewName");
+        autoname.setRule("'NewName'");
         autoname.setPropertyName("objectName");
         autonameService.apply(autoname, document);
 

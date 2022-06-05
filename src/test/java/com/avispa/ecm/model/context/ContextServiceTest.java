@@ -63,7 +63,7 @@ class ContextServiceTest {
         superDocumentType = typeRepository.findByObjectName("Super Document").orElseGet(() -> {
                 superDocumentType = new Type();
                 superDocumentType.setObjectName("Super Document");
-                superDocumentType.setClazz(SuperDocument.class);
+                superDocumentType.setEntityClass(SuperDocument.class);
 
                 return typeRepository.save(superDocumentType);
         });

@@ -14,14 +14,11 @@
       "type": "string",
       "pattern": "^[A-Za-z][A-Za-z0-9.]*$"
     },
-    "propertyType": {
-      "type": "string"
-    },
     "controls": {
       "type": "array",
       "items": {
         "type": "object",
-        "minItem": 1,
+        "minItems": 1,
         "oneOf": [
           { "$ref": "combo.json#" },
           { "$ref": "date.json#" },
@@ -37,7 +34,6 @@
     "type",
     "label",
     "property",
-    "propertyType",
     "controls"
   ]
 }

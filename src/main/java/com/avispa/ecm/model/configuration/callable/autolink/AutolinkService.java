@@ -5,7 +5,9 @@ import com.avispa.ecm.model.configuration.callable.CallableConfigService;
 import com.avispa.ecm.model.folder.Folder;
 import com.avispa.ecm.model.folder.FolderService;
 import com.avispa.ecm.util.expression.ExpressionResolver;
+import com.avispa.ecm.util.expression.ExpressionResolverException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AutolinkService implements CallableConfigService<Autolink> {
 
     private final ExpressionResolver expressionResolver;
@@ -45,10 +48,16 @@ public class AutolinkService implements CallableConfigService<Autolink> {
     }
 
     private String getFolderName(Autolink autolink, EcmObject ecmObject, String rule) {
-        String name = expressionResolver.resolve(ecmObject, rule);
-        if(StringUtils.isEmpty(name)) {
-            name = autolink.getDefaultValue();
+        try {
+            String name = expressionResolver.resolve(ecmObject, rule);
+            if(StringUtils.isEmpty(name)) {
+                name = autolink.getDefaultValue();
+            }
+            return name;
+        } catch (ExpressionResolverException e) {
+            log.error("Folder name can't be resolved from '{}' rule", rule, e);
         }
-        return name;
+
+        return rule;
     }
 }

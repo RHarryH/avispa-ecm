@@ -15,9 +15,9 @@ public interface TypeRepository extends EcmObjectRepository<Type> {
         return findByObjectName(typeName).orElseThrow(RepositoryCorruptionError::new);
     }
 
-    Optional<Type> findByClazz(Class<?> clazz);
+    Optional<Type> findByEntityClass(Class<?> clazz);
 
     default Type findByClass(Class<?> clazz) throws RepositoryCorruptionError {
-        return findByClazz(clazz).orElseThrow(RepositoryCorruptionError::new);
+        return findByEntityClass(clazz).orElseThrow(RepositoryCorruptionError::new);
     }
 }

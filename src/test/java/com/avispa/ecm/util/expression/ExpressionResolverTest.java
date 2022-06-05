@@ -34,22 +34,22 @@ class ExpressionResolverTest {
     }
 
     @Test
-    void applyFieldFromSuperDocument() {
+    void applyFieldFromSuperDocument() throws ExpressionResolverException {
         assertEquals("ABC_XY_ABC", expressionResolver.resolve(document, "'ABC_' + $value('extraField') + '_ABC'"));
     }
 
     @Test
-    void applyNonExistingField() {
+    void applyNonExistingField() throws ExpressionResolverException {
         assertEquals("ABC__ABC", expressionResolver.resolve(document, "'ABC_' + $value('nonExistingField') + '_ABC'"));
     }
 
     @Test
-    void replaceInteger() {
+    void replaceInteger() throws ExpressionResolverException {
         assertEquals("ABC_5_ABC", expressionResolver.resolve(document, "'ABC_' + $value('extraInt') + '_ABC'"));
     }
 
     @Test
-    void functionOnly() {
+    void functionOnly() throws ExpressionResolverException {
         assertEquals("XY", expressionResolver.resolve(document, "$value('extraField')"));
     }
 
@@ -59,12 +59,12 @@ class ExpressionResolverTest {
     }
 
     @Test
-    void unknownFunction() {
+    void unknownFunction() throws ExpressionResolverException {
         assertEquals("ABC_$unknownFunction('nonExistingField')_ABC", expressionResolver.resolve(document, "'ABC_' + $unknownFunction('nonExistingField') + '_ABC'"));
     }
 
     @Test
-    void dateValueFunction() {
+    void dateValueFunction() throws ExpressionResolverException {
         assertEquals("ABC_10_ABC", expressionResolver.resolve(document, "'ABC_' + $datevalue('extraDateTime', 'MM') + '_ABC'"));
     }
 
@@ -74,22 +74,22 @@ class ExpressionResolverTest {
     }
 
     @Test
-    void nestedFunction() {
+    void nestedFunction() throws ExpressionResolverException {
         assertEquals("ABC_XY_ABC", expressionResolver.resolve(document, "'ABC_' + $default($value('extraField'), 'This is default value') + '_ABC'"));
     }
 
     @Test
-    void defaultFunctionExtractsNonExistingField() {
+    void defaultFunctionExtractsNonExistingField() throws ExpressionResolverException {
         assertEquals("This is default value", expressionResolver.resolve(document, "$default($value('nonExistingField'), 'This is default value')"));
     }
 
     @Test
-    void nestedFunctionWithConcatenation() {
+    void nestedFunctionWithConcatenation() throws ExpressionResolverException {
         assertEquals("ABC_XY", expressionResolver.resolve(document, "$default('ABC_'+$value('extraField'), 'This is default value')"));
     }
 
     @Test
-    void twoFunctions() {
+    void twoFunctions() throws ExpressionResolverException {
         assertEquals("ABC_XY", expressionResolver.resolve(document, "$value('objectName') + '_' + $default($value('extraField'), 'This is default value')"));
     }
 
@@ -99,13 +99,13 @@ class ExpressionResolverTest {
     }
 
     @Test
-    void tooManyParamsFunction() {
+    void tooManyParamsFunction() throws ExpressionResolverException {
         assertEquals("XY", expressionResolver.resolve(document, "$value('extraField', 'redundantParameter')"));
     }
 
     @Test
     void syntaxError() {
-        assertEquals("invalid", expressionResolver.resolve(document, "invalid"));
+        assertThrows(ExpressionResolverException.class, () -> expressionResolver.resolve(document, "invalid"));
     }
 
     public static String printSyntaxTree(Parser parser, ParseTree root) {
