@@ -6,8 +6,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Rafał Hiszpański
@@ -21,4 +24,10 @@ public class SuperDocument extends Document {
     private LocalDateTime extraDateTime;
     private LocalDate extraDate;
     private int extraInt;
+
+    @OneToMany
+    private List<Document> table;
+
+    @OneToMany
+    private Set<Document> nonTable;
 }

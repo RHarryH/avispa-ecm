@@ -11,7 +11,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "minItem": 1,
+        "minItems": 1,
         "oneOf": [
           { "$ref": "combo.json#" },
           { "$ref": "date.json#" },

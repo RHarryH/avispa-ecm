@@ -4,8 +4,7 @@
       {
         "type": "table",
         "label": "Test table",
-        "property": "property",
-        "propertyType": "TestType",
+        "property": "table",
         "controls": [
           {
             "type": "number",

@@ -3,6 +3,7 @@ package com.avispa.ecm.model.configuration.callable.autoname;
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigService;
 import com.avispa.ecm.util.expression.ExpressionResolver;
+import com.avispa.ecm.util.expression.ExpressionResolverException;
 import com.avispa.ecm.util.reflect.PropertyUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +31,13 @@ public class AutonameService implements CallableConfigService<Autoname> {
             log.error("Property name must be provided!");
         }
 
-        String name = expressionResolver.resolve(contextObject, autoname.getRule());
-        PropertyUtils.setPropertyValue(contextObject, propertyName, name);
+        try {
+            String name = expressionResolver.resolve(contextObject, autoname.getRule());
+            PropertyUtils.setPropertyValue(contextObject, propertyName, name);
 
-        log.info("Autonaming '{}' for '{}' object has completed", autoname, contextObject);
+            log.info("Autonaming '{}' for '{}' object has completed", autoname, contextObject);
+        } catch (ExpressionResolverException e) {
+            log.error("Autonaming '{}' for '{}' object couldn't be completed due to parse exception for the rule", autoname, contextObject, e);
+        }
     }
 }

@@ -116,7 +116,7 @@ class PropertyPageMapperIntegrationTest {
 
         Type type = new Type();
         type.setObjectName("Super Document");
-        type.setClazz(SuperDocument.class);
+        type.setEntityClass(SuperDocument.class);
 
         when(typeRepository.findByTypeName("Super Document")).thenReturn(type);
     }
@@ -265,7 +265,7 @@ class PropertyPageMapperIntegrationTest {
 
         assertTrue(controls.get(0) instanceof Table);
         Table tabs = (Table) controls.get(0);
-        assertEquals("property", tabs.getProperty());
+        assertEquals("table", tabs.getProperty());
         assertEquals(1, tabs.getControls().size());
 
         Control control = tabs.getControls().get(0);

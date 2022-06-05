@@ -28,12 +28,16 @@ public class DictionaryService {
             return classMemberField.getAnnotation(com.avispa.ecm.model.configuration.dictionary.annotation.Dictionary.class).name();
         }
 
+        if(log.isWarnEnabled()) {
+            log.warn("Dictionary annotation for {} field not found", propertyName);
+        }
+
         return "";
     }
 
     private Field getField(Class<?> objectClass, String propertyName) {
         Field field = FieldUtils.getField(objectClass, propertyName, true);
-        if(null == field) {
+        if(null == field && log.isWarnEnabled()) {
             log.warn("Property {} is not a member of {} class", propertyName, objectClass.getSimpleName());
         }
 

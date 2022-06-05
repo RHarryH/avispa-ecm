@@ -17,16 +17,20 @@ import com.avispa.ecm.model.content.Content;
 import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeRepository;
 import com.avispa.ecm.util.expression.ExpressionResolver;
+import com.avispa.ecm.util.expression.ExpressionResolverException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -60,6 +64,28 @@ public class PropertyPageMapper {
         return propertyPageContent;
     }
 
+    public Table getTable(PropertyPage propertyPage, String tableName, Class<?> contextClass) {
+        PropertyPageContent propertyPageContent = getPropertyPageContent(propertyPage.getPrimaryContent()).orElseThrow();
+
+        Table table = propertyPageContent.getControls().stream()
+                .filter(Table.class::isInstance)
+                .map(Table.class::cast)
+                .filter(t -> t.getProperty().equals(tableName))
+                .findFirst().orElseThrow();
+
+        Class<?> rowClass = getTableRowClass(table, contextClass);
+        if(null == rowClass) {
+            String errorMessage = String.format("Class of the table row can't be identified based on the '%s' property of '%s' context type.", table.getProperty(), contextClass.getClass());
+            log.error(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        table.setPropertyType(rowClass);
+
+        processTableControls(table);
+
+        return table;
+    }
+
     /**
      * Loads JSON content file and converts it to PropertyPageContent instance
      * @param content property page JSON content
@@ -67,6 +93,10 @@ public class PropertyPageMapper {
      */
     private Optional<PropertyPageContent> getPropertyPageContent(Content content) {
         try {
+            if(null == content) {
+                return Optional.empty();
+            }
+
             byte[] resource = Files.readAllBytes(Path.of(content.getFileStorePath()));
             return Optional.of(objectMapper.readerFor(PropertyPageContent.class).withRootName("propertyPage").readValue(resource));
         } catch (IOException e) {
@@ -88,15 +118,58 @@ public class PropertyPageMapper {
                 }
             } else if(control instanceof Table) {
                 Table table = (Table)control;
-                processTableControls(table.getControls(), table.getPropertyType());
+
+                Class<?> rowClass = getTableRowClass(table, context.getClass());
+                if(null == rowClass) {
+                    String errorMessage = String.format("Class of the table row can't be identified based on the '%s' property of '%s' context type.", table.getProperty(), context.getClass());
+                    log.error(errorMessage);
+                    throw new IllegalStateException(errorMessage);
+                }
+                table.setPropertyType(rowClass);
+
+                processTableControls(table);
             } else {
                 processControl(control, context);
             }
         }
     }
 
-    private void processTableControls(List<Control> controls, String type) {
-        controls.stream()
+    /**
+     * Identifies table data type. It uses following approach:
+     * 1. Get field from context class of name defined in the table configuration
+     * 2. Check if field is a list
+     * 3. Extract info about type of elements in the list
+     * 4. Found value is the table data type.
+     * @param table
+     * @param contextClass
+     * @return
+     */
+    private Class<?> getTableRowClass(Table table, Class<?> contextClass) {
+        Field field = ReflectionUtils.findField(contextClass, table.getProperty());
+        if(field != null && field.getType().isAssignableFrom(List.class)) {
+            java.lang.reflect.Type genericFieldType = field.getGenericType();
+
+            if (genericFieldType instanceof ParameterizedType) {
+                ParameterizedType aType = (ParameterizedType) genericFieldType;
+                java.lang.reflect.Type[] fieldArgTypes = aType.getActualTypeArguments();
+                if(fieldArgTypes.length > 0) {
+                    Class<?> rowClass = (Class<?>) fieldArgTypes[0];
+                    if(log.isDebugEnabled()) {
+                        log.debug("Found table type class: '{}'", rowClass);
+                    }
+                    return rowClass;
+                } else {
+                    log.error("Type of the '{}' not found", table.getProperty());
+                }
+            }
+        } else {
+            log.error("Property '{}' not found in class '{}' or the property is not of the List type.", table.getProperty(), contextClass);
+        }
+        return null;
+    }
+
+    private void processTableControls(Table table) {
+        table.getControls().stream()
                 .filter(ComboRadio.class::isInstance)
                 .map(ComboRadio.class::cast)
                 .forEach(comboRadio -> {
@@ -104,17 +177,27 @@ public class PropertyPageMapper {
                         log.info("Type name for tables is ignored. Use dictionaries only.");
                         comboRadio.setTypeName("");
                     }
-                    loadDictionary(comboRadio, typeRepository.findByTypeName(type).getClazz());
+                    loadDictionary(comboRadio, table.getPropertyType());
                 });
     }
 
     private void processControl(Control control, Object context) {
         if(control instanceof Label) {
             Label label = (Label)control;
-            label.setExpression(expressionResolver.resolve(context, label.getExpression()));
+            try {
+                label.setExpression(expressionResolver.resolve(context, label.getExpression()));
+            } catch (ExpressionResolverException e) {
+                log.error("Label expression couldn't be resolved", e);
+            }
         } else if(control instanceof ComboRadio) {
             ComboRadio comboRadio = (ComboRadio)control;
-            comboRadio.setTypeName(expressionResolver.resolve(context, comboRadio.getTypeName()));
+            try {
+                if(StringUtils.isEmpty(comboRadio.getTypeName()) && StringUtils.isNotEmpty(comboRadio.getTypeNameExpression())) {
+                    comboRadio.setTypeName(expressionResolver.resolve(context, comboRadio.getTypeNameExpression()));
+                }
+            } catch (ExpressionResolverException e) {
+                log.error("Type name expression couldn't be resolved", e);
+            }
             loadDictionary(comboRadio, context.getClass());
         }
     }
@@ -162,7 +245,7 @@ public class PropertyPageMapper {
      */
     private SimpleJpaRepository<? extends EcmObject, Long> getSimpleRepository(Type type) {
         SimpleJpaRepository<? extends EcmObject, Long> jpaRepository;
-        jpaRepository = new SimpleJpaRepository<>(type.getClazz(), entityManager);
+        jpaRepository = new SimpleJpaRepository<>(type.getEntityClass(), entityManager);
         return jpaRepository;
     }
 

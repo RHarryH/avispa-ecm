@@ -13,6 +13,7 @@ import java.util.Map;
 @Setter
 public class ComboRadio extends PropertyControl {
     private String typeName;
+    private String typeNameExpression;
     private String dictionary;
     private boolean sortByLabel;
 

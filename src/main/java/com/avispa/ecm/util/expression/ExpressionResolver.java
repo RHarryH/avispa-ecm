@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ExpressionResolver {
-    public String resolve(Object object, String expression) {
+    public String resolve(Object object, String expression) throws ExpressionResolverException {
         try {
             if(StringUtils.isEmpty(expression)) {
                 if(log.isWarnEnabled()) {
@@ -45,8 +45,7 @@ public class ExpressionResolver {
             return visitor.visit(tree);
         } catch (ParseCancellationException e) {
             log.error("Syntax error: {}", e.getMessage());
+            throw new ExpressionResolverException(String.format("Syntax error: %s", e.getMessage()));
         }
-
-        return expression;
     }
 }

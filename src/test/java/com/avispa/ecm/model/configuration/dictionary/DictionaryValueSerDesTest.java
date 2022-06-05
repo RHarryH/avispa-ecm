@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DictionaryValueSerDesTest {
     private static Dictionary dictionary;
 
-    private static final String referenceJson = "{\"value\":{\"id\":\"%s\",\"objectName\":\"Key\",\"columns\":{\"C\":\"D\",\"A\":\"B\"},\"label\":\"Label\",\"dictionary\":{\"id\":\"%s\",\"objectName\":\"Test dictionary\",\"values\":[\"%s\"]}}}";
+    private static final String referenceJson = "{\"value\":{\"id\":\"%s\",\"objectName\":\"Key\",\"columns\":{\"A\":\"B\",\"C\":\"D\"},\"label\":\"Label\",\"dictionary\":{\"id\":\"%s\",\"objectName\":\"Test dictionary\",\"values\":[\"%s\"],\"empty\":false}}}";
 
     @Getter
     @Setter

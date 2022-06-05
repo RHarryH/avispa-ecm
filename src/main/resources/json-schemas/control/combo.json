@@ -21,6 +21,10 @@
       "type": "string",
       "minLength": 1
     },
+    "typeNameExpression": {
+      "type": "string",
+      "minLength": 1
+    },
     "dictionary": {
       "type": "string",
       "minLength": 1
@@ -38,17 +42,29 @@
       ]
     },
     {
-      "anyOf": [
+      "oneOf": [
         {
-          "required": ["dictionary"],
-          "not": { "required": ["typeName"] }
+          "required": ["dictionary"]
         },
         {
-          "not": { "required": ["dictionary"] },
           "required": ["typeName"]
         },
         {
-          "not": { "required": ["dictionary", "typeName"] }
+          "required": ["typeNameExpression"]
+        },
+        {
+          "allOf": [
+            {
+              "not": { "required": ["typeName"] }
+
+            },{
+              "not": { "required": ["typeNameExpression"] }
+
+            },{
+              "not": { "required": ["dictionary"] }
+
+            }
+          ]
         }
       ]
     }

@@ -162,7 +162,7 @@ public class ContextService {
      * @return true if context can be applied on the object
      */
     private <T extends EcmObject> boolean matches(Context context, T object) {
-        Class<? extends EcmObject> contextSupportedClass = context.getType().getClazz();
+        Class<? extends EcmObject> contextSupportedClass = context.getType().getEntityClass();
         Class<? extends EcmObject> inputObjectClass = object.getClass();
 
         if(!contextSupportedClass.isAssignableFrom(inputObjectClass)) {
@@ -205,7 +205,7 @@ public class ContextService {
     private <T extends EcmObject> Stream<EcmConfigObject> getMatchingConfigurations(Class<T> clazz) {
         List<Context> contexts = contextRepository.findAllByOrderByImportanceDesc();
 
-        return contexts.stream().filter(context -> context.getType().getClazz().equals(clazz))
+        return contexts.stream().filter(context -> context.getType().getEntityClass().equals(clazz))
                 .filter(this::hasEmptyMatchRule)
                 .map(Context::getEcmConfigObjects)
                 .flatMap(Collection::stream);
