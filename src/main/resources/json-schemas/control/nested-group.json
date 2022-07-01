@@ -1,21 +1,24 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "description": "Special case group for tabs disabling creation of another tabs inside",
   "additionalProperties": false,
-  "description": "Grouping control allowing to define up to 4 controls in a single row",
   "properties": {
     "type": {
       "type": "string",
       "enum": [
-        "columns"
+        "group"
       ]
+    },
+    "name": {
+      "type": "string"
     },
     "controls": {
       "type": "array",
       "minItems": 1,
-      "maxItems": 4,
       "items": {
         "type": "object",
         "oneOf": [
+          { "$ref": "columns.json#" },
           { "$ref": "combo.json#" },
           { "$ref": "date.json#" },
           { "$ref": "datetime.json#" },
@@ -24,14 +27,25 @@
           { "$ref": "number.json#" },
           { "$ref": "radio.json#" },
           { "$ref": "separator.json#" },
+          { "$ref": "table.json#" },
           { "$ref": "text.json#" },
           { "$ref": "textarea.json#" }
         ]
+      }
+    },
+    "conditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "visibility": {
+          "$ref": "../property/condition.json#/$defs/condition"
+        }
       }
     }
   },
   "required": [
     "type",
+    "name",
     "controls"
   ]
 }

@@ -1,0 +1,11 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "group",
+        "name": "Test group",
+        "controls": []
+      }
+    ]
+  }
+}

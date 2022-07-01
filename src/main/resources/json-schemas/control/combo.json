@@ -1,72 +1,18 @@
 {
-  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "description": "Combo box allowing to select one of the value from a dropdown list",
+  "allOf": [
+    {
+      "$ref": "../control-template/combo-template.json#"
+    }
+  ],
+  "unevaluatedProperties": false,
   "properties": {
-    "type": {
-      "type": "string",
-      "enum": [
-        "combo"
-      ]
-    },
-    "label": {
-      "type": "string"
-    },
-    "property": {
-      "type": "string",
-      "pattern": "^[A-Za-z][A-Za-z0-9.]*$"
-    },
     "required": {
       "type": "boolean"
     },
-    "typeName": {
-      "type": "string",
-      "minLength": 1
-    },
-    "typeNameExpression": {
-      "type": "string",
-      "minLength": 1
-    },
-    "dictionary": {
-      "type": "string",
-      "minLength": 1
-    },
-    "sortByLabel": {
-      "type": "boolean"
+    "conditions": {
+      "$ref": "../property/condition.json#"
     }
-  },
-  "allOf": [
-    {
-      "required": [
-        "type",
-        "label",
-        "property"
-      ]
-    },
-    {
-      "oneOf": [
-        {
-          "required": ["dictionary"]
-        },
-        {
-          "required": ["typeName"]
-        },
-        {
-          "required": ["typeNameExpression"]
-        },
-        {
-          "allOf": [
-            {
-              "not": { "required": ["typeName"] }
-
-            },{
-              "not": { "required": ["typeNameExpression"] }
-
-            },{
-              "not": { "required": ["dictionary"] }
-
-            }
-          ]
-        }
-      ]
-    }
-  ]
+  }
 }

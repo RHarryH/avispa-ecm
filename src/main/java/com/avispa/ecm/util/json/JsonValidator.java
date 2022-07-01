@@ -1,20 +1,18 @@
 package com.avispa.ecm.util.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.JsonLoader;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.core.report.LogLevel;
-import com.github.fge.jsonschema.core.report.ProcessingMessage;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SpecVersion;
+import com.networknt.schema.ValidationMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
+import java.util.Set;
 
 /**
  * @author Rafał Hiszpański
@@ -26,6 +24,9 @@ public class JsonValidator {
 
     }
 
+    // TODO: Verify
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     /**
      * Read, parse and validate JSON file. JSON schema file must be located in resources/jsonSchemas
      *
@@ -36,33 +37,33 @@ public class JsonValidator {
     public static boolean validateJson(InputStream jsonContentInputStream, String jsonSchemaPath) {
         try {
             // make your JSON to JsonNode
-            JsonNode jsonToValidate = JsonLoader.fromReader(new InputStreamReader(jsonContentInputStream));
+            JsonNode jsonToValidate = objectMapper.readTree(jsonContentInputStream);
 
-            Resource resource = new ClassPathResource(jsonSchemaPath);
-            URI uri = resource.getURI();
-
+            JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V201909);
+            Resource resourceSchema = new ClassPathResource(jsonSchemaPath);
             if(log.isDebugEnabled()) {
-                log.debug("URI to JSON Schema: " + uri);
+                log.debug("URI to JSON Schema: " + resourceSchema.getURI());
             }
+            JsonSchema jsonSchema = factory.getSchema(resourceSchema.getURI());
+
+            jsonSchema.initializeValidators();
 
             // validate it against the schema
-            ProcessingReport report = JsonSchemaFactory.byDefault().getJsonSchema(uri.toString()).validate(jsonToValidate);
+            Set<ValidationMessage> errors = jsonSchema.validate(jsonToValidate);
 
-            log(report);
+            log(errors);
 
-            return report.isSuccess();
-        } catch (IOException | ProcessingException e) {
+            return errors.isEmpty();
+        } catch (IOException e) {
             log.error("Cannot verify input json", e);
         }
 
         return false;
     }
 
-    private static void log(ProcessingReport report) {
-        for (ProcessingMessage message : report) {
-            if (message.getLogLevel().equals(LogLevel.ERROR)) {
-                log.error(message.toString());
-            }
+    private static void log(Set<ValidationMessage> errors) {
+        for (ValidationMessage message : errors) {
+            log.error(message.toString());
         }
     }
 }

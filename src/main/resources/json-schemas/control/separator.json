@@ -1,4 +1,6 @@
 {
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "description": "Separator used for separation of controls",
   "additionalProperties": false,
   "properties": {
     "type": {
@@ -6,6 +8,15 @@
       "enum": [
         "separator"
       ]
+    },
+    "conditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "visibility": {
+          "$ref": "../property/condition.json#/$defs/condition"
+        }
+      }
     }
   },
   "required": ["type"]

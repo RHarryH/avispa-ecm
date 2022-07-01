@@ -1,52 +1,18 @@
 {
-  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "description": "Datetime control",
+  "allOf": [
+    {
+      "$ref": "../control-template/datetime-template.json#"
+    }
+  ],
+  "unevaluatedProperties": false,
   "properties": {
-    "type": {
-      "type": "string",
-      "enum": [
-        "datetime"
-      ]
-    },
-    "label": {
-      "type": "string"
-    },
-    "property": {
-      "type": "string",
-      "pattern": "^[A-Za-z][A-Za-z0-9.]*$"
-    },
     "required": {
       "type": "boolean"
     },
-    "min": {
-      "type": "string",
-      "pattern": "^[\\d]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][\\d]|3[0-2])T(0[1-9]|1[\\d]|2[0-3]):(0[1-9]|[1-5][\\d])$"
-    },
-    "max": {
-      "type": "string",
-      "pattern": "^[\\d]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][\\d]|3[0-2])T(0[1-9]|1[\\d]|2[0-3]):(0[1-9]|[1-5][\\d])$"
-    },
-    "step": {
-      "type": "number",
-      "minimum": 1
-    },
-    "customValidation": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "function": {
-          "type": "string",
-          "pattern": "^[_$a-zA-Z][_$a-zA-Z0-9]+$"
-        },
-        "message": {
-          "type": "string",
-          "pattern": "^[a-zA-Z0-9 !?]+$"
-        }
-      }
+    "conditions": {
+      "$ref": "../property/condition.json#"
     }
-  },
-  "required": [
-    "type",
-    "label",
-    "property"
-  ]
+  }
 }

@@ -1,0 +1,12 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "table",
+        "label": "Test table",
+        "property": "table",
+        "controls": []
+      }
+    ]
+  }
+}

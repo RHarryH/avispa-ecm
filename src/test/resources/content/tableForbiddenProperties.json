@@ -1,0 +1,20 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "table",
+        "label": "Test table",
+        "property": "table",
+        "controls": [
+          {
+            "type": "number",
+            "label": "Number test",
+            "property": "extraInt",
+            "min": 10,
+            "required": false
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,5 +1,6 @@
 package com.avispa.ecm.model.configuration.propertypage.content.control;
 
+import com.avispa.ecm.model.configuration.propertypage.content.control.validation.CustomValidation;
 import lombok.Getter;
 import lombok.Setter;
 

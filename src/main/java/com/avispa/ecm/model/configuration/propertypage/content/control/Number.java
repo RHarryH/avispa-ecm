@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class Number extends ValidatablePropertyControl {
+public class Number extends PropertyControl {
     private Float min;
     private Float max;
     private Float step;

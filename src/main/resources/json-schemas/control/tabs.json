@@ -1,4 +1,6 @@
 {
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "description": "Grouping control used to group controls in a clickable tabs. There is no possibility to hide single tab.",
   "additionalProperties": false,
   "properties": {
     "type": {
@@ -12,9 +14,9 @@
     },
     "tabs": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
-        "minItems": 1,
         "additionalProperties": false,
         "properties": {
           "name": {
@@ -23,14 +25,15 @@
           },
           "controls": {
             "type": "array",
+            "minItems": 1,
             "items": {
               "type": "object",
-              "minItems": 1,
               "oneOf": [
                 { "$ref": "columns.json#" },
+                { "$ref": "combo.json#" },
                 { "$ref": "date.json#" },
                 { "$ref": "datetime.json#" },
-                { "$ref": "combo.json#" },
+                { "$ref": "nested-group.json#" },
                 { "$ref": "label.json#" },
                 { "$ref": "money.json#" },
                 { "$ref": "number.json#" },
@@ -42,6 +45,15 @@
               ]
             }
           }
+        }
+      }
+    },
+    "conditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "visibility": {
+          "$ref": "../property/condition.json#/$defs/condition"
         }
       }
     }

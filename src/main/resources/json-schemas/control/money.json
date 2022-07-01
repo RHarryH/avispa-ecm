@@ -1,47 +1,18 @@
 {
-  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "description": "Control used for providing money values",
+  "allOf": [
+    {
+      "$ref": "../control-template/money-template.json#"
+    }
+  ],
+  "unevaluatedProperties": false,
   "properties": {
-    "type": {
-      "type": "string",
-      "enum": [
-        "money"
-      ]
-    },
-    "label": {
-      "type": "string"
-    },
-    "property": {
-      "type": "string",
-      "pattern": "^[A-Za-z][A-Za-z0-9.]*$"
-    },
     "required": {
       "type": "boolean"
     },
-    "currency": {
-      "type": "string",
-      "enum": [
-        "PLN"
-      ]
-    },
-    "customValidation": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "function": {
-          "type": "string",
-          "pattern": "^[_$a-zA-Z][_$a-zA-Z0-9]+$"
-        },
-        "message": {
-          "type": "string",
-          "pattern": "^[a-zA-Z0-9 !?]+$"
-        }
-      }
+    "conditions": {
+      "$ref": "../property/condition.json#"
     }
-  },
-  "required": [
-    "type",
-    "label",
-    "property",
-    "currency"
-  ]
+  }
 }

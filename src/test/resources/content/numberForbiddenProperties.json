@@ -6,7 +6,7 @@
         "label": "Number test",
         "property": "extraInt",
         "min": 10,
-        "required": true
+        "forbidden": true
       }
     ]
   }

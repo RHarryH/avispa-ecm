@@ -1,0 +1,14 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "combo",
+        "label": "Combo test",
+        "property": "extraField",
+        "typeName": "Super Document",
+        "invalid": "test",
+        "required": true
+      }
+    ]
+  }
+}

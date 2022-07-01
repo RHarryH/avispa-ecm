@@ -9,6 +9,7 @@ import com.avispa.ecm.model.configuration.propertypage.content.PropertyPageConte
 import com.avispa.ecm.model.configuration.propertypage.content.control.Columns;
 import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadio;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Control;
+import com.avispa.ecm.model.configuration.propertypage.content.control.Group;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Label;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Tab;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Table;
@@ -109,8 +110,11 @@ public class PropertyPageMapper {
     private void processControls(List<Control> controls, Object context) {
         for(Control control : controls) {
             if(control instanceof Columns) {
-                Columns columns = (Columns)control;
+                Columns columns = (Columns) control;
                 processControls(columns.getControls(), context);
+            } else if(control instanceof Group) {
+                Group group = (Group) control;
+                processControls(group.getControls(), context);
             } else if(control instanceof Tabs) {
                 Tabs tabs = (Tabs)control;
                 for(Tab tab : tabs.getTabs()) {

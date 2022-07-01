@@ -1,5 +1,6 @@
 package com.avispa.ecm.model.configuration.propertypage.content.control;
 
+import com.avispa.ecm.model.configuration.propertypage.content.control.conditions.Conditions;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
@@ -21,6 +22,7 @@ import lombok.Setter;
         @JsonSubTypes.Type(value = Date.class, name = "date"),
         @JsonSubTypes.Type(value = Date.class, name = "datetime"),
         @JsonSubTypes.Type(value = Text.class, name = "email"),
+        @JsonSubTypes.Type(value = Group.class, name = "group"),
         @JsonSubTypes.Type(value = Label.class, name = "label"),
         @JsonSubTypes.Type(value = Money.class, name = "money"),
         @JsonSubTypes.Type(value = Number.class, name = "number"),
@@ -34,4 +36,5 @@ import lombok.Setter;
 })
 public abstract class Control {
     private String type;
+    private Conditions conditions;
 }
