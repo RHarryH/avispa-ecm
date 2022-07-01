@@ -1,12 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "description": "Group of radio buttons allowing to select only one value from the group",
-  "additionalProperties": false,
   "properties": {
     "type": {
       "type": "string",
       "enum": [
-        "radio"
+        "combo"
       ]
     },
     "label": {
@@ -15,9 +13,6 @@
     "property": {
       "type": "string",
       "pattern": "^[A-Za-z][A-Za-z0-9.]*$"
-    },
-    "required": {
-      "type": "boolean"
     },
     "typeName": {
       "type": "string",
@@ -33,9 +28,6 @@
     },
     "sortByLabel": {
       "type": "boolean"
-    },
-    "conditions": {
-      "$ref": "../property/condition.json#"
     }
   },
   "allOf": [
@@ -61,13 +53,12 @@
           "allOf": [
             {
               "not": { "required": ["typeName"] }
-
-            },{
+            },
+            {
               "not": { "required": ["typeNameExpression"] }
-
-            },{
+            },
+            {
               "not": { "required": ["dictionary"] }
-
             }
           ]
         }

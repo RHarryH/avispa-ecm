@@ -1,49 +1,18 @@
 {
-  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "description": "Number control",
+  "allOf": [
+    {
+      "$ref": "../control-template/number-template.json#"
+    }
+  ],
+  "unevaluatedProperties": false,
   "properties": {
-    "type": {
-      "type": "string",
-      "enum": [
-        "number"
-      ]
-    },
-    "label": {
-      "type": "string"
-    },
-    "property": {
-      "type": "string",
-      "pattern": "^[A-Za-z][A-Za-z0-9.]*$"
-    },
     "required": {
       "type": "boolean"
     },
-    "min": {
-      "type": "number"
-    },
-    "max": {
-      "type": "number"
-    },
-    "step": {
-      "type": "number"
-    },
-    "customValidation": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "function": {
-          "type": "string",
-          "pattern": "^[_$a-zA-Z][_$a-zA-Z0-9]+$"
-        },
-        "message": {
-          "type": "string",
-          "pattern": "^[a-zA-Z0-9 !?]+$"
-        }
-      }
+    "conditions": {
+      "$ref": "../property/condition.json#"
     }
-  },
-  "required": [
-    "type",
-    "label",
-    "property"
-  ]
+  }
 }

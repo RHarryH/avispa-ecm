@@ -1,0 +1,16 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "tabs",
+        "label": "Tabs test",
+        "tabs": [
+          {
+            "name": "Tab 1",
+            "controls": []
+          }
+        ]
+      }
+    ]
+  }
+}

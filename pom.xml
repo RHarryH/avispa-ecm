@@ -118,9 +118,9 @@
 
         <!-- JSON Schema -->
         <dependency>
-            <groupId>com.github.java-json-tools</groupId>
+            <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
-            <version>2.2.14</version>
+            <version>1.0.71</version>
         </dependency>
 
         <!-- Java Bean Mapper -->

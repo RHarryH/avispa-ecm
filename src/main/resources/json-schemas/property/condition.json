@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "visibility": {
+      "$ref": "#/$defs/condition"
+    },
+    "requirement": {
+      "$ref": "#/$defs/condition"
+    }
+  },
+  "$defs": {
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[A-Za-z][A-Za-z0-9.]*$": {
+          "$ref": "#/$defs/property"
+        }
+      },
+      "properties": {
+        "$and": {
+          "$ref": "#/$defs/operator"
+        },
+        "$or": {
+          "$ref": "#/$defs/operator"
+        }
+      }
+    },
+    "property": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "maxProperties": 1,
+          "properties": {
+            "$eq": {
+              "$ref": "#/$defs/value"
+            },
+            "$ne": {
+              "$ref": "#/$defs/value"
+            },
+            "$gt": {
+              "type": "number"
+            },
+            "$gte": {
+              "type": "number"
+            },
+            "$lt": {
+              "type": "number"
+            },
+            "$lte": {
+              "type": "number"
+            }
+          }
+        }
+      ]
+    },
+    "operator": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "anyOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^[A-Za-z][A-Za-z0-9.]*$": {
+                "$ref": "#/$defs/property"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "$and": {
+                "$ref": "#/$defs/operator"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "$or": {
+                "$ref": "#/$defs/operator"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "value": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    }
+  }
+}

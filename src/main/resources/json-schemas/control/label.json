@@ -1,4 +1,6 @@
 {
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "description": "Label opening new section on the property page",
   "additionalProperties": false,
   "properties": {
     "type": {
@@ -9,6 +11,15 @@
     },
     "expression": {
       "type": "string"
+    },
+    "conditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "visibility": {
+          "$ref": "../property/condition.json#/$defs/condition"
+        }
+      }
     }
   },
   "required": ["type", "expression"]

@@ -1,12 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "description": "Textarea control",
-  "additionalProperties": false,
   "properties": {
     "type": {
       "type": "string",
       "enum": [
-        "textarea"
+        "date"
       ]
     },
     "label": {
@@ -16,30 +14,20 @@
       "type": "string",
       "pattern": "^[A-Za-z][A-Za-z0-9.]*$"
     },
-    "required": {
-      "type": "boolean"
+    "min": {
+      "type": "string",
+      "pattern": "^[\\d]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][\\d]|3[0-2])$"
     },
-    "rows": {
-      "type": "integer",
-      "minimum": 0
+    "max": {
+      "type": "string",
+      "pattern": "^[\\d]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][\\d]|3[0-2])$"
     },
-    "cols": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "minLength": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "maxLength": {
-      "type": "integer",
-      "minimum": 0
+    "step": {
+      "type": "number",
+      "minimum": 1
     },
     "customValidation": {
       "$ref": "../property/custom-validation.json#"
-    },
-    "conditions": {
-      "$ref": "../property/condition.json#"
     }
   },
   "required": [

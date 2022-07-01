@@ -1,0 +1,22 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "group",
+        "name": "Test group",
+        "controls": [
+          {
+            "type": "combo",
+            "label": "Combo test",
+            "property": "objectName",
+            "typeName": "Super Document",
+            "required": true
+          }
+        ],
+        "conditions": {
+          "visibility": []
+        }
+      }
+    ]
+  }
+}

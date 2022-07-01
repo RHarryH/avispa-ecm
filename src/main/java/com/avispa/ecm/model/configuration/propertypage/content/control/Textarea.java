@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class Textarea extends ValidatablePropertyControl {
+public class Textarea extends PropertyControl {
     private Integer rows;
     private Integer cols;
 

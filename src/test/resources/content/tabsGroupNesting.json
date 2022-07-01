@@ -1,0 +1,52 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "group",
+        "name": "Test group",
+        "controls": [
+          {
+            "type": "tabs",
+            "label": "Allowed tabs",
+            "tabs": [
+              {
+                "name": "Tab 1",
+                "controls": [
+                  {
+                    "type": "number",
+                    "label": "Number test",
+                    "property": "extraInt",
+                    "min": 10
+                  },
+                  {
+                    "type": "group",
+                    "name": "Test group",
+                    "controls": [
+                      {
+                        "type": "tabs",
+                        "label": "Forbidden nested tabs",
+                        "tabs": [
+                          {
+                            "name": "Tab",
+                            "controls": [
+                              {
+                                "type": "date",
+                                "label": "Date test",
+                                "property": "extraDate",
+                                "required": true
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

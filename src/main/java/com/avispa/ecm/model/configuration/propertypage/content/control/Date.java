@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class Date extends ValidatablePropertyControl {
+public class Date extends PropertyControl {
     private String min;
     private String max;
     private Integer step;

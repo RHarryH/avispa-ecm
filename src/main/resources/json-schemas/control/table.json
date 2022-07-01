@@ -1,4 +1,6 @@
 {
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "description": "Table control",
   "additionalProperties": false,
   "properties": {
     "type": {
@@ -16,18 +18,21 @@
     },
     "controls": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
-        "minItems": 1,
         "oneOf": [
-          { "$ref": "combo.json#" },
-          { "$ref": "date.json#" },
-          { "$ref": "datetime.json#" },
-          { "$ref": "money.json#" },
-          { "$ref": "number.json#" },
-          { "$ref": "text.json#" }
+          { "$ref": "../control-table/combo-table.json#" },
+          { "$ref": "../control-table/date-table.json#" },
+          { "$ref": "../control-table/datetime-table.json#" },
+          { "$ref": "../control-table/money-table.json#" },
+          { "$ref": "../control-table/number-table.json#"},
+          { "$ref": "../control-table/text-table.json#" }
         ]
       }
+    },
+    "conditions": {
+      "$ref": "../property/condition.json#"
     }
   },
   "required": [
