@@ -7,8 +7,10 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,14 +20,15 @@ import java.util.Set;
  * @author Rafał Hiszpański
  */
 @Slf4j
+@Component
 public class JsonValidator {
 
-    private JsonValidator() {
+    private ObjectMapper objectMapper;
 
+    @Autowired
+    public JsonValidator(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
-
-    // TODO: Verify
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Read, parse and validate JSON file. JSON schema file must be located in resources/jsonSchemas
@@ -34,7 +37,7 @@ public class JsonValidator {
      * @param jsonSchemaPath
      * @return
      */
-    public static boolean validateJson(InputStream jsonContentInputStream, String jsonSchemaPath) {
+    public boolean validate(InputStream jsonContentInputStream, String jsonSchemaPath) {
         try {
             // make your JSON to JsonNode
             JsonNode jsonToValidate = objectMapper.readTree(jsonContentInputStream);
@@ -61,7 +64,7 @@ public class JsonValidator {
         return false;
     }
 
-    private static void log(Set<ValidationMessage> errors) {
+    private void log(Set<ValidationMessage> errors) {
         for (ValidationMessage message : errors) {
             log.error(message.toString());
         }
