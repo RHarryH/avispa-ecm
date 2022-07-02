@@ -20,6 +20,7 @@ import java.io.IOException;
 public class PropertyPageService {
     private final ContentService contentService;
     private final ResourceLoader resourceLoader;
+    private final JsonValidator jsonValidator;
     private final EcmObjectRepository<PropertyPage> ecmObjectRepository;
 
     /**
@@ -42,7 +43,7 @@ public class PropertyPageService {
         Resource resource = resourceLoader.getResource(sourceFileLocation);
 
         try {
-            if(JsonValidator.validateJson(resource.getInputStream(), "/json-schemas/property-page-content.json")) {
+            if(jsonValidator.validate(resource.getInputStream(), "/json-schemas/property-page-content.json")) {
                 contentService.loadContentTo(propertyPage, resource);
             } else {
                 log.error("Property page content ({}) wasn't loaded because it does not match JSON schema", sourceFileLocation);

@@ -1,7 +1,7 @@
 package com.avispa.ecm.util.json;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SchemaValidatorsConfig;
 import com.networknt.schema.SpecVersion;
@@ -9,6 +9,7 @@ import com.networknt.schema.ValidationMessage;
 import com.networknt.schema.walk.JsonSchemaWalkListener;
 import com.networknt.schema.walk.WalkEvent;
 import com.networknt.schema.walk.WalkFlow;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,7 +18,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Rafał Hiszpański
  */
 class JsonValidatorTest {
+
+    private JsonValidator jsonValidator = new JsonValidator(new ObjectMapper());
 
     @ParameterizedTest
     @ValueSource(strings = {
@@ -64,7 +66,54 @@ class JsonValidatorTest {
 
     private boolean validate(String jsonFilePath) {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(jsonFilePath);
-        assertTrue(JsonValidator.validateJson(inputStream, "/json-schemas/property-page-content.json"));
+        return jsonValidator.validate(inputStream, "/json-schemas/property-page-content.json");
+    }
+
+    @Test
+    @Disabled
+    void testWalker() throws Exception {
+        var svc = new SchemaValidatorsConfig();
+        svc.addKeywordWalkListener("$ref", new JsonSchemaWalkListener() {
+            @Override
+            public WalkFlow onWalkStart(WalkEvent walkEvent) {
+                if(!walkEvent.getAt().endsWith("conditions.visibility") &&
+                   !walkEvent.getAt().endsWith("conditions.requirement")) {
+                    return WalkFlow.CONTINUE;
+                } else {
+                    return WalkFlow.SKIP;
+                }
+            }
+
+            @Override
+            public void onWalkEnd(WalkEvent we, Set<ValidationMessage> validationMessages) {
+                var ref = we.getSchemaNode().get("$ref").asText();
+                var parent = we.getParentSchema().getCurrentUri();
+                var target = we.getCurrentJsonSchemaFactory().getUriFactory().create(parent, ref);
+                var schema = we.getRefSchema(target);
+                var sn = (ObjectNode) we.getParentSchema().getSchemaNode();
+                var field = fieldName(we.getSchemaPath());
+                if(field == null) {
+                    field = RandomStringUtils.randomAlphanumeric(10);
+                }
+                sn.set(field, schema.getSchemaNode());
+
+            }
+
+            private String fieldName(String schemaPath) {
+                int idx = schemaPath.lastIndexOf("/");
+                if(idx >= 0 && idx < schemaPath.length() - 1) {
+                    return schemaPath.substring(idx + 1);
+                }
+                return null;
+            }
+        });
+
+        JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V201909);
+        Resource resourceSchema = new ClassPathResource("/json-schemas/property-page-content.json");
+
+        var schema = factory.getSchema(resourceSchema.getURI(), svc);
+        schema.walk(null, false);
+        System.out.println(schema.getSchemaNode().toPrettyString());
     }
 
 }
