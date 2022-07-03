@@ -27,7 +27,6 @@
           { "$ref": "number.json#" },
           { "$ref": "radio.json#" },
           { "$ref": "separator.json#" },
-          { "$ref": "table.json#" },
           { "$ref": "text.json#" },
           { "$ref": "textarea.json#" }
         ]
