@@ -30,9 +30,6 @@
           { "$ref": "../control-table/text-table.json#" }
         ]
       }
-    },
-    "conditions": {
-      "$ref": "../property/condition.json#"
     }
   },
   "required": [
