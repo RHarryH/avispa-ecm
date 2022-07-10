@@ -1,6 +1,6 @@
 package com.avispa.ecm.model.configuration.propertypage;
 
-import com.avispa.ecm.model.configuration.EcmConfigObject;
+import com.avispa.ecm.model.configuration.EcmConfig;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,5 +12,5 @@ import javax.persistence.Entity;
 @Entity
 @Getter
 @Setter
-public class PropertyPage extends EcmConfigObject {
+public class PropertyPage extends EcmConfig {
 }

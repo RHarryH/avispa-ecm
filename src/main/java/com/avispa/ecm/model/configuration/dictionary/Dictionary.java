@@ -1,6 +1,6 @@
 package com.avispa.ecm.model.configuration.dictionary;
 
-import com.avispa.ecm.model.configuration.EcmConfigObject;
+import com.avispa.ecm.model.configuration.EcmConfig;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +21,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Slf4j
-public class Dictionary extends EcmConfigObject {
+public class Dictionary extends EcmConfig {
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dictionary")

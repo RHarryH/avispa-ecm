@@ -12,8 +12,8 @@ import java.util.UUID;
  */
 @Repository
 public interface ContentRepository extends EcmObjectRepository<Content> {
-    boolean existsByRelatedObjectId(UUID id);
-    Content findByRelatedObjectIdAndFormat(UUID id, Format format);
+    boolean existsByRelatedEntityId(UUID id);
+    Content findByRelatedEntityIdAndFormat(UUID id, Format format);
 
-    void deleteByRelatedObject(EcmObject relatedObject);
+    void deleteByRelatedEntity(EcmObject relatedObject);
 }

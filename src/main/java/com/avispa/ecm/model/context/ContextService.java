@@ -1,7 +1,7 @@
 package com.avispa.ecm.model.context;
 
 import com.avispa.ecm.model.EcmObject;
-import com.avispa.ecm.model.configuration.EcmConfigObject;
+import com.avispa.ecm.model.configuration.EcmConfig;
 import com.avispa.ecm.model.configuration.callable.CallableConfigObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,7 +46,7 @@ public class ContextService {
     public final <T extends EcmObject, C extends CallableConfigObject> void applyMatchingConfigurations(T object, Class<? extends C>... configs) {
         List<Class<? extends C>> configsList = List.of(configs);
 
-        Set<EcmConfigObject> availableConfigurations = getConfigurations(object).stream()
+        Set<EcmConfig> availableConfigurations = getConfigurations(object).stream()
                 .filter(e -> configsList.contains(e.getClass()))// filter only elements from the list
                 .collect(Collectors.toSet());
 
@@ -55,7 +55,7 @@ public class ContextService {
         for (CallableConfigService<CallableConfigObject> ecmConfigService : callableConfigServices) {
             Class<?> ecmConfigObject = getClassOfEcmConfigObjectSupportedByService(ecmConfigService);
 
-            for (EcmConfigObject configObject : availableConfigurations) {
+            for (EcmConfig configObject : availableConfigurations) {
                 if(configObject.getClass().equals(ecmConfigObject)) {
 
                     debugLog("{} object retrieved from the context is applicable for the service {}", ecmConfigService.getClass(), configObject.getClass().getSimpleName());
@@ -78,7 +78,7 @@ public class ContextService {
      * @param <C> configuration type
      * @return
      */
-    public <T extends EcmObject, C extends EcmConfigObject> Optional<C> getConfiguration(Class<T> clazz, Class<C> configurationType) {
+    public <T extends EcmObject, C extends EcmConfig> Optional<C> getConfiguration(Class<T> clazz, Class<C> configurationType) {
         return filter(getMatchingConfigurations(clazz), configurationType);
     }
 
@@ -90,7 +90,7 @@ public class ContextService {
      * @param <C> configuration type
      * @return
      */
-    public <T extends EcmObject, C extends EcmConfigObject> Optional<C> getConfiguration(T object, Class<C> configurationType) {
+    public <T extends EcmObject, C extends EcmConfig> Optional<C> getConfiguration(T object, Class<C> configurationType) {
         return filter(getMatchingConfigurations(object), configurationType);
     }
 
@@ -102,8 +102,8 @@ public class ContextService {
      * @param <C>
      * @return
      */
-    private <C extends EcmConfigObject> Optional<C> filter(Stream<EcmConfigObject> stream, Class<C> configurationType) {
-        return stream.collect(Collectors.groupingBy(EcmConfigObject::getClass)) // group by class name
+    private <C extends EcmConfig> Optional<C> filter(Stream<EcmConfig> stream, Class<C> configurationType) {
+        return stream.collect(Collectors.groupingBy(EcmConfig::getClass)) // group by class name
                 .values().stream()
                 .map(list -> list.get(0))// for each list get only first element
                 .filter(configurationType::isInstance)
@@ -123,9 +123,9 @@ public class ContextService {
      * @param <T> type of object
      * @return
      */
-    public <T extends EcmObject> List<EcmConfigObject> getConfigurations(T object) {
+    public <T extends EcmObject> List<EcmConfig> getConfigurations(T object) {
         return getMatchingConfigurations(object)
-                .collect(Collectors.groupingBy(EcmConfigObject::getClass)) // group by class name
+                .collect(Collectors.groupingBy(EcmConfig::getClass)) // group by class name
                 .values().stream()
                 .map(list -> list.get(0))// for each list get only first element
                 .collect(Collectors.toList());
@@ -139,7 +139,7 @@ public class ContextService {
      * @return
      */
     @SuppressWarnings("java:S3864")
-    private <T extends EcmObject> Stream<EcmConfigObject> getMatchingConfigurations(T object) {
+    private <T extends EcmObject> Stream<EcmConfig> getMatchingConfigurations(T object) {
         List<Context> contexts = contextRepository.findAllByOrderByImportanceDesc();
 
         return contexts.stream().filter(context -> matches(context, object))
@@ -148,7 +148,7 @@ public class ContextService {
                         log.debug("Matched context: '{}'", context.getObjectName());
                     }
                 })
-                .map(Context::getEcmConfigObjects)
+                .map(Context::getEcmConfigs)
                 .flatMap(Collection::stream);
     }
 
@@ -202,12 +202,12 @@ public class ContextService {
      * @param <T> type of object
      * @return
      */
-    private <T extends EcmObject> Stream<EcmConfigObject> getMatchingConfigurations(Class<T> clazz) {
+    private <T extends EcmObject> Stream<EcmConfig> getMatchingConfigurations(Class<T> clazz) {
         List<Context> contexts = contextRepository.findAllByOrderByImportanceDesc();
 
         return contexts.stream().filter(context -> context.getType().getEntityClass().equals(clazz))
                 .filter(this::hasEmptyMatchRule)
-                .map(Context::getEcmConfigObjects)
+                .map(Context::getEcmConfigs)
                 .flatMap(Collection::stream);
     }
 
