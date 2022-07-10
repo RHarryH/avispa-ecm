@@ -1,6 +1,6 @@
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
-import com.avispa.ecm.model.EcmObjectRepository;
+import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import com.avispa.ecm.model.configuration.dictionary.Dictionary;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryService;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryValue;
@@ -62,7 +62,7 @@ class PropertyPageMapperIntegrationTest {
     private TypeRepository typeRepository;
 
     @MockBean
-    private EcmObjectRepository<Dictionary> dictionaryRepository;
+    private EcmConfigRepository<Dictionary> dictionaryRepository;
 
     @Autowired
     private PropertyPageMapper propertyPageMapper;

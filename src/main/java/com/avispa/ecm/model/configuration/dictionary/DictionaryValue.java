@@ -1,6 +1,6 @@
 package com.avispa.ecm.model.configuration.dictionary;
 
-import com.avispa.ecm.model.configuration.EcmConfigObject;
+import com.avispa.ecm.model.EcmEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,7 +18,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Entity
-public class DictionaryValue extends EcmConfigObject {
+public class DictionaryValue extends EcmEntity {
     @ElementCollection
     private Map<String, String> columns;
 

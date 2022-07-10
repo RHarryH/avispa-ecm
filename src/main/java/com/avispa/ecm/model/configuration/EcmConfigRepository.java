@@ -7,6 +7,6 @@ import java.util.Optional;
 /**
  * @author Rafał Hiszpański
  */
-public interface EcmConfigObjectRepository<T extends EcmConfigObject> extends EcmEntityRepository<T> {
+public interface EcmConfigRepository<T extends EcmConfig> extends EcmEntityRepository<T> {
     Optional<T> findByObjectName(String objectName);
 }

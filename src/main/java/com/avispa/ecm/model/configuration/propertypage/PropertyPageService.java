@@ -1,6 +1,6 @@
 package com.avispa.ecm.model.configuration.propertypage;
 
-import com.avispa.ecm.model.EcmObjectRepository;
+import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import com.avispa.ecm.model.content.ContentService;
 import com.avispa.ecm.util.json.JsonValidator;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class PropertyPageService {
     private final ContentService contentService;
     private final ResourceLoader resourceLoader;
     private final JsonValidator jsonValidator;
-    private final EcmObjectRepository<PropertyPage> ecmObjectRepository;
+    private final EcmConfigRepository<PropertyPage> ecmObjectRepository;
 
     /**
      * Loads content of the property page. The content is validated against

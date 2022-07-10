@@ -1,5 +1,6 @@
 package com.avispa.ecm.model.content;
 
+import com.avispa.ecm.model.EcmEntity;
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.filestore.FileStore;
 import com.avispa.ecm.model.format.Format;
@@ -39,11 +40,11 @@ public class ContentService {
      * @param relatedObject object to which we want to attach the content
      * @param sourceFileLocation location of the file
      */
-    public void loadContentTo(EcmObject relatedObject, String sourceFileLocation) {
+    public void loadContentTo(EcmEntity relatedObject, String sourceFileLocation) {
         loadContentTo(relatedObject, resourceLoader.getResource(sourceFileLocation));
     }
 
-    public void loadContentTo(EcmObject relatedObject, Resource resource) {
+    public void loadContentTo(EcmEntity relatedObject, Resource resource) {
         if(!existsByRelatedObjectId(relatedObject.getId())) {
             String fileName = resource.getFilename();
             String extension = FilenameUtils.getExtension(fileName);
@@ -72,31 +73,31 @@ public class ContentService {
         return fullFileStorePath;
     }
 
-    public Content createNewContent(String extension, EcmObject relatedObject, Path fileStorePath) {
+    public Content createNewContent(String extension, EcmEntity relatedObject, Path fileStorePath) {
         Format format = formatRepository.findByExtension(extension);
 
         Content content = new Content();
         content.setObjectName(relatedObject.getObjectName().replace("/","_") + "." + extension);
         content.setFormat(format);
-        content.setRelatedObject(relatedObject);
+        content.setRelatedEntity(relatedObject);
         content.setFileStorePath(fileStorePath.toString());
 
         return contentRepository.save(content);
     }
 
     public boolean existsByRelatedObjectId(UUID id) {
-        return contentRepository.existsByRelatedObjectId(id);
+        return contentRepository.existsByRelatedEntityId(id);
     }
 
     public Content findPdfRenditionByDocumentId(UUID id) {
         try {
-            return contentRepository.findByRelatedObjectIdAndFormat(id, formatRepository.findByExtensionOrThrowException(PDF));
+            return contentRepository.findByRelatedEntityIdAndFormat(id, formatRepository.findByExtensionOrThrowException(PDF));
         } catch (FormatNotFoundException e) {
             throw new RepositoryCorruptionError("PDF Format not found in ECM Repository. Probably it is corrupted.");
         }
     }
 
     public void deleteByRelatedObject(EcmObject object) {
-        contentRepository.deleteByRelatedObject(object);
+        contentRepository.deleteByRelatedEntity(object);
     }
 }

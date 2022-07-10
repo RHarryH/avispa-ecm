@@ -82,7 +82,7 @@ public class RenditionService {
                 }
             }
 
-            contentService.createNewContent(PDF, content.getRelatedObject(), renditionFileStorePath);
+            contentService.createNewContent(PDF, content.getRelatedEntity(), renditionFileStorePath);
 
             log.info("PDF rendition generated successfully");
         } catch (Exception e) {

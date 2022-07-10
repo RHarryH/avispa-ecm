@@ -1,7 +1,7 @@
 package com.avispa.ecm.model.context;
 
 import com.avispa.ecm.model.EcmObject;
-import com.avispa.ecm.model.configuration.EcmConfigObject;
+import com.avispa.ecm.model.configuration.EcmConfig;
 import com.avispa.ecm.model.type.Type;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +25,7 @@ import java.util.List;
 @Setter
 public class Context extends EcmObject {
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<EcmConfigObject> ecmConfigObjects;
+    private List<EcmConfig> ecmConfigs;
 
     @ManyToOne
     private Type type;

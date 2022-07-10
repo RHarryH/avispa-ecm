@@ -1,5 +1,6 @@
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
+import com.avispa.ecm.model.EcmEntity;
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.configuration.dictionary.Dictionary;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryService;
@@ -278,7 +279,7 @@ public class PropertyPageMapper {
 
         Map<String, String> values = dictionary.getValues().stream()
                 .filter(value -> StringUtils.isNotEmpty(value.getLabel())) // filter out incorrect values with empty object name
-                .sorted(Comparator.comparing(EcmObject::getObjectName))
+                .sorted(Comparator.comparing(EcmEntity::getObjectName))
                 .collect(Collectors.toMap(DictionaryValue::getKey, DictionaryValue::getLabel, (x, y) -> x, LinkedHashMap::new));
 
         comboRadio.setValues(values);

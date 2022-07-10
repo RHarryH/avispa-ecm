@@ -1,5 +1,6 @@
 package com.avispa.ecm.model.content;
 
+import com.avispa.ecm.model.EcmEntity;
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.format.Format;
 import lombok.Getter;
@@ -11,6 +12,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PostRemove;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -34,19 +37,13 @@ public final class Content extends EcmObject {
     private String fileStorePath; // path in the file store (physical path)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="related_object_id", nullable=false)
+    @JoinColumn(name="related_entity_id", nullable=false)
     @Setter
-    private EcmObject relatedObject;
+    private EcmEntity relatedEntity;
 
-    @Override
-    protected void prePersist() {
-        super.prePersist();
-        updateSize();
-    }
-
-    @Override
-    protected void preUpdate() {
-        super.preUpdate();
+    @PrePersist
+    @PreUpdate
+    private void prePersistAndUpdate() {
         updateSize();
     }
 

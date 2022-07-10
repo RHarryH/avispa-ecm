@@ -2,8 +2,8 @@ package com.avispa.ecm.model.context;
 
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.EcmObjectRepository;
-import com.avispa.ecm.model.configuration.EcmConfigObject;
-import com.avispa.ecm.model.configuration.EcmConfigObjectRepository;
+import com.avispa.ecm.model.configuration.EcmConfig;
+import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import com.avispa.ecm.model.configuration.callable.autolink.Autolink;
 import com.avispa.ecm.model.configuration.callable.autoname.Autoname;
 import com.avispa.ecm.model.configuration.callable.autoname.AutonameService;
@@ -44,7 +44,7 @@ class ContextServiceTest {
     private EcmObjectRepository<EcmObject> ecmObjectRepository;
 
     @Autowired
-    private EcmConfigObjectRepository<EcmConfigObject> ecmConfigObjectRepository;
+    private EcmConfigRepository<EcmConfig> ecmConfigRepository;
 
     @Autowired
     private TypeRepository typeRepository;
@@ -76,7 +76,7 @@ class ContextServiceTest {
 
         createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname);
 
-        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
+        List<EcmConfig> configurations = contextService.getConfigurations(document);
 
         assertFalse(configurations.isEmpty());
         assertEquals(autoname.getId(), configurations.get(0).getId());
@@ -89,7 +89,7 @@ class ContextServiceTest {
 
         createContext(documentType, "{ \"objectName\": \"It's me\", \"extraField\": \"Extra field\"}", autoname);
 
-        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
+        List<EcmConfig> configurations = contextService.getConfigurations(document);
 
         assertFalse(configurations.isEmpty());
         assertEquals(autoname.getId(), configurations.get(0).getId());
@@ -102,7 +102,7 @@ class ContextServiceTest {
 
         createContext(superDocumentType, "{ \"objectName\": \"It's me\"}", autoname);
 
-        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
+        List<EcmConfig> configurations = contextService.getConfigurations(document);
 
         assertTrue(configurations.isEmpty());
     }
@@ -119,7 +119,7 @@ class ContextServiceTest {
 
         createContext(documentType, "{ \"objectName\": \"It's me\"}", autoname);
 
-        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
+        List<EcmConfig> configurations = contextService.getConfigurations(document);
 
         assertFalse(configurations.isEmpty());
         assertEquals(autoname.getId(), configurations.get(0).getId());
@@ -132,7 +132,7 @@ class ContextServiceTest {
 
         createContext(documentType, "{}", autoname);
 
-        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
+        List<EcmConfig> configurations = contextService.getConfigurations(document);
 
         assertFalse(configurations.isEmpty());
         assertEquals(autoname.getId(), configurations.get(0).getId());
@@ -150,7 +150,7 @@ class ContextServiceTest {
 
         createContext(documentType, "{ \"objectName\": \"It's me\"}", autoname);
 
-        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
+        List<EcmConfig> configurations = contextService.getConfigurations(document);
 
         assertTrue(configurations.isEmpty());
     }
@@ -176,7 +176,7 @@ class ContextServiceTest {
 
         createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname, autolink, autoname2);
 
-        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
+        List<EcmConfig> configurations = contextService.getConfigurations(document);
 
         assertEquals(2, configurations.size());
     }
@@ -190,7 +190,7 @@ class ContextServiceTest {
         createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname);
         createContext(documentType, "{ \"objectName\": \"It's me\" }", 1, autoname2);
 
-        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
+        List<EcmConfig> configurations = contextService.getConfigurations(document);
 
         assertEquals(1, configurations.size());
         assertTrue(configurations.contains(autoname2));
@@ -256,7 +256,7 @@ class ContextServiceTest {
         createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname);
         createContext(documentType, "{ \"objectName\": \"It's me\" }", 1, autolink);
 
-        List<EcmConfigObject> configurations = contextService.getConfigurations(document);
+        List<EcmConfig> configurations = contextService.getConfigurations(document);
 
         assertEquals(2, configurations.size());
     }
@@ -303,7 +303,7 @@ class ContextServiceTest {
         autoname.setObjectName(objectName);
         autoname.setRule("'F/' + $default($value('extraField'), 'Extra field does not exist')");
         autoname.setPropertyName("objectName");
-        ecmConfigObjectRepository.save(autoname);
+        ecmConfigRepository.save(autoname);
         return autoname;
     }
 
@@ -313,18 +313,18 @@ class ContextServiceTest {
         autolink.addRule("ABC");
         autolink.addRule("DEF");
         autolink.addRule("GHI");
-        ecmConfigObjectRepository.save(autolink);
+        ecmConfigRepository.save(autolink);
         return autolink;
     }
 
-    private void createContext(Type type, String rule, EcmConfigObject... ecmConfigObjects) {
-        createContext(type, rule, 0, ecmConfigObjects);
+    private void createContext(Type type, String rule, EcmConfig... ecmConfigs) {
+        createContext(type, rule, 0, ecmConfigs);
     }
 
-    private void createContext(Type type, String rule, int importance, EcmConfigObject... ecmConfigObjects) {
+    private void createContext(Type type, String rule, int importance, EcmConfig... ecmConfigs) {
         Context context = new Context();
         context.setObjectName(RandomStringUtils.randomAlphanumeric(10));
-        context.setEcmConfigObjects(List.of(ecmConfigObjects));
+        context.setEcmConfigs(List.of(ecmConfigs));
         context.setType(type);
         context.setMatchRule(rule);
         context.setImportance(importance);

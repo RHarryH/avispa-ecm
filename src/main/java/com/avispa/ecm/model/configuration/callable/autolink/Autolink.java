@@ -1,7 +1,7 @@
 package com.avispa.ecm.model.configuration.callable.autolink;
 
+import com.avispa.ecm.model.configuration.EcmConfig;
 import com.avispa.ecm.model.configuration.callable.CallableConfigObject;
-import com.avispa.ecm.model.configuration.EcmConfigObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,7 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class Autolink extends EcmConfigObject implements CallableConfigObject {
+public class Autolink extends EcmConfig implements CallableConfigObject {
 
     @ElementCollection
     @OrderColumn

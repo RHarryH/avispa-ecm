@@ -1,6 +1,6 @@
 package com.avispa.ecm.model.configuration.dictionary;
 
-import com.avispa.ecm.model.EcmObjectRepository;
+import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -15,7 +15,7 @@ import java.lang.reflect.Field;
 @RequiredArgsConstructor
 @Slf4j
 public class DictionaryService {
-    private final EcmObjectRepository<Dictionary> dictionaryRepository;
+    private final EcmConfigRepository<Dictionary> dictionaryRepository;
 
     public Dictionary getDictionary(String dictionaryName) {
         return dictionaryRepository.findByObjectName(dictionaryName).orElseThrow(DictionaryNotFoundException::new);
