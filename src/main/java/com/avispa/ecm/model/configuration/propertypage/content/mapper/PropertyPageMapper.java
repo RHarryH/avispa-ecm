@@ -259,7 +259,7 @@ public class PropertyPageMapper {
 
         // if dictionary was not retrieved from property page, try with annotation
         if(StringUtils.isEmpty(dictionaryName)) {
-            dictionaryName = dictionaryService.getDictionaryNameFromAnnotation(contextClass, comboRadio.getProperty());
+            dictionaryName = dictionaryService.getValueFromAnnotation(contextClass, comboRadio.getProperty());
         }
 
         // if dictionary name is still not resolved throw an exception

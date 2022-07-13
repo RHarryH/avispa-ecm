@@ -1,6 +1,7 @@
 package com.avispa.ecm.model.configuration.dictionary;
 
 import com.avispa.ecm.model.configuration.EcmConfigRepository;
+import com.avispa.ecm.model.configuration.annotation.AnnotationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -14,33 +15,17 @@ import java.lang.reflect.Field;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class DictionaryService {
+public class DictionaryService extends AnnotationService {
     private final EcmConfigRepository<Dictionary> dictionaryRepository;
 
     public Dictionary getDictionary(String dictionaryName) {
         return dictionaryRepository.findByObjectName(dictionaryName).orElseThrow(DictionaryNotFoundException::new);
     }
 
-    public String getDictionaryNameFromAnnotation(Class<?> objectClass, String propertyName) {
-        Field classMemberField = getField(objectClass, propertyName);
-
-        if (null != classMemberField && classMemberField.isAnnotationPresent(com.avispa.ecm.model.configuration.dictionary.annotation.Dictionary.class)) {
-            return classMemberField.getAnnotation(com.avispa.ecm.model.configuration.dictionary.annotation.Dictionary.class).name();
-        }
-
-        if(log.isWarnEnabled()) {
-            log.warn("Dictionary annotation for {} field not found", propertyName);
-        }
-
-        return "";
-    }
-
-    private Field getField(Class<?> objectClass, String propertyName) {
-        Field field = FieldUtils.getField(objectClass, propertyName, true);
-        if(null == field && log.isWarnEnabled()) {
-            log.warn("Property {} is not a member of {} class", propertyName, objectClass.getSimpleName());
-        }
-
-        return field;
+    @Override
+    public String getValueFromAnnotation(Class<?> objectClass, String propertyName) {
+        com.avispa.ecm.model.configuration.dictionary.annotation.Dictionary dictionary =
+                getFromAnnotation(com.avispa.ecm.model.configuration.dictionary.annotation.Dictionary.class, objectClass, propertyName);
+        return dictionary != null ? dictionary.name() : "";
     }
 }
