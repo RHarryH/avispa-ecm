@@ -4,6 +4,7 @@ import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import com.avispa.ecm.model.configuration.dictionary.Dictionary;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryService;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryValue;
+import com.avispa.ecm.model.configuration.display.DisplayService;
 import com.avispa.ecm.model.configuration.propertypage.PropertyPage;
 import com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContent;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Columns;
@@ -54,7 +55,7 @@ import static org.mockito.Mockito.when;
 @Slf4j
 @DataJpaTest
 @AutoConfigureJson
-@Import({PropertyPageMapper.class, ExpressionResolver.class, DictionaryService.class})
+@Import({PropertyPageMapper.class, ExpressionResolver.class, DictionaryService.class, DisplayService.class})
 class PropertyPageMapperIntegrationTest {
     private Document document;
 
@@ -384,6 +385,33 @@ class PropertyPageMapperIntegrationTest {
         assertEquals(values, combo.getValues());
     }
 
+    @Test
+    void emptyLabelSetToPropertyNameWhenNoDisplayName() {
+        // given
+        PropertyPage propertyPage = createPropertyPage("content/propertyControlLabel.json");
+
+        // when
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+
+        // then
+        assertEquals(2, propertyPageContent.getControls().size());
+        Text text = (Text) propertyPageContent.getControls().get(0);
+        assertEquals("extraDate", text.getLabel());
+    }
+
+    @Test
+    void emptyLabelSetToDisplayName() {
+        // given
+        PropertyPage propertyPage = createPropertyPage("content/propertyControlLabel.json");
+
+        // when
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+
+        // then
+        assertEquals(2, propertyPageContent.getControls().size());
+        Text text = (Text) propertyPageContent.getControls().get(1);
+        assertEquals("Some extra integer", text.getLabel());
+    }
 
     private PropertyPage createPropertyPage(String contentPath) {
         PropertyPage propertyPage = new PropertyPage();

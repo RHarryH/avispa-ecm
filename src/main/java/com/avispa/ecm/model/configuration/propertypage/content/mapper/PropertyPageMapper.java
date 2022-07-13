@@ -5,6 +5,7 @@ import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.configuration.dictionary.Dictionary;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryService;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryValue;
+import com.avispa.ecm.model.configuration.display.DisplayService;
 import com.avispa.ecm.model.configuration.propertypage.PropertyPage;
 import com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContent;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Columns;
@@ -12,6 +13,7 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadi
 import com.avispa.ecm.model.configuration.propertypage.content.control.Control;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Group;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Label;
+import com.avispa.ecm.model.configuration.propertypage.content.control.PropertyControl;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Tab;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Table;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Tabs;
@@ -24,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
@@ -53,6 +56,7 @@ public class PropertyPageMapper {
     private final TypeRepository typeRepository;
     private final ObjectMapper objectMapper;
     private final DictionaryService dictionaryService;
+    private final DisplayService displayService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -194,16 +198,24 @@ public class PropertyPageMapper {
             } catch (ExpressionResolverException e) {
                 log.error("Label expression couldn't be resolved", e);
             }
-        } else if(control instanceof ComboRadio) {
-            ComboRadio comboRadio = (ComboRadio)control;
-            try {
-                if(StringUtils.isEmpty(comboRadio.getTypeName()) && StringUtils.isNotEmpty(comboRadio.getTypeNameExpression())) {
-                    comboRadio.setTypeName(expressionResolver.resolve(context, comboRadio.getTypeNameExpression()));
-                }
-            } catch (ExpressionResolverException e) {
-                log.error("Type name expression couldn't be resolved", e);
+        } else if(control instanceof PropertyControl) {
+
+            PropertyControl propertyControl = (PropertyControl) control;
+            if(Strings.isEmpty(propertyControl.getLabel())) {
+                propertyControl.setLabel(displayService.getValueFromAnnotation(context.getClass(), propertyControl.getProperty()));
             }
-            loadDictionary(comboRadio, context.getClass());
+
+            if(control instanceof ComboRadio) {
+                ComboRadio comboRadio = (ComboRadio) control;
+                try {
+                    if (StringUtils.isEmpty(comboRadio.getTypeName()) && StringUtils.isNotEmpty(comboRadio.getTypeNameExpression())) {
+                        comboRadio.setTypeName(expressionResolver.resolve(context, comboRadio.getTypeNameExpression()));
+                    }
+                } catch (ExpressionResolverException e) {
+                    log.error("Type name expression couldn't be resolved", e);
+                }
+                loadDictionary(comboRadio, context.getClass());
+            }
         }
     }
 
