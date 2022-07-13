@@ -1,0 +1,16 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "text",
+        "required": true,
+        "property": "extraDate"
+      },
+      {
+        "type": "text",
+        "required": true,
+        "property": "extraInt"
+      }
+    ]
+  }
+}

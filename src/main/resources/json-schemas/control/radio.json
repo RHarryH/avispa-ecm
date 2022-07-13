@@ -42,7 +42,6 @@
     {
       "required": [
         "type",
-        "label",
         "property"
       ]
     },
