@@ -4,10 +4,8 @@ import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import com.avispa.ecm.model.configuration.annotation.AnnotationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
-
-import java.lang.reflect.Field;
 
 /**
  * @author Rafał Hiszpański
@@ -18,12 +16,33 @@ import java.lang.reflect.Field;
 public class DictionaryService extends AnnotationService {
     private final EcmConfigRepository<Dictionary> dictionaryRepository;
 
+    public String getValueFromDictionary(Class<?> objectClass, String propertyName, String propertyValue) {
+        String dictionaryName = getDictionaryNameFromAnnotation(objectClass, propertyName);
+
+        if(Strings.isEmpty(dictionaryName)) {
+            log.warn("There is no dictionary for '{}' property defined in '{}'", propertyName, objectClass.getSimpleName());
+            return propertyValue;
+        }
+
+        Dictionary dictionary = getDictionary(dictionaryName);
+
+        return dictionary.getValues().stream()
+                .filter(dictionaryValue -> dictionaryValue.getKey().equals(propertyValue))
+                .findFirst()
+                .map(DictionaryValue::getLabel)
+                .orElse(propertyValue);
+    }
+
+    public Dictionary getDictionary(Class<?> objectClass, String propertyName) {
+        String dictionaryName = getDictionaryNameFromAnnotation(objectClass, propertyName);
+        return getDictionary(dictionaryName);
+    }
+
     public Dictionary getDictionary(String dictionaryName) {
         return dictionaryRepository.findByObjectName(dictionaryName).orElseThrow(DictionaryNotFoundException::new);
     }
 
-    @Override
-    public String getValueFromAnnotation(Class<?> objectClass, String propertyName) {
+    public String getDictionaryNameFromAnnotation(Class<?> objectClass, String propertyName) {
         com.avispa.ecm.model.configuration.dictionary.annotation.Dictionary dictionary =
                 getFromAnnotation(com.avispa.ecm.model.configuration.dictionary.annotation.Dictionary.class, objectClass, propertyName);
         return dictionary != null ? dictionary.name() : "";
