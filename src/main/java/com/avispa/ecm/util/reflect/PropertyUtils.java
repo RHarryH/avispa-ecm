@@ -1,11 +1,13 @@
 package com.avispa.ecm.util.reflect;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -114,6 +116,19 @@ public class PropertyUtils {
             log.error("Error when invoking method {}", writer.getName(), e);
         }
         return null;
+    }
+
+    public static boolean hasField(Class<?> clazz, String propertyName) {
+        return null != getField(clazz, propertyName);
+    }
+
+    public static Field getField(Class<?> clazz, String propertyName) {
+        Field field = FieldUtils.getField(clazz, propertyName, true);
+        if(null == field && log.isWarnEnabled()) {
+            log.warn("Property {} is not a member of {} class", propertyName, clazz.getSimpleName());
+        }
+
+        return field;
     }
 
     private static BeanInfo getBeanInfo(Object obj) throws IntrospectionException {
