@@ -20,7 +20,7 @@ public class DictionaryService extends AnnotationService {
         String dictionaryName = getDictionaryNameFromAnnotation(objectClass, propertyName);
 
         if(Strings.isEmpty(dictionaryName)) {
-            log.warn("There is no dictionary for '{}' property defined in '{}'", propertyName, objectClass.getSimpleName());
+            log.info("There is no dictionary for '{}' property defined in '{}'", propertyName, objectClass.getSimpleName());
             return propertyValue;
         }
 
