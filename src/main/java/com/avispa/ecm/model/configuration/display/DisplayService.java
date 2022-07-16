@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class DisplayService extends AnnotationService {
-    @Override
-    public String getValueFromAnnotation(Class<?> objectClass, String propertyName) {
+
+    public String getDisplayValueFromAnnotation(Class<?> objectClass, String propertyName) {
         DisplayName displayName = getFromAnnotation(DisplayName.class, objectClass, propertyName);
         return displayName != null ? displayName.value() : propertyName;
     }

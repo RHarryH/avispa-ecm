@@ -202,7 +202,7 @@ public class PropertyPageMapper {
 
             PropertyControl propertyControl = (PropertyControl) control;
             if(Strings.isEmpty(propertyControl.getLabel())) {
-                propertyControl.setLabel(displayService.getValueFromAnnotation(context.getClass(), propertyControl.getProperty()));
+                propertyControl.setLabel(displayService.getDisplayValueFromAnnotation(context.getClass(), propertyControl.getProperty()));
             }
 
             if(control instanceof ComboRadio) {
@@ -271,7 +271,7 @@ public class PropertyPageMapper {
 
         // if dictionary was not retrieved from property page, try with annotation
         if(StringUtils.isEmpty(dictionaryName)) {
-            dictionaryName = dictionaryService.getValueFromAnnotation(contextClass, comboRadio.getProperty());
+            dictionaryName = dictionaryService.getDictionaryNameFromAnnotation(contextClass, comboRadio.getProperty());
         }
 
         // if dictionary name is still not resolved throw an exception
