@@ -105,4 +105,11 @@ class DictionaryServiceTest {
 
         assertEquals("fourth", value);
     }
+
+    @Test
+    void givenEntityClassAndNestedPropertyNameAndPropertyValue_whenGetValueFromDictionary_thenReturnValue() {
+        String value = dictionaryService.getValueFromDictionary(SuperDocument.class, "nestedObject.nestedField", "second");
+
+        assertEquals("b", value);
+    }
 }

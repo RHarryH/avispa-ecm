@@ -199,7 +199,7 @@ public class PropertyPageMapper {
                 log.error("Label expression couldn't be resolved", e);
             }
         } else if(control instanceof PropertyControl) {
-
+            // TODO: validate if property is accessible?
             PropertyControl propertyControl = (PropertyControl) control;
             if(Strings.isEmpty(propertyControl.getLabel())) {
                 propertyControl.setLabel(displayService.getDisplayValueFromAnnotation(context.getClass(), propertyControl.getProperty()));

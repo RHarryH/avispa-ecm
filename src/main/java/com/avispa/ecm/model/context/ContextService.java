@@ -188,7 +188,7 @@ public class ContextService {
             return matches;
         } catch (JsonProcessingException e) {
             log.error(context.getMatchRule());
-            log.error("Error when trying to match object '{}}' with sample of '{}}'", object.getId(), context.getMatchRule(), e);
+            log.error("Error when trying to match object '{}' with sample of '{}'", object.getId(), context.getMatchRule(), e);
         }
 
         return false;
