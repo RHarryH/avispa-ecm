@@ -9,7 +9,7 @@
             "type": "combo",
             "label": "Combo test",
             "property": "objectName",
-            "typeName": "Super Document",
+            "typeName": "Test Document",
             "required": true
           }
         ]

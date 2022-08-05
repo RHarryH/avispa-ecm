@@ -15,7 +15,7 @@
                   {
                     "type": "number",
                     "label": "Number test",
-                    "property": "extraInt",
+                    "property": "testInt",
                     "min": 10
                   },
                   {
@@ -32,7 +32,7 @@
                               {
                                 "type": "date",
                                 "label": "Date test",
-                                "property": "extraDate",
+                                "property": "testDate",
                                 "required": true
                               }
                             ]

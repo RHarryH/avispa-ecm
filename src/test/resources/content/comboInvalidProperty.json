@@ -4,8 +4,8 @@
       {
         "type": "combo",
         "label": "Combo test",
-        "property": "extraField",
-        "typeName": "Super Document",
+        "property": "testString",
+        "typeName": "Test Document",
         "invalid": "test",
         "required": true
       }

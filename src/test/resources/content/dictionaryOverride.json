@@ -4,7 +4,7 @@
       {
         "type": "combo",
         "label": "Combo test",
-        "property": "extraField",
+        "property": "testString",
         "dictionary": "TestDict2",
         "required": true
       }

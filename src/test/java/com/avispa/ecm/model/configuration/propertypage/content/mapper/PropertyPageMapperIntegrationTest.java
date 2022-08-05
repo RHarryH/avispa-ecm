@@ -24,7 +24,7 @@ import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.format.Format;
 import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeRepository;
-import com.avispa.ecm.util.SuperDocument;
+import com.avispa.ecm.util.TestDocument;
 import com.avispa.ecm.util.expression.ExpressionResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,7 +70,7 @@ class PropertyPageMapperIntegrationTest {
 
     @BeforeEach
     void init() {
-        document = createSuperDocument();
+        document = createTestDocument();
 
         // first dictionary
         {
@@ -116,18 +116,18 @@ class PropertyPageMapperIntegrationTest {
         }
 
         Type type = new Type();
-        type.setObjectName("Super Document");
-        type.setEntityClass(SuperDocument.class);
+        type.setObjectName("Test Document");
+        type.setEntityClass(TestDocument.class);
 
-        when(typeRepository.findByTypeName("Super Document")).thenReturn(type);
+        when(typeRepository.findByTypeName("Test Document")).thenReturn(type);
     }
 
-    private Document createSuperDocument() {
-        SuperDocument document = new SuperDocument();
+    private Document createTestDocument() {
+        TestDocument document = new TestDocument();
         document.setId(UUID.randomUUID());
         document.setObjectName("It's me");
-        document.setExtraDate(LocalDate.of(2010, 11, 12));
-        document.setExtraInt(10);
+        document.setTestDate(LocalDate.of(2010, 11, 12));
+        document.setTestInt(10);
         return document;
     }
 
@@ -166,8 +166,8 @@ class PropertyPageMapperIntegrationTest {
         assertTrue(controls.get(0) instanceof ComboRadio);
         ComboRadio combo = (ComboRadio) controls.get(0);
         assertEquals("Combo test", combo.getLabel());
-        assertEquals("extraField", combo.getProperty());
-        assertEquals("Super Document", combo.getTypeName());
+        assertEquals("testString", combo.getProperty());
+        assertEquals("Test Document", combo.getTypeName());
         assertTrue(combo.isRequired());
     }
 
@@ -186,7 +186,7 @@ class PropertyPageMapperIntegrationTest {
         assertTrue(controls.get(0) instanceof PropertyControl);
         PropertyControl date = (PropertyControl) controls.get(0);
         assertEquals("Date test", date.getLabel());
-        assertEquals("extraDate", date.getProperty());
+        assertEquals("testDate", date.getProperty());
         assertTrue(date.isRequired());
     }
 
@@ -225,7 +225,7 @@ class PropertyPageMapperIntegrationTest {
         assertTrue(controls.get(0) instanceof Number);
         Number number = (Number) controls.get(0);
         assertEquals("Number test", number.getLabel());
-        assertEquals("extraInt", number.getProperty());
+        assertEquals("testInt", number.getProperty());
         assertEquals(10, number.getMin());
     }
 
@@ -246,7 +246,7 @@ class PropertyPageMapperIntegrationTest {
         assertTrue(controls.get(0) instanceof ComboRadio);
         ComboRadio radio = (ComboRadio) controls.get(0);
         assertEquals("Radio test", radio.getLabel());
-        assertEquals("extraField", radio.getProperty());
+        assertEquals("testString", radio.getProperty());
 
         Map<String, String> values = Map.of("1", "10", "2", "20", "3", "30");
         assertEquals(values, radio.getValues());
@@ -314,7 +314,7 @@ class PropertyPageMapperIntegrationTest {
         assertTrue(controls.get(0) instanceof Textarea);
         Textarea textarea = (Textarea) controls.get(0);
         assertEquals("Textarea test", textarea.getLabel());
-        assertEquals("extraField", textarea.getProperty());
+        assertEquals("testString", textarea.getProperty());
         assertEquals(25, textarea.getRows());
     }
 
@@ -396,7 +396,7 @@ class PropertyPageMapperIntegrationTest {
         // then
         assertEquals(2, propertyPageContent.getControls().size());
         Text text = (Text) propertyPageContent.getControls().get(0);
-        assertEquals("extraDate", text.getLabel());
+        assertEquals("testDate", text.getLabel());
     }
 
     @Test
@@ -410,7 +410,7 @@ class PropertyPageMapperIntegrationTest {
         // then
         assertEquals(2, propertyPageContent.getControls().size());
         Text text = (Text) propertyPageContent.getControls().get(1);
-        assertEquals("Some extra integer", text.getLabel());
+        assertEquals("Some test integer", text.getLabel());
     }
 
     private PropertyPage createPropertyPage(String contentPath) {
