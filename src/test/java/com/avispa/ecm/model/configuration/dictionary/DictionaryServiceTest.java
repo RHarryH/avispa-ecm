@@ -1,7 +1,7 @@
 package com.avispa.ecm.model.configuration.dictionary;
 
 import com.avispa.ecm.model.configuration.EcmConfigRepository;
-import com.avispa.ecm.util.SuperDocument;
+import com.avispa.ecm.util.TestDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -76,12 +76,12 @@ class DictionaryServiceTest {
 
     @Test
     void givenEntityClassAndPropertyName_whenGetDictionaryName_thenReturnDictionary() {
-        assertEquals("TestDict", dictionaryService.getDictionaryNameFromAnnotation(SuperDocument.class, "extraField"));
+        assertEquals("TestDict", dictionaryService.getDictionaryNameFromAnnotation(TestDocument.class, "testString"));
     }
 
     @Test
     void givenEntityClassAndPropertyName_whenGetDictionary_thenReturnDictionary() {
-        Dictionary dictionary = dictionaryService.getDictionary(SuperDocument.class, "extraField");
+        Dictionary dictionary = dictionaryService.getDictionary(TestDocument.class, "testString");
 
         assertEquals("TestDict", dictionary.getObjectName());
     }
@@ -89,26 +89,26 @@ class DictionaryServiceTest {
     @Test
     void givenEntityClassAndPropertyName_whenGetDictionary_thenThrowException() {
         assertThrows(DictionaryNotFoundException.class, () ->
-                dictionaryService.getDictionary(SuperDocument.class, "extraDateTime"));
+                dictionaryService.getDictionary(TestDocument.class, "testDateTime"));
     }
 
     @Test
     void givenEntityClassAndPropertyNameAndPropertyValue_whenGetValueFromDictionary_thenReturnValue() {
-        String value = dictionaryService.getValueFromDictionary(SuperDocument.class, "extraField", "second");
+        String value = dictionaryService.getValueFromDictionary(TestDocument.class, "testString", "second");
 
         assertEquals("b", value);
     }
 
     @Test
     void givenEntityClassAndPropertyNameAndPropertyValue_whenGetValueFromDictionary_thenReturnOriginalValue() {
-        String value = dictionaryService.getValueFromDictionary(SuperDocument.class, "extraField", "fourth");
+        String value = dictionaryService.getValueFromDictionary(TestDocument.class, "testString", "fourth");
 
         assertEquals("fourth", value);
     }
 
     @Test
     void givenEntityClassAndNestedPropertyNameAndPropertyValue_whenGetValueFromDictionary_thenReturnValue() {
-        String value = dictionaryService.getValueFromDictionary(SuperDocument.class, "nestedObject.nestedField", "second");
+        String value = dictionaryService.getValueFromDictionary(TestDocument.class, "nestedObject.nestedField", "second");
 
         assertEquals("b", value);
     }

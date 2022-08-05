@@ -1,6 +1,6 @@
 package com.avispa.ecm.util.expression;
 
-import com.avispa.ecm.util.SuperDocument;
+import com.avispa.ecm.util.TestDocument;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -20,22 +20,22 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 class ExpressionResolverTest {
 
-    private static SuperDocument document;
+    private static TestDocument document;
 
     private final ExpressionResolver expressionResolver = new ExpressionResolver();
 
     @BeforeAll
     static void init() {
-        document = new SuperDocument();
+        document = new TestDocument();
         document.setObjectName("ABC");
-        document.setExtraDateTime(LocalDateTime.of(2021, 10, 11, 10, 54, 18));
-        document.setExtraField("XY");
-        document.setExtraInt(5);
+        document.setTestDateTime(LocalDateTime.of(2021, 10, 11, 10, 54, 18));
+        document.setTestString("XY");
+        document.setTestInt(5);
     }
 
     @Test
-    void applyFieldFromSuperDocument() throws ExpressionResolverException {
-        assertEquals("ABC_XY_ABC", expressionResolver.resolve(document, "'ABC_' + $value('extraField') + '_ABC'"));
+    void applyFieldFromTestDocument() throws ExpressionResolverException {
+        assertEquals("ABC_XY_ABC", expressionResolver.resolve(document, "'ABC_' + $value('testString') + '_ABC'"));
     }
 
     @Test
@@ -45,12 +45,12 @@ class ExpressionResolverTest {
 
     @Test
     void replaceInteger() throws ExpressionResolverException {
-        assertEquals("ABC_5_ABC", expressionResolver.resolve(document, "'ABC_' + $value('extraInt') + '_ABC'"));
+        assertEquals("ABC_5_ABC", expressionResolver.resolve(document, "'ABC_' + $value('testInt') + '_ABC'"));
     }
 
     @Test
     void functionOnly() throws ExpressionResolverException {
-        assertEquals("XY", expressionResolver.resolve(document, "$value('extraField')"));
+        assertEquals("XY", expressionResolver.resolve(document, "$value('testString')"));
     }
 
     @Test
@@ -65,17 +65,17 @@ class ExpressionResolverTest {
 
     @Test
     void dateValueFunction() throws ExpressionResolverException {
-        assertEquals("ABC_10_ABC", expressionResolver.resolve(document, "'ABC_' + $datevalue('extraDateTime', 'MM') + '_ABC'"));
+        assertEquals("ABC_10_ABC", expressionResolver.resolve(document, "'ABC_' + $datevalue('testDateTime', 'MM') + '_ABC'"));
     }
 
     @Test
     void dateValueFunctionInvalidFormat() {
-        assertThrows(IllegalArgumentException.class, () -> expressionResolver.resolve(document, "'ABC_' + $datevalue('extraDateTime', 'invalid_format') + '_ABC'"));
+        assertThrows(IllegalArgumentException.class, () -> expressionResolver.resolve(document, "'ABC_' + $datevalue('testDateTime', 'invalid_format') + '_ABC'"));
     }
 
     @Test
     void nestedFunction() throws ExpressionResolverException {
-        assertEquals("ABC_XY_ABC", expressionResolver.resolve(document, "'ABC_' + $default($value('extraField'), 'This is default value') + '_ABC'"));
+        assertEquals("ABC_XY_ABC", expressionResolver.resolve(document, "'ABC_' + $default($value('testString'), 'This is default value') + '_ABC'"));
     }
 
     @Test
@@ -85,12 +85,12 @@ class ExpressionResolverTest {
 
     @Test
     void nestedFunctionWithConcatenation() throws ExpressionResolverException {
-        assertEquals("ABC_XY", expressionResolver.resolve(document, "$default('ABC_'+$value('extraField'), 'This is default value')"));
+        assertEquals("ABC_XY", expressionResolver.resolve(document, "$default('ABC_'+$value('testString'), 'This is default value')"));
     }
 
     @Test
     void twoFunctions() throws ExpressionResolverException {
-        assertEquals("ABC_XY", expressionResolver.resolve(document, "$value('objectName') + '_' + $default($value('extraField'), 'This is default value')"));
+        assertEquals("ABC_XY", expressionResolver.resolve(document, "$value('objectName') + '_' + $default($value('testString'), 'This is default value')"));
     }
 
     @Test
@@ -100,7 +100,7 @@ class ExpressionResolverTest {
 
     @Test
     void tooManyParamsFunction() throws ExpressionResolverException {
-        assertEquals("XY", expressionResolver.resolve(document, "$value('extraField', 'redundantParameter')"));
+        assertEquals("XY", expressionResolver.resolve(document, "$value('testString', 'redundantParameter')"));
     }
 
     @Test

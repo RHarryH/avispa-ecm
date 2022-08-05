@@ -9,7 +9,7 @@
           {
             "type": "number",
             "label": "Number test",
-            "property": "extraInt",
+            "property": "testInt",
             "min": 10
           }
         ]

@@ -21,14 +21,15 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-public class SuperDocument extends Document {
+public class TestDocument extends Document {
     @Dictionary(name = "TestDict")
-    private String extraField;
-    private LocalDateTime extraDateTime;
-    private LocalDate extraDate;
+    private String testString;
+    private LocalDateTime testDateTime;
+    private LocalDate testDate;
+    private boolean testBoolean;
 
-    @DisplayName("Some extra integer")
-    private int extraInt;
+    @DisplayName("Some test integer")
+    private int testInt;
 
     @OneToMany
     private List<Document> table;

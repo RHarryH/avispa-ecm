@@ -4,7 +4,7 @@
       {
         "type": "date",
         "label": "Date test",
-        "property": "extraDate",
+        "property": "testDate",
         "required": true
       }
     ]

@@ -4,9 +4,9 @@ import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.configuration.EcmConfig;
 import com.avispa.ecm.model.configuration.callable.CallableConfigObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigService;
+import com.avispa.ecm.service.condition.ConditionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +33,7 @@ public class ContextService {
     private final ContextRepository contextRepository;
     private final ObjectMapper objectMapper;
 
+    private final ConditionService conditionService;
     private final List<CallableConfigService> callableConfigServices;
 
     /**
@@ -206,19 +207,9 @@ public class ContextService {
         List<Context> contexts = contextRepository.findAllByOrderByImportanceDesc();
 
         return contexts.stream().filter(context -> context.getType().getEntityClass().equals(clazz))
-                .filter(this::hasEmptyMatchRule)
+                .filter(context -> conditionService.isEmptyCondition(context.getMatchRule()))
                 .map(Context::getEcmConfigs)
                 .flatMap(Collection::stream);
-    }
-
-    private boolean hasEmptyMatchRule(Context context) {
-        try {
-            JsonNode actualObj = objectMapper.readTree(context.getMatchRule());
-            return actualObj.isEmpty();
-        } catch (JsonProcessingException e) {
-            log.error("Can't parse {} context rule", context.getMatchRule(), e);
-        }
-        return false;
     }
 
     /**

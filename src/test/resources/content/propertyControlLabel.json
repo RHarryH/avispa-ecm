@@ -4,12 +4,12 @@
       {
         "type": "text",
         "required": true,
-        "property": "extraDate"
+        "property": "testDate"
       },
       {
         "type": "text",
         "required": true,
-        "property": "extraInt"
+        "property": "testInt"
       }
     ]
   }

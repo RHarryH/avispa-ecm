@@ -4,7 +4,7 @@
       {
         "type": "textarea",
         "label": "Textarea test",
-        "property": "extraField",
+        "property": "testString",
         "rows": 25
       }
     ]

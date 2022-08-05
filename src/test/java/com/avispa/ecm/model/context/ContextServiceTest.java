@@ -11,8 +11,12 @@ import com.avispa.ecm.model.configuration.propertypage.PropertyPage;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeRepository;
-import com.avispa.ecm.util.SuperDocument;
+import com.avispa.ecm.service.condition.ConditionParser;
+import com.avispa.ecm.service.condition.ConditionResolver;
+import com.avispa.ecm.service.condition.ConditionService;
+import com.avispa.ecm.util.TestDocument;
 import com.avispa.ecm.util.expression.ExpressionResolver;
+import com.avispa.ecm.util.json.JsonValidator;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +42,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Import({ContextService.class,
         // required to add service to list of available services
         AutonameService.class,
-        ExpressionResolver.class})
+        ExpressionResolver.class,
+        ConditionService.class,
+        ConditionResolver.class,
+        ConditionParser.class,
+        JsonValidator.class})
 class ContextServiceTest {
     @Autowired
     private EcmObjectRepository<EcmObject> ecmObjectRepository;
@@ -53,19 +61,19 @@ class ContextServiceTest {
     private ContextService contextService;
 
     private Type documentType;
-    private Type superDocumentType;
+    private Type testDocumentType;
 
     @BeforeEach
     void init() {
         documentType = typeRepository.findByTypeName("Document");
 
         // this is not a default type so create it
-        superDocumentType = typeRepository.findByObjectName("Super Document").orElseGet(() -> {
-                superDocumentType = new Type();
-                superDocumentType.setObjectName("Super Document");
-                superDocumentType.setEntityClass(SuperDocument.class);
+        testDocumentType = typeRepository.findByObjectName("Test Document").orElseGet(() -> {
+                testDocumentType = new Type();
+                testDocumentType.setObjectName("Test Document");
+                testDocumentType.setEntityClass(TestDocument.class);
 
-                return typeRepository.save(superDocumentType);
+                return typeRepository.save(testDocumentType);
         });
     }
 
@@ -87,7 +95,7 @@ class ContextServiceTest {
         Document document = createDocument();
         Autoname autoname = createAutoname();
 
-        createContext(documentType, "{ \"objectName\": \"It's me\", \"extraField\": \"Extra field\"}", autoname);
+        createContext(documentType, "{ \"objectName\": \"It's me\", \"testField\": \"Test string\"}", autoname);
 
         List<EcmConfig> configurations = contextService.getConfigurations(document);
 
@@ -96,11 +104,11 @@ class ContextServiceTest {
     }
 
     @Test
-    void findConfigurationsForContextAcceptingSuperDocumentWhenInputIsDocument() {
+    void findConfigurationsForContextAcceptingTestDocumentWhenInputIsDocument() {
         Document document = createDocument();
         Autoname autoname = createAutoname();
 
-        createContext(superDocumentType, "{ \"objectName\": \"It's me\"}", autoname);
+        createContext(testDocumentType, "{ \"objectName\": \"It's me\"}", autoname);
 
         List<EcmConfig> configurations = contextService.getConfigurations(document);
 
@@ -108,13 +116,13 @@ class ContextServiceTest {
     }
 
     /**
-     * In this test we're trying to match SuperDocument for context accepting
-     * only Documents or above. This test should return true because SuperDocument
+     * In this test we're trying to match TestDocument for context accepting
+     * only Documents or above. This test should return true because TestDocument
      * is a subtype of Document.
      */
     @Test
-    void givenSuperDocumentAndContextAcceptingDocuments_whenGetMatchinConfigurations_thenAutonameIsPresent() {
-        SuperDocument document = createSuperDocument();
+    void givenTestDocumentAndContextAcceptingDocuments_whenGetMatchinConfigurations_thenAutonameIsPresent() {
+        TestDocument document = createTestDocument();
         Autoname autoname = createAutoname();
 
         createContext(documentType, "{ \"objectName\": \"It's me\"}", autoname);
@@ -164,7 +172,7 @@ class ContextServiceTest {
 
         contextService.applyMatchingConfigurations(document, Autoname.class);
 
-        assertEquals("F/Extra field does not exist", document.getObjectName());
+        assertEquals("F/Test string does not exist", document.getObjectName());
     }
 
     @Test
@@ -286,10 +294,10 @@ class ContextServiceTest {
         return document;
     }
 
-    private SuperDocument createSuperDocument() {
-        SuperDocument document = new SuperDocument();
+    private TestDocument createTestDocument() {
+        TestDocument document = new TestDocument();
         document.setObjectName("It's me");
-        document.setExtraField("Extra field");
+        document.setTestString("Test String");
         ecmObjectRepository.save(document);
         return document;
     }
@@ -301,7 +309,7 @@ class ContextServiceTest {
     private Autoname createAutoname(String objectName) {
         Autoname autoname = new Autoname();
         autoname.setObjectName(objectName);
-        autoname.setRule("'F/' + $default($value('extraField'), 'Extra field does not exist')");
+        autoname.setRule("'F/' + $default($value('testString'), 'Test string does not exist')");
         autoname.setPropertyName("objectName");
         ecmConfigRepository.save(autoname);
         return autoname;
