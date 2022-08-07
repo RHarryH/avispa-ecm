@@ -108,6 +108,21 @@ class ExpressionResolverTest {
         assertThrows(ExpressionResolverException.class, () -> expressionResolver.resolve(document, "invalid"));
     }
 
+    @Test
+    void padFunctionWithDefaultPaddingCharacter() throws ExpressionResolverException {
+        assertEquals("000a", expressionResolver.resolve(document, "$pad('a', '4')"));
+    }
+
+    @Test
+    void padFunctionWithCustomPaddingCharacter() throws ExpressionResolverException {
+        assertEquals("XXXa", expressionResolver.resolve(document, "$pad('a', '4', 'X')"));
+    }
+
+    @Test
+    void padFunctionWithShorterLenghtThanProvidedValue() throws ExpressionResolverException {
+        assertEquals("aaaa", expressionResolver.resolve(document, "$pad('aaaa', '2')"));
+    }
+
     public static String printSyntaxTree(Parser parser, ParseTree root) {
         StringBuilder buf = new StringBuilder();
         recursive(root, buf, 0, Arrays.asList(parser.getRuleNames()));

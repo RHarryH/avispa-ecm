@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Pads string to n characters in total using padding character or if not provided - default 0 value.
+ * Pad left string to n characters in total using padding character or if not provided - default 0 value.
  * If number of characters will not be a correct positive integer then original input will be returned.
  * Sample:
  * ["1", "2"] => "01"

@@ -4,7 +4,7 @@ import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.configuration.EcmConfig;
 import com.avispa.ecm.model.configuration.callable.CallableConfigObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigService;
-import com.avispa.ecm.service.condition.ConditionService;
+import com.avispa.ecm.util.condition.ConditionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
