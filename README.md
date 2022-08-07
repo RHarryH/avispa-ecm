@@ -12,6 +12,9 @@ MongoDB-like syntax described in `context-rule.json` JSON Schema.
 Conditions are used for example in context match rules, but they can also be used on the frontend in 
 conditional controls visibility or requirement.
 
+Please note that RFC document (chapter 4) specifies that the JSON keys within an object must be unique 
+otherwise their behavior is unpredictable but in many cases the latter value is used.
+
 ### Syntax
 
 All conditions specified in the root of the JSON are grouped in the default `and` group. It means there is
@@ -95,6 +98,51 @@ To check if property does not equal certain value use `$ne` operator
   }
 }
 ```
+
+#### Conditions grouping
+
+Conditions can be grouped in `and` or `or` groups. Each condition has to be a separate object element in
+at least 2 element array.
+
+```json
+{
+  "$and": [
+    {
+      "propertyName": {
+        "$lte": 12
+      }
+    },
+    {
+      "propertyName2": {
+        "$eq": "string"
+      }
+    }
+  ]
+}
+```
+
+is equal to: `propertyName < 12 and propertyName2 = 'string'`
+
+```json
+{
+  "$or": [
+    {
+      "propertyName": {
+        "$lte": 12
+      }
+    },
+    {
+      "propertyName2": {
+        "$eq": "string"
+      }
+    }
+  ]
+}
+```
+
+is equal to: `propertyName < 12 or propertyName2 = 'string'`
+
+Groups can be nested within other groups.
 
 ## Expressions processing
 
