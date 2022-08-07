@@ -5,18 +5,13 @@ import com.avispa.ecm.model.configuration.EcmConfig;
 import com.avispa.ecm.model.configuration.callable.CallableConfigObject;
 import com.avispa.ecm.model.configuration.callable.CallableConfigService;
 import com.avispa.ecm.util.condition.ConditionService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ResolvableType;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,7 +26,6 @@ import java.util.stream.Stream;
 public class ContextService {
 
     private final ContextRepository contextRepository;
-    private final ObjectMapper objectMapper;
 
     private final ConditionService conditionService;
     private final List<CallableConfigService> callableConfigServices;
@@ -171,28 +165,13 @@ public class ContextService {
             return false;
         }
 
-        try {
-            TypeReference<HashMap<String, Object>> typeRef = new TypeReference<>() {};
-            // convert JSON object to EcmObject of <T> type to eliminate fields not applicable to <T> type
-            EcmObject queryObject = objectMapper.readValue(context.getMatchRule(), object.getClass());
+        boolean matches = conditionService.hasObjectMatching(context.getMatchRule(), object);
 
-            // convert to maps
-            Map<String, Object> query = objectMapper.convertValue(queryObject, typeRef);
-            Map<String, Object> reference = objectMapper.convertValue(object, typeRef);
-
-            boolean matches = reference.entrySet().containsAll(query.entrySet());
-
-            if(log.isDebugEnabled()) {
-                log.debug("Query '{}' matches in '{}' reference: {}", query, reference, matches);
-            }
-
-            return matches;
-        } catch (JsonProcessingException e) {
-            log.error(context.getMatchRule());
-            log.error("Error when trying to match object '{}' with sample of '{}'", object.getId(), context.getMatchRule(), e);
+        if(log.isDebugEnabled()) {
+            log.debug("Object with id '{}' matches rule '{}': {}", object.getId(), context.getMatchRule(), matches);
         }
 
-        return false;
+        return matches;
     }
 
     /**
