@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,9 +29,12 @@ class ConditionResolverTest {
     @Autowired
     private ConditionResolver conditionResolver;
 
+    private TestDocument testDocument;
+
     @BeforeEach
     void init(@Autowired EcmObjectRepository<TestDocument> repository) {
-        TestDocument testDocument = new TestDocument();
+        testDocument = new TestDocument();
+        testDocument.setId(UUID.randomUUID());
         testDocument.setTestString("TEST");
         testDocument.setTestInt(12);
         testDocument.setNestedObject(new NestedObject("TEST"));
@@ -124,5 +129,13 @@ class ConditionResolverTest {
         conditions.addElement(Condition.equal("nestedObject.nestedField", ConditionValue.text("TEST")));
 
         assertTrue(conditionResolver.resolve(conditions, TestDocument.class));
+    }
+
+    @Test
+    void givenObjectWithId_whenConversion_thenReturnTrue() {
+        Conditions conditions = new Conditions();
+        conditions.addElement(Condition.equal("testString", ConditionValue.text("TEST")));
+
+        assertTrue(conditionResolver.resolve(conditions, testDocument));
     }
 }

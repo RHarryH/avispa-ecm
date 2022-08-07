@@ -31,29 +31,60 @@ public
 class ConditionResolver {
     private final EntityManager entityManager;
 
-    public <T extends EcmObject> boolean resolve(Conditions conditions, Class<T> inputObjectClass) {
-        TypedQuery<Long> query = getQuery(conditions, inputObjectClass);
+    public boolean resolve(Conditions conditions, Class<? extends EcmObject> objectClass) {
+        TypedQuery<Long> query = getQuery(conditions, objectClass);
 
-        log.info("Found: {}", query.getSingleResult());
+        if(log.isDebugEnabled()) {
+            log.debug("Found: {}", query.getSingleResult());
+        }
 
         return query.getSingleResult() > 0;
     }
 
-    private <T extends EcmObject> TypedQuery<Long> getQuery(Conditions conditions, Class<T> inputObjectClass) {
+    public boolean resolve(Conditions conditions, EcmObject object) {
+        TypedQuery<Long> query = getQuery(conditions, object);
+
+        if(log.isDebugEnabled()) {
+            log.debug("Found: {}", query.getSingleResult());
+        }
+
+        return query.getSingleResult() > 0;
+    }
+
+    private TypedQuery<Long> getQuery(Conditions conditions, Class<? extends EcmObject> objectClass) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<T> queryRoot = criteriaQuery.from(inputObjectClass);
-        criteriaQuery.select(criteriaBuilder.count(queryRoot));
+        Root<? extends EcmObject> queryRoot = criteriaQuery.from(objectClass);
 
-        ConditionGroup group = conditions.getConditionGroup();
+        List<Predicate> predicates = getPredicates(conditions, criteriaBuilder, criteriaQuery, queryRoot);
 
-        List<Predicate> predicates = resolveGroup(criteriaBuilder, queryRoot, group);
-        criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+        criteriaQuery.where(criteriaBuilder.and(predicates.toArray(Predicate[]::new)));
 
         return entityManager.createQuery(criteriaQuery);
     }
 
-    private <T extends EcmObject> List<Predicate> resolveGroup(CriteriaBuilder criteriaBuilder, Root<T> queryRoot, ConditionGroup group) {
+    private TypedQuery<Long> getQuery(Conditions conditions, EcmObject object) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<? extends EcmObject> queryRoot = criteriaQuery.from(object.getClass());
+
+        List<Predicate> predicates = getPredicates(conditions, criteriaBuilder, criteriaQuery, queryRoot);
+        predicates.add(criteriaBuilder.equal(queryRoot.get("id"), object.getId()));
+
+        criteriaQuery.where(criteriaBuilder.and(predicates.toArray(Predicate[]::new)));
+
+        return entityManager.createQuery(criteriaQuery);
+    }
+
+    private List<Predicate> getPredicates(Conditions conditions, CriteriaBuilder criteriaBuilder, CriteriaQuery<Long> criteriaQuery, Root<? extends EcmObject> queryRoot) {
+        criteriaQuery.select(criteriaBuilder.count(queryRoot));
+
+        ConditionGroup group = conditions.getConditionGroup();
+
+        return resolveGroup(criteriaBuilder, queryRoot, group);
+    }
+
+    private List<Predicate> resolveGroup(CriteriaBuilder criteriaBuilder, Root<? extends EcmObject> queryRoot, ConditionGroup group) {
         List<Predicate> predicates = new ArrayList<>(group.getConditions().size());
         for (IConditionElement element : group.getConditions()) {
             if(element instanceof ConditionGroup) {
@@ -86,7 +117,7 @@ class ConditionResolver {
         }
     }
 
-    private <T extends EcmObject> Predicate getPredicate(Condition condition, CriteriaBuilder criteriaBuilder, Root<T> queryRoot) {
+    private Predicate getPredicate(Condition condition, CriteriaBuilder criteriaBuilder, Root<? extends EcmObject> queryRoot) {
         String key = condition.getKey();
         Operator operator = condition.getOperator();
         ConditionValue<?> value = condition.getValue();
@@ -112,7 +143,7 @@ class ConditionResolver {
         }
     }
 
-    private <T extends EcmObject, Y> Path<Y> getPath(String key, Root<T> queryRoot) {
+    private <Y> Path<Y> getPath(String key, Root<? extends EcmObject> queryRoot) {
         String[] properties = key.split("\\.");
 
         Path<Y> path = queryRoot.get(properties[0]);
@@ -123,8 +154,8 @@ class ConditionResolver {
         return path;
     }
 
-    public <T extends EcmObject> String getQueryString(Conditions conditions, Class<T> inputObjectClass) {
-        TypedQuery<Long> query = getQuery(conditions, inputObjectClass);
+    public String getQueryString(Conditions conditions, Class<? extends EcmObject> objectClass) {
+        TypedQuery<Long> query = getQuery(conditions, objectClass);
 
         return query.unwrap(org.hibernate.query.Query.class).getQueryString();
     }

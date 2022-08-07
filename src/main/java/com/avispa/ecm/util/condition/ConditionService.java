@@ -19,8 +19,12 @@ public class ConditionService {
     private final ConditionResolver conditionResolver;
     private final ObjectMapper objectMapper;
 
-    public <T extends EcmObject> boolean parseConditions(String conditions, Class<T> inputObjectClass) {
-        return conditionResolver.resolve(conditionParser.parse(conditions), inputObjectClass);
+    public boolean hasObjectMatching(String conditions, EcmObject object) {
+        return conditionResolver.resolve(conditionParser.parse(conditions), object);
+    }
+
+    public boolean hasObjectOfClassMatching(String conditions, Class<? extends EcmObject> objectClass) {
+        return conditionResolver.resolve(conditionParser.parse(conditions), objectClass);
     }
 
     public boolean isEmptyCondition(String condition) {
