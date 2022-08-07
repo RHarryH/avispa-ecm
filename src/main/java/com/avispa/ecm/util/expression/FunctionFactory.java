@@ -1,6 +1,5 @@
 package com.avispa.ecm.util.expression;
 
-import com.avispa.ecm.model.EcmEntity;
 import com.avispa.ecm.util.expression.function.Function;
 import com.avispa.ecm.util.expression.function.impl.DateValue;
 import com.avispa.ecm.util.expression.function.impl.Default;

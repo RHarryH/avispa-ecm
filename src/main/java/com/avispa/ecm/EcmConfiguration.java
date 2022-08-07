@@ -45,6 +45,7 @@ public class EcmConfiguration implements AsyncConfigurer {
                 .serializers(LOCAL_DATETIME_SERIALIZER)
                 .deserializers(LOCAL_DATETIME_DESERIALIZER)
                 .serializationInclusion(JsonInclude.Include.NON_NULL)
+                .featuresToEnable()
                 .modulesToInstall(Hibernate5Module.class); // disables serialization of lazy collections
     }
 
