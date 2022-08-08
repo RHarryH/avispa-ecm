@@ -21,7 +21,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Slf4j
-public class Dictionary extends EcmConfig {
+public final class Dictionary extends EcmConfig {
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dictionary")

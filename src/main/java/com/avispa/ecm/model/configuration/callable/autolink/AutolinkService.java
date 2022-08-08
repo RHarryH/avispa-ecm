@@ -22,7 +22,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AutolinkService implements CallableConfigService<Autolink> {
+public final class AutolinkService implements CallableConfigService<Autolink> {
 
     private final ExpressionResolver expressionResolver;
     private final FolderService folderService;

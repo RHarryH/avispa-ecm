@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AutonameService implements CallableConfigService<Autoname> {
+public final class AutonameService implements CallableConfigService<Autoname> {
 
     private final ExpressionResolver expressionResolver;
 

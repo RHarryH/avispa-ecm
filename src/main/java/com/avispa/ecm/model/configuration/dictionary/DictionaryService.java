@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class DictionaryService extends AnnotationService {
+public final class DictionaryService extends AnnotationService {
     private final EcmConfigRepository<Dictionary> dictionaryRepository;
 
     public String getValueFromDictionary(Class<?> objectClass, String propertyName, String propertyValue) {
