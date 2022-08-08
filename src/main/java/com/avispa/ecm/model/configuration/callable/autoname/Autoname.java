@@ -15,7 +15,7 @@ import javax.persistence.Entity;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class Autoname extends EcmConfig implements CallableConfigObject {
+public final class Autoname extends EcmConfig implements CallableConfigObject {
     private String rule;
     private String propertyName;
 }

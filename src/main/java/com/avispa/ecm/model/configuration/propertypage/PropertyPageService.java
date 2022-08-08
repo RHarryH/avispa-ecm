@@ -1,5 +1,6 @@
 package com.avispa.ecm.model.configuration.propertypage;
 
+import com.avispa.ecm.model.configuration.ContentLoadable;
 import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import com.avispa.ecm.model.content.ContentService;
 import com.avispa.ecm.util.json.JsonValidator;
@@ -17,7 +18,7 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class PropertyPageService {
+public final class PropertyPageService implements ContentLoadable {
     private final ContentService contentService;
     private final ResourceLoader resourceLoader;
     private final JsonValidator jsonValidator;
@@ -29,6 +30,7 @@ public class PropertyPageService {
      * @param propertyPageName name of the property page object
      * @param sourceFileLocation location of the property page content file
      */
+    @Override
     public void loadContentTo(String propertyPageName, String sourceFileLocation) {
         loadContentTo(ecmObjectRepository.findByObjectName(propertyPageName).orElseThrow(), sourceFileLocation);
     }

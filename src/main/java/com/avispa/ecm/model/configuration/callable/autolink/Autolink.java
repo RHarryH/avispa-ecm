@@ -19,7 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class Autolink extends EcmConfig implements CallableConfigObject {
+public final class Autolink extends EcmConfig implements CallableConfigObject {
 
     @ElementCollection
     @OrderColumn

@@ -14,7 +14,7 @@ import javax.persistence.ManyToOne;
 @Entity
 @Getter
 @Setter
-public class Upsert extends EcmConfig {
+public final class Upsert extends EcmConfig {
     @ManyToOne
     private PropertyPage propertyPage;
 }

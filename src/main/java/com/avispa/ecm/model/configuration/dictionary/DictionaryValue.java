@@ -18,7 +18,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Entity
-public class DictionaryValue extends EcmEntity {
+public final class DictionaryValue extends EcmEntity {
     @ElementCollection
     private Map<String, String> columns;
 

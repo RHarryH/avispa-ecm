@@ -31,6 +31,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -91,16 +92,13 @@ class ContextServiceTest {
     }
 
     @Test
-    void findConfigurationsForContextAcceptingDocumentWhenInputJsonContainsNonExitingField() {
+    void throwExceptionWhenInputJsonContainsNonExitingField() {
         Document document = createDocument();
         Autoname autoname = createAutoname();
 
-        createContext(documentType, "{ \"objectName\": \"It's me\", \"testField\": \"Test string\"}", autoname);
+        createContext(documentType, "{ \"objectName\": \"It's me\", \"testString\": \"Test string\"}", autoname);
 
-        List<EcmConfig> configurations = contextService.getConfigurations(document);
-
-        assertFalse(configurations.isEmpty());
-        assertEquals(autoname.getId(), configurations.get(0).getId());
+        assertThrows(IllegalArgumentException.class, () -> contextService.getConfigurations(document));
     }
 
     @Test
