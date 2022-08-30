@@ -144,6 +144,31 @@ class ContextServiceTest {
         assertEquals(autoname.getId(), configurations.get(0).getId());
     }
 
+    @Test
+    void givenDocumentContextWithEmptyRuleAndNewDocument_whenGetConfigurations_thenReturnDocumentContext() {
+        Document document = new Document();
+        Autoname autoname = createAutoname();
+
+        createContext(documentType, "{}", autoname);
+
+        List<EcmConfig> configurations = contextService.getConfigurations(document);
+
+        assertFalse(configurations.isEmpty());
+        assertEquals(autoname.getId(), configurations.get(0).getId());
+    }
+
+    @Test
+    void givenTestDocumentContextWithEmptyRuleAndNewDocument_whenGetConfigurations_thenReturnNothing() {
+        Document document = new Document();
+        Autoname autoname = createAutoname();
+
+        createContext(testDocumentType, "{}", autoname);
+
+        List<EcmConfig> configurations = contextService.getConfigurations(document);
+
+        assertTrue(configurations.isEmpty());
+    }
+
     /**
      *  We're matching for document with 'It's another me' name while context requires 'It's me' document. This document
      *  exists in the repository.

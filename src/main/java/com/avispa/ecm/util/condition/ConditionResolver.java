@@ -32,23 +32,31 @@ class ConditionResolver {
     private final EntityManager entityManager;
 
     public boolean resolve(Conditions conditions, Class<? extends EcmObject> objectClass) {
-        TypedQuery<Long> query = getQuery(conditions, objectClass);
-
-        if(log.isDebugEnabled()) {
-            log.debug("Found: {}", query.getSingleResult());
+        if(conditions.isEmpty()) {
+            return true;
         }
 
-        return query.getSingleResult() > 0;
+        TypedQuery<Long> query = getQuery(conditions, objectClass);
+
+        return hasResult(query);
     }
 
     public boolean resolve(Conditions conditions, EcmObject object) {
-        TypedQuery<Long> query = getQuery(conditions, object);
-
-        if(log.isDebugEnabled()) {
-            log.debug("Found: {}", query.getSingleResult());
+        if(conditions.isEmpty()) {
+            return true;
         }
 
-        return query.getSingleResult() > 0;
+        TypedQuery<Long> query = getQuery(conditions, object);
+
+        return hasResult(query);
+    }
+
+    private boolean hasResult(TypedQuery<Long> query) {
+        long result = query.getSingleResult();
+        if(log.isDebugEnabled()) {
+            log.debug("Found: {}", result);
+        }
+        return result > 0;
     }
 
     private TypedQuery<Long> getQuery(Conditions conditions, Class<? extends EcmObject> objectClass) {
