@@ -16,4 +16,8 @@ public class Conditions {
     public void addElement(IConditionElement conditionElement) {
         conditionGroup.addElement(conditionElement);
     }
+
+    public boolean isEmpty() {
+        return conditionGroup.getConditions().isEmpty();
+    }
 }
