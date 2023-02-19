@@ -3,6 +3,7 @@ package com.avispa.ecm.model.content;
 import com.avispa.ecm.model.EcmEntity;
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.format.Format;
+import com.avispa.ecm.util.exception.EcmException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ public final class Content extends EcmObject {
     private String fileStorePath; // path in the file store (physical path)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="related_entity_id", nullable=false)
+    @JoinColumn(name = "related_entity_id", nullable = false)
     @Setter
     private EcmEntity relatedEntity;
 
@@ -67,6 +68,7 @@ public final class Content extends EcmObject {
             log.error("'{}' content file does not exist", fileStorePath);
         } catch (IOException e) {
             log.error("Can't delete '{}' content file", fileStorePath, e);
+            throw new EcmException("Can't delete content file because it is in use by a different process");
         }
     }
 

@@ -4,28 +4,30 @@ import com.avispa.ecm.model.content.Content;
 import com.avispa.ecm.model.content.ContentService;
 import com.avispa.ecm.model.filestore.FileStore;
 import com.avispa.ecm.model.format.Format;
-import com.documents4j.api.DocumentType;
-import com.documents4j.api.IConverter;
-import com.documents4j.job.LocalConverter;
+import com.avispa.ecm.model.format.FormatNotFoundException;
+import com.avispa.ecm.util.exception.EcmException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.office.OfficeManager;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
+import java.util.concurrent.Future;
 
-import static com.avispa.ecm.model.format.Format.DOCX;
-import static com.avispa.ecm.model.format.Format.ODT;
 import static com.avispa.ecm.model.format.Format.PDF;
 
 /**
@@ -35,26 +37,25 @@ import static com.avispa.ecm.model.format.Format.PDF;
 @Slf4j
 @RequiredArgsConstructor
 public class RenditionService {
-    private final OfficeManager officeManager;
     private final FileStore fileStore;
     private final ContentService contentService;
 
-    @Value("${avispa.ecm.rendition.use-always-office:true}")
-    private boolean renditionUseAlwaysOffice;
+    private final DocumentConverter documentConverter;
 
     /**
      * Generate PDF rendition based on the input file
      * @param content
      */
     @Async
-    public void generate(Content content) {
+    @Transactional(rollbackFor = EcmException.class)
+    public Future<Content> generate(Content content) {
         log.info("Requested PDF rendition");
 
         Format format = content.getFormat();
 
         if(format.isPdf()) {
             log.warn("Document is already a pdf. Ignoring");
-            return;
+            return new AsyncResult<>(null);
         }
 
         Path renditionFileStorePath = Path.of(fileStore.getRootPath(), UUID.randomUUID().toString());
@@ -64,29 +65,26 @@ public class RenditionService {
                 OutputStream outputStream = new FileOutputStream(renditionFileStorePath.toString())) {
                 String extension = format.getExtension();
 
-                if (renditionUseAlwaysOffice) {
-                    generateUsingSoffice(extension, inputStream, outputStream);
-                } else {
-                    switch (extension) {
-                        case DOCX: // does not require soffice
-                            IConverter converter = LocalConverter.builder().build();
-                            converter.convert(inputStream).as(DocumentType.DOCX).to(outputStream).as(DocumentType.PDF).execute();
-                        break;
-                        case ODT:
-                            generateUsingSoffice(extension, inputStream, outputStream);
-                            break;
-                        default:
-                            log.error("Unsupported extension: {}.", extension);
-
-                    }
-                }
+                generateWithSOffice(extension, inputStream, outputStream);
             }
 
-            contentService.createNewContent(PDF, content.getRelatedEntity(), renditionFileStorePath);
+            Content rendition = contentService.createNewContent(PDF, content.getRelatedEntity(), renditionFileStorePath);
 
             log.info("PDF rendition generated successfully");
+
+            return new AsyncResult<>(rendition);
         } catch (Exception e) {
-            log.error("PDF rendition cannot be generated", e);
+            String errorMessage = "PDF rendition cannot be generated";
+            log.error(errorMessage, e);
+
+            // rollback file creation when any rendition creation step has failed
+            try {
+                Files.deleteIfExists(renditionFileStorePath);
+            } catch (IOException ex) {
+                log.error("Can't delete '{} 'rendition file", renditionFileStorePath);
+            }
+
+            throw new EcmException(errorMessage);
         }
     }
 
@@ -96,16 +94,25 @@ public class RenditionService {
      * @param inputStream original file stream
      * @param outputStream rendition file stream
      * @throws OfficeException
+     * @throws FileNotFoundException
      */
-    private void generateUsingSoffice(String extension, InputStream inputStream, OutputStream outputStream) throws OfficeException {
+    private void generateWithSOffice(String extension, InputStream inputStream, OutputStream outputStream) throws OfficeException, FormatNotFoundException {
+        final DocumentFormat sourceFormat =
+                DefaultDocumentFormatRegistry.getFormatByExtension(extension);
         final DocumentFormat targetFormat =
                 DefaultDocumentFormatRegistry.getFormatByExtension(PDF);
 
-        org.jodconverter.local.LocalConverter
-                .make(officeManager)
+        if(null == sourceFormat) {
+            throw new FormatNotFoundException("Extension not supported by the rendition service: " + extension);
+        }
+
+        if(null == targetFormat) {
+            throw new FormatNotFoundException("Can't find PDF format");
+        }
+
+        documentConverter
                 .convert(inputStream)
-                .as(DefaultDocumentFormatRegistry.getFormatByExtension(
-                        extension))
+                .as(sourceFormat)
                 .to(outputStream)
                 .as(targetFormat)
                 .execute();

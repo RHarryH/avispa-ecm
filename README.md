@@ -2,6 +2,11 @@
 
 Small framework for implementing ECM (Enterprise Content Management) solution.
 
+## Rendition generating
+
+Rendition is the source document converted to different format (for instance `.docx` to `.odt`). 
+In this ECM context it is always conversion from any format supported by `JODConverter` library to PDF.
+
 ## Conditions processing
 
 Conditions provide a way to define simple queries without the need to know languages like SQL. 

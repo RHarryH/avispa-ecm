@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author Rafał Hiszpański
  */
-@DataJpaTest(properties = "spring.datasource.initialization-mode=never")
+@DataJpaTest(properties = "spring.sql.init.mode=never")
 @AutoConfigureJson
 @Sql("/basic-configuration.sql")
 @Import({ContextService.class,

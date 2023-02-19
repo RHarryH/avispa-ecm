@@ -42,14 +42,12 @@ public class FileStoreConfiguration {
      * @return
      */
     private FileStore createFileStore(String fileStoreName, String fileStorePath, FileStoreRepository fileStoreRepository) {
-        FileStore fileStore;
-
-        Path p = Paths.get(fileStorePath);
+        Path p = Path.of(fileStorePath);
         if (!p.isAbsolute()) {
             fileStorePath = Path.of(System.getProperty("user.home"), fileStorePath).toString();
         }
 
-        fileStore = new FileStore();
+        FileStore fileStore = new FileStore();
         fileStore.setObjectName(fileStoreName);
         fileStore.setRootPath(fileStorePath);
         fileStoreRepository.save(fileStore);
