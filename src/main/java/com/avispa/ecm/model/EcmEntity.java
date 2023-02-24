@@ -19,6 +19,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.Version;
 import java.io.Serializable;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -63,13 +65,26 @@ public abstract class EcmEntity implements Serializable {
     }
 
     /**
+     * Assign content to the contents set
+     * @param content
+     */
+    public void addContent(Content content) {
+        if(null == this.contents) {
+            this.contents = new HashSet<>();
+        }
+        this.contents.add(content);
+    }
+
+    /**
      * Returns primary content. Always PDF rendition has precedence over other formats. If not present then first
-     * content file will be considered as primary.
+     * content file will be considered as primary. The first content file means the one with the earliest
+     * creation date.
      * @return
      */
     public Content getPrimaryContent() {
-        return null == contents ? null :
-                contents.stream().filter(Content::isPdf).findFirst().orElse(contents.stream().findFirst().orElse(null));
+        return null == this.contents ? null :
+                this.contents.stream().filter(Content::isPdf).findFirst()
+                        .orElse(contents.stream().min(Comparator.comparing(EcmObject::getCreationDate)).orElse(null));
     }
 
     @Override

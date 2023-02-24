@@ -12,15 +12,11 @@ public abstract class ValueFunction implements Function {
 
     protected final String returnValue(String propertyName, Object value) {
         if(null == value) {
-            if(log.isDebugEnabled()) {
-                log.debug("'{}' property value is null or property does not exist", propertyName);
-            }
+            log.debug("'{}' property value is null or property does not exist", propertyName);
 
             return "";
         } else {
-            if(log.isDebugEnabled()) {
-                log.debug("'{}' property value found: {}", propertyName, value);
-            }
+            log.debug("'{}' property value found: {}", propertyName, value);
 
             return value.toString();
         }

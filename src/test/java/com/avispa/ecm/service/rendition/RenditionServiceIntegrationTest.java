@@ -37,10 +37,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(properties = "jodconverter.local.existing-process-action=connect_or_kill")
 @ActiveProfiles(profiles = {"test"})
 class RenditionServiceIntegrationTest {
+    private static final String fileStorePath = Path.of("target", "rendition-test").toAbsolutePath().toString();
+
     @DynamicPropertySource
     static void dynamicProperties(DynamicPropertyRegistry registry) {
-        registry.add("avispa.ecm.file-store.path", () ->
-            Path.of(Path.of("target").toAbsolutePath().toString(), "rendition-test").toString());
+        registry.add("avispa.ecm.file-store.path", () -> fileStorePath);
     }
 
     @Autowired

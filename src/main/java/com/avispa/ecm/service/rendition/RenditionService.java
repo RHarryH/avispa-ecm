@@ -6,6 +6,7 @@ import com.avispa.ecm.model.filestore.FileStore;
 import com.avispa.ecm.model.format.Format;
 import com.avispa.ecm.model.format.FormatNotFoundException;
 import com.avispa.ecm.util.exception.EcmException;
+import com.avispa.ecm.util.transaction.TransactionUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jodconverter.core.DocumentConverter;
@@ -18,12 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.Future;
@@ -47,7 +45,7 @@ public class RenditionService {
      * @param content
      */
     @Async
-    @Transactional(rollbackFor = EcmException.class)
+    @Transactional
     public Future<Content> generate(Content content) {
         log.info("Requested PDF rendition");
 
@@ -59,14 +57,13 @@ public class RenditionService {
         }
 
         Path renditionFileStorePath = Path.of(fileStore.getRootPath(), UUID.randomUUID().toString());
+        TransactionUtils.registerFileRollback(renditionFileStorePath);
 
-        try  {
-            try(InputStream inputStream = new FileInputStream(content.getFileStorePath());
-                OutputStream outputStream = new FileOutputStream(renditionFileStorePath.toString())) {
-                String extension = format.getExtension();
+        try(InputStream inputStream = new FileInputStream(content.getFileStorePath());
+            OutputStream outputStream = new FileOutputStream(renditionFileStorePath.toString())) {
+            String extension = format.getExtension();
 
-                generateWithSOffice(extension, inputStream, outputStream);
-            }
+            generateWithSOffice(extension, inputStream, outputStream);
 
             Content rendition = contentService.createNewContent(PDF, content.getRelatedEntity(), renditionFileStorePath);
 
@@ -76,14 +73,6 @@ public class RenditionService {
         } catch (Exception e) {
             String errorMessage = "PDF rendition cannot be generated";
             log.error(errorMessage, e);
-
-            // rollback file creation when any rendition creation step has failed
-            try {
-                Files.deleteIfExists(renditionFileStorePath);
-            } catch (IOException ex) {
-                log.error("Can't delete '{} 'rendition file", renditionFileStorePath);
-            }
-
             throw new EcmException(errorMessage);
         }
     }
@@ -94,18 +83,17 @@ public class RenditionService {
      * @param inputStream original file stream
      * @param outputStream rendition file stream
      * @throws OfficeException
-     * @throws FileNotFoundException
+     * @throws FormatNotFoundException
      */
     private void generateWithSOffice(String extension, InputStream inputStream, OutputStream outputStream) throws OfficeException, FormatNotFoundException {
         final DocumentFormat sourceFormat =
                 DefaultDocumentFormatRegistry.getFormatByExtension(extension);
-        final DocumentFormat targetFormat =
-                DefaultDocumentFormatRegistry.getFormatByExtension(PDF);
-
         if(null == sourceFormat) {
             throw new FormatNotFoundException("Extension not supported by the rendition service: " + extension);
         }
 
+        final DocumentFormat targetFormat =
+                DefaultDocumentFormatRegistry.getFormatByExtension(PDF);
         if(null == targetFormat) {
             throw new FormatNotFoundException("Can't find PDF format");
         }
