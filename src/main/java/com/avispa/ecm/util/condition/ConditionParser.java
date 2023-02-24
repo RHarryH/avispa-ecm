@@ -37,9 +37,7 @@ class ConditionParser {
      * @return
      */
     public Conditions parse(String conditions) {
-        if(log.isDebugEnabled()) {
-            log.debug("Conditions: {}", conditions);
-        }
+        log.debug("Conditions: {}", conditions);
 
         boolean jsonValid = jsonValidator.validate(new ByteArrayInputStream(conditions.getBytes()), "/json-schemas/context/context-rule.json");
         if(!jsonValid) {
@@ -95,9 +93,7 @@ class ConditionParser {
         String key = jsonField.getKey();
         JsonNode value = jsonField.getValue();
 
-        if(log.isDebugEnabled()) {
-            log.debug("Field: key => {}, value => {}", key, value);
-        }
+        log.debug("Field: key => {}, value => {}", key, value);
 
         if(value.isArray()) {
             ConditionGroup newConditionGroup = getConditionGroup(key, isRoot, conditionGroup);
@@ -193,9 +189,7 @@ class ConditionParser {
             case NUMBER:
                 return ConditionValue.number(value.numberValue());
             default:
-                if(log.isDebugEnabled()) {
-                    log.debug("Unsupported node type: {}", nodeType);
-                }
+                log.debug("Unsupported node type: {}", nodeType);
                 break;
         }
         return null;

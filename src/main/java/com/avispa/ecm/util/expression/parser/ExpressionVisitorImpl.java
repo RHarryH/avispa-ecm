@@ -20,17 +20,13 @@ public class ExpressionVisitorImpl extends ExpressionBaseVisitor<String> {
         String functionSignature = ctx.getText();
         String functionName = ctx.FUNCTION_NAME().getText();
 
-        if(log.isDebugEnabled()) {
-            log.debug("Function name: {}", functionName);
-        }
+        log.debug("Function name: {}", functionName);
 
         List<String> params = new ArrayList<>();
 
         processParams(ctx, params);
 
-        if(log.isDebugEnabled()) {
-            log.debug("Function params: {}", params);
-        }
+        log.debug("Function params: {}", params);
 
         String returnedValue = FunctionFactory.resolve(functionName.substring(1), params.toArray(new String[0]), object);
         if(null != returnedValue) {
@@ -45,9 +41,9 @@ public class ExpressionVisitorImpl extends ExpressionBaseVisitor<String> {
         if(null != ctx.params()) {
             for (ExpressionParser.ExpressionContext child : ctx.params().expression()) {
                 String param = this.visit(child);
-                if (log.isDebugEnabled()) {
-                    log.debug("Param: {}", param);
-                }
+
+                log.debug("Param: {}", param);
+
                 params.add(param);
             }
         }
@@ -58,18 +54,18 @@ public class ExpressionVisitorImpl extends ExpressionBaseVisitor<String> {
         String left = this.visit(ctx.left);
         String right = this.visit(ctx.right);
         String result = left + right;
-        if(log.isDebugEnabled()) {
-            log.debug("Concatenate result: {} ({} + {})", result, left, right);
-        }
+
+        log.debug("Concatenate result: {} ({} + {})", result, left, right);
+
         return result;
     }
 
     @Override
     public String visitTextExpr(ExpressionParser.TextExprContext ctx) {
         String string = ctx.getText();
-        if(log.isDebugEnabled()) {
-            log.debug("String: {}", string);
-        }
+
+        log.debug("String: {}", string);
+
         return string.substring(1, string.length() - 1);
     }
 }

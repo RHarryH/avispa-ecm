@@ -163,9 +163,7 @@ public class PropertyPageMapper {
                 java.lang.reflect.Type[] fieldArgTypes = aType.getActualTypeArguments();
                 if(fieldArgTypes.length > 0) {
                     Class<?> rowClass = (Class<?>) fieldArgTypes[0];
-                    if(log.isDebugEnabled()) {
-                        log.debug("Found table type class: '{}'", rowClass);
-                    }
+                    log.debug("Found table type class: '{}'", rowClass);
                     return rowClass;
                 } else {
                     log.error("Type of the '{}' not found", table.getProperty());
@@ -285,9 +283,7 @@ public class PropertyPageMapper {
     }
 
     private void loadValuesFromDictionary(ComboRadio comboRadio, Dictionary dictionary) {
-        if(log.isDebugEnabled()) {
-            log.debug("Loading values from {} dictionary", dictionary.getObjectName());
-        }
+        log.debug("Loading values from {} dictionary", dictionary.getObjectName());
 
         Map<String, String> values = dictionary.getValues().stream()
                 .filter(value -> StringUtils.isNotEmpty(value.getLabel())) // filter out incorrect values with empty object name

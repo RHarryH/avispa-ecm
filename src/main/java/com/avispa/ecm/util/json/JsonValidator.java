@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Set;
 
 /**
@@ -44,10 +45,11 @@ public class JsonValidator {
 
             JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V201909);
             Resource resourceSchema = new ClassPathResource(jsonSchemaPath);
-            if(log.isDebugEnabled()) {
-                log.debug("URI to JSON Schema: " + resourceSchema.getURI());
-            }
-            JsonSchema jsonSchema = factory.getSchema(resourceSchema.getURI());
+            URI resourceSchemaURI = resourceSchema.getURI();
+
+            log.debug("URI to JSON Schema: " + resourceSchemaURI);
+
+            JsonSchema jsonSchema = factory.getSchema(resourceSchemaURI);
 
             jsonSchema.initializeValidators();
 

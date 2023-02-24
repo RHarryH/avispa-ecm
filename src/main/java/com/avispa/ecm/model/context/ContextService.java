@@ -30,33 +30,34 @@ public class ContextService {
     private final ConditionService conditionService;
     private final List<CallableConfigService> callableConfigServices;
 
-    /**
-     * Automatically applies configurations of selected classes
-     * @param object
-     * @param configs
-     * @param <T>
-     * @param <C>
-     */
-    @SafeVarargs
-    public final <T extends EcmObject, C extends CallableConfigObject> void applyMatchingConfigurations(T object, Class<? extends C>... configs) {
-        List<Class<? extends C>> configsList = List.of(configs);
+    public <T extends EcmObject, C extends CallableConfigObject> void applyMatchingConfigurations(T object, Class<? extends C> config) {
+        applyMatchingConfigurations(object, List.of(config));
+    }
 
+        /**
+         * Automatically applies configurations of selected classes
+         * @param object
+         * @param configs
+         * @param <T>
+         * @param <C>
+         */
+    public <T extends EcmObject, C extends CallableConfigObject> void applyMatchingConfigurations(T object, List<Class<? extends C>> configs) {
         Set<EcmConfig> availableConfigurations = getConfigurations(object).stream()
-                .filter(e -> configsList.contains(e.getClass()))// filter only elements from the list
+                .filter(e -> configs.contains(e.getClass())) // filter only elements from the list
                 .collect(Collectors.toSet());
 
-        debugLog("Configuration services {}", callableConfigServices);
+        log.debug("Configuration services {}", callableConfigServices);
 
-        for (CallableConfigService<CallableConfigObject> ecmConfigService : callableConfigServices) {
+        for (CallableConfigService ecmConfigService : callableConfigServices) {
             Class<?> ecmConfigObject = getClassOfEcmConfigObjectSupportedByService(ecmConfigService);
 
             for (EcmConfig configObject : availableConfigurations) {
                 if(configObject.getClass().equals(ecmConfigObject)) {
 
-                    debugLog("{} object retrieved from the context is applicable for the service {}", ecmConfigService.getClass(), configObject.getClass().getSimpleName());
+                    log.debug("{} object retrieved from the context is applicable for the service {}", ecmConfigService.getClass(), configObject.getClass().getSimpleName());
 
-                    if (configsList.contains(configObject.getClass())) {
-                        debugLog("Applying the configuration using {} service", ecmConfigService.getClass().getSimpleName());
+                    if (configs.contains(configObject.getClass())) {
+                        log.debug("Applying the configuration using {} service", ecmConfigService.getClass().getSimpleName());
 
                         ecmConfigService.apply((CallableConfigObject) configObject, object);
                     }
@@ -138,11 +139,7 @@ public class ContextService {
         List<Context> contexts = contextRepository.findAllByOrderByImportanceDesc();
 
         return contexts.stream().filter(context -> matches(context, object))
-                .peek(context -> {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Matched context: '{}'", context.getObjectName());
-                    }
-                })
+                .peek(context -> log.debug("Matched context: '{}'", context.getObjectName()))
                 .map(Context::getEcmConfigs)
                 .flatMap(Collection::stream);
     }
@@ -167,9 +164,7 @@ public class ContextService {
 
         boolean matches = conditionService.hasObjectMatching(context.getMatchRule(), object);
 
-        if(log.isDebugEnabled()) {
-            log.debug("Object with id '{}' matches rule '{}': {}", object.getId(), context.getMatchRule(), matches);
-        }
+        log.debug("Object with id '{}' matches rule '{}': {}", object.getId(), context.getMatchRule(), matches);
 
         return matches;
     }
@@ -203,13 +198,7 @@ public class ContextService {
         if(null == ecmConfigObject) {
             throw new IllegalStateException(String.format("Can't evaluate object of %s service", callableConfigService.getClass().getSimpleName()));
         }
-        debugLog( "{} is applicable for {} configuration object", ecmConfigObject, callableConfigService.getClass().getSimpleName());
+        log.debug( "{} is applicable for {} configuration object", ecmConfigObject, callableConfigService.getClass().getSimpleName());
         return ecmConfigObject;
-    }
-
-    private void debugLog(String message, Object... objects) {
-        if (log.isDebugEnabled()) {
-            log.debug(message, objects);
-        }
     }
 }

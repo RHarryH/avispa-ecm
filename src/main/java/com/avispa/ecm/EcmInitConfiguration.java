@@ -21,7 +21,7 @@ public class EcmInitConfiguration {
     //@EventListener(ApplicationReadyEvent.class)
     @EventListener(ContextRefreshedEvent.class) // after bean creation but before the server starts
     public void loadDefaultConfiguration() {
-        propertyPageService.loadContentTo("Folder property page", "classpath:/content/Folder property page content.json");
-        propertyPageService.loadContentTo("Document property page", "classpath:/content/Document property page content.json");
+        propertyPageService.loadContent("Folder property page", "classpath:/content/Folder property page content.json");
+        propertyPageService.loadContent("Document property page", "classpath:/content/Document property page content.json");
     }
 }

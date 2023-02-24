@@ -6,6 +6,7 @@ import com.avispa.ecm.model.filestore.FileStore;
 import com.avispa.ecm.model.format.Format;
 import com.avispa.ecm.model.format.FormatNotFoundException;
 import com.avispa.ecm.model.format.FormatRepository;
+import com.avispa.ecm.util.exception.EcmException;
 import com.avispa.ecm.util.exception.RepositoryCorruptionError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,24 +42,29 @@ public class ContentService {
      * @param relatedObject object to which we want to attach the content
      * @param sourceFileLocation location of the file
      */
-    public void loadContentTo(EcmEntity relatedObject, String sourceFileLocation) {
-        loadContentTo(relatedObject, resourceLoader.getResource(sourceFileLocation));
+    @Transactional
+    public void loadContentOf(EcmEntity relatedObject, String sourceFileLocation) {
+        loadContentOf(relatedObject, resourceLoader.getResource(sourceFileLocation));
     }
 
-    public void loadContentTo(EcmEntity relatedObject, Resource resource) {
-        if(!existsByRelatedObjectId(relatedObject.getId())) {
+    @Transactional
+    public void loadContentOf(EcmEntity relatedObject, Resource resource) {
+        if (!existsByRelatedObjectId(relatedObject.getId())) {
             String fileName = resource.getFilename();
             String extension = FilenameUtils.getExtension(fileName);
 
-            Path fileStorePath = save(resource);
-
+            Path fileStorePath = saveToFileStore(resource);
             createNewContent(extension, relatedObject, fileStorePath);
         } else {
             log.error("'{}' object already has its content", relatedObject.getObjectName());
         }
     }
 
-    private Path save(Resource resource) {
+    private boolean existsByRelatedObjectId(UUID id) {
+        return contentRepository.existsByRelatedEntityId(id);
+    }
+
+    private Path saveToFileStore(Resource resource) {
         Path fullFileStorePath = Paths.get(fileStore.getRootPath(), UUID.randomUUID().toString());
 
         try {
@@ -66,13 +73,15 @@ public class ContentService {
             try {
                 log.error("Unable to copy content from '{}' to '{}'", resource.getURL(), fullFileStorePath, e);
             } catch (IOException ex) {
-                log.error("Can't get urls content path", e);
+                log.error("Can't get urls content path", ex);
             }
+            throw new EcmException("Can't save the content in the file store", e);
         }
 
         return fullFileStorePath;
     }
 
+    @Transactional
     public Content createNewContent(String extension, EcmEntity relatedObject, Path fileStorePath) {
         Format format = formatRepository.findByExtension(extension);
 
@@ -82,11 +91,9 @@ public class ContentService {
         content.setRelatedEntity(relatedObject);
         content.setFileStorePath(fileStorePath.toString());
 
-        return contentRepository.save(content);
-    }
+        relatedObject.addContent(content);
 
-    public boolean existsByRelatedObjectId(UUID id) {
-        return contentRepository.existsByRelatedEntityId(id);
+        return contentRepository.save(content);
     }
 
     public Content findPdfRenditionByDocumentId(UUID id) {

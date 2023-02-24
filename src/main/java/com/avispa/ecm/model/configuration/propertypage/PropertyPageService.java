@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
@@ -18,7 +19,7 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public final class PropertyPageService implements ContentLoadable {
+public class PropertyPageService implements ContentLoadable {
     private final ContentService contentService;
     private final ResourceLoader resourceLoader;
     private final JsonValidator jsonValidator;
@@ -31,8 +32,9 @@ public final class PropertyPageService implements ContentLoadable {
      * @param sourceFileLocation location of the property page content file
      */
     @Override
-    public void loadContentTo(String propertyPageName, String sourceFileLocation) {
-        loadContentTo(ecmObjectRepository.findByObjectName(propertyPageName).orElseThrow(), sourceFileLocation);
+    @Transactional
+    public void loadContent(String propertyPageName, String sourceFileLocation) {
+        loadContent(ecmObjectRepository.findByObjectName(propertyPageName).orElseThrow(), sourceFileLocation);
     }
 
     /**
@@ -41,12 +43,12 @@ public final class PropertyPageService implements ContentLoadable {
      * @param propertyPage property page object to which we want to attach the object
      * @param sourceFileLocation location of the property page content file
      */
-    private void loadContentTo(PropertyPage propertyPage, String sourceFileLocation) {
+    private void loadContent(PropertyPage propertyPage, String sourceFileLocation) {
         Resource resource = resourceLoader.getResource(sourceFileLocation);
 
         try {
             if(jsonValidator.validate(resource.getInputStream(), "/json-schemas/property-page-content.json")) {
-                contentService.loadContentTo(propertyPage, resource);
+                contentService.loadContentOf(propertyPage, resource);
             } else {
                 log.error("Property page content ({}) wasn't loaded because it does not match JSON schema", sourceFileLocation);
             }

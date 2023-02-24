@@ -53,9 +53,9 @@ class ConditionResolver {
 
     private boolean hasResult(TypedQuery<Long> query) {
         long result = query.getSingleResult();
-        if(log.isDebugEnabled()) {
-            log.debug("Found: {}", result);
-        }
+
+        log.debug("Found: {}", result);
+
         return result > 0;
     }
 
