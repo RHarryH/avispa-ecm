@@ -13,7 +13,7 @@ import javax.persistence.Entity;
 @Entity
 @Getter
 @Setter
-public final class FileStore extends EcmObject {
+public class FileStore extends EcmObject {
     @Column(nullable = false)
     private String rootPath;
 }

@@ -8,5 +8,5 @@ import javax.persistence.Entity;
  * @author Rafał Hiszpański
  */
 @Entity
-public final class PropertyPage extends EcmConfig {
+public class PropertyPage extends EcmConfig {
 }

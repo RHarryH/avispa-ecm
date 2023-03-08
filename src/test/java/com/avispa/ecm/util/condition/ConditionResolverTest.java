@@ -34,10 +34,11 @@ class ConditionResolverTest {
     @BeforeEach
     void init(@Autowired EcmObjectRepository<TestDocument> repository) {
         testDocument = new TestDocument();
+        testDocument.setObjectName("Object Name");
         testDocument.setId(UUID.randomUUID());
         testDocument.setTestString("TEST");
         testDocument.setTestInt(12);
-        testDocument.setNestedObject(new NestedObject("TEST"));
+        testDocument.setNestedObject(new NestedObject("Nested Object", "TEST"));
         repository.save(testDocument);
     }
 

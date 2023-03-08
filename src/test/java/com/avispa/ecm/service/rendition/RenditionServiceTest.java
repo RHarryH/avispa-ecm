@@ -22,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,6 +91,8 @@ class RenditionServiceTest {
         when(contentRepository.save(any(Content.class))).thenAnswer(i -> i.getArgument(0));
 
         officeManager.start();
+
+        TransactionSynchronizationManager.initSynchronization();
     }
 
     @AfterEach
@@ -97,6 +100,8 @@ class RenditionServiceTest {
         officeManager.stop();
 
         FileUtils.cleanDirectory(new File(fileStore.getRootPath()));
+
+        TransactionSynchronizationManager.clear();
     }
 
     @Test

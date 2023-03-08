@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @SpringBootTest
 @Slf4j
 class EcmApplicationTests {
@@ -21,7 +23,6 @@ class EcmApplicationTests {
 		fileStore.setRootPath("C:/TestPath");
 		repository.save(fileStore);
 
-		log.info("Result: {}", fileStore.getId());
+		assertNotNull(fileStore.getId());
 	}
-
 }

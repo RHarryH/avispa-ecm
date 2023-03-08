@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "additionalProperties": false,
+  "description": "Schema for upsert configuration",
+  "type": "object",
+  "properties": {
+    "upsert": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "propertyPage": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "name",
+        "propertyPage"
+      ]
+    }
+  },
+  "required": [
+    "upsert"
+  ]
+}

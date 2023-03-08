@@ -1,5 +1,6 @@
 HELP.md
 target/
+src/test/resources/configuration/ecm_**
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

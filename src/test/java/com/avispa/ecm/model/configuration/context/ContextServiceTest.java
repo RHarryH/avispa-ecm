@@ -1,4 +1,4 @@
-package com.avispa.ecm.model.context;
+package com.avispa.ecm.model.configuration.context;
 
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.EcmObjectRepository;
@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,9 +36,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author Rafał Hiszpański
  */
-@DataJpaTest(properties = "spring.sql.init.mode=never")
+@DataJpaTest
 @AutoConfigureJson
-@Sql("/basic-configuration.sql")
 @Import({ContextService.class,
         // required to add service to list of available services
         AutonameService.class,
@@ -359,6 +357,6 @@ class ContextServiceTest {
         context.setType(type);
         context.setMatchRule(rule);
         context.setImportance(importance);
-        ecmObjectRepository.save(context);
+        ecmConfigRepository.save(context);
     }
 }

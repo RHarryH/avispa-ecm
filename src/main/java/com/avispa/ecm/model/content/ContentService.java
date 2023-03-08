@@ -1,7 +1,6 @@
 package com.avispa.ecm.model.content;
 
 import com.avispa.ecm.model.EcmEntity;
-import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.filestore.FileStore;
 import com.avispa.ecm.model.format.Format;
 import com.avispa.ecm.model.format.FormatNotFoundException;
@@ -11,12 +10,12 @@ import com.avispa.ecm.util.exception.RepositoryCorruptionError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,29 +33,39 @@ public class ContentService {
     private final ContentRepository contentRepository;
     private final FormatRepository formatRepository;
     private final FileStore fileStore;
-    private final ResourceLoader resourceLoader;
 
     /**
      * Loads any content from provided path to the object
      * Works with classpath: and file: pseudo protocols
      * @param relatedObject object to which we want to attach the content
-     * @param sourceFileLocation location of the file
+     * @param contentPath location of the file
      */
     @Transactional
-    public void loadContentOf(EcmEntity relatedObject, String sourceFileLocation) {
-        loadContentOf(relatedObject, resourceLoader.getResource(sourceFileLocation));
+    public void loadContentOf(EcmEntity relatedObject, Path contentPath) {
+        loadContentOf(relatedObject, contentPath, false);
     }
 
     @Transactional
-    public void loadContentOf(EcmEntity relatedObject, Resource resource) {
-        if (!existsByRelatedObjectId(relatedObject.getId())) {
-            String fileName = resource.getFilename();
-            String extension = FilenameUtils.getExtension(fileName);
+    public void loadContentOf(EcmEntity relatedEntity, Path contentPath, boolean overwrite) {
+        if(existsByRelatedObjectId(relatedEntity.getId())) {
+            if(overwrite) {
+                deleteByRelatedEntity(relatedEntity);
+            } else {
+                log.error("'{}' object already has its content", relatedEntity.getObjectName());
+                return;
+            }
+        }
 
-            Path fileStorePath = saveToFileStore(resource);
-            createNewContent(extension, relatedObject, fileStorePath);
-        } else {
-            log.error("'{}' object already has its content", relatedObject.getObjectName());
+        String fileName = contentPath.getFileName().toString();
+        String extension = FilenameUtils.getExtension(fileName);
+
+        try {
+            byte[] bytes = Files.readAllBytes(contentPath);
+
+            Path fileStorePath = saveToFileStore(new ByteArrayInputStream(bytes));
+            createNewContent(extension, relatedEntity, fileStorePath);
+        } catch (IOException e) {
+            throw new EcmException("Can't load '" + contentPath + "' content", e);
         }
     }
 
@@ -64,17 +73,12 @@ public class ContentService {
         return contentRepository.existsByRelatedEntityId(id);
     }
 
-    private Path saveToFileStore(Resource resource) {
+    private Path saveToFileStore(InputStream resource) {
         Path fullFileStorePath = Paths.get(fileStore.getRootPath(), UUID.randomUUID().toString());
 
         try {
-            Files.copy(resource.getInputStream(), fullFileStorePath);
+            Files.copy(resource, fullFileStorePath);
         } catch(IOException e) {
-            try {
-                log.error("Unable to copy content from '{}' to '{}'", resource.getURL(), fullFileStorePath, e);
-            } catch (IOException ex) {
-                log.error("Can't get urls content path", ex);
-            }
             throw new EcmException("Can't save the content in the file store", e);
         }
 
@@ -104,7 +108,8 @@ public class ContentService {
         }
     }
 
-    public void deleteByRelatedObject(EcmObject object) {
-        contentRepository.deleteByRelatedEntity(object);
+    public void deleteByRelatedEntity(EcmEntity entity) {
+        var deletedContents = contentRepository.deleteByRelatedEntity(entity);
+        deletedContents.forEach(entity.getContents()::remove);
     }
 }

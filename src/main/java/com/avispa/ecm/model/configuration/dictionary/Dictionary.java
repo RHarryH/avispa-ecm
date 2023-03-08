@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -21,11 +22,12 @@ import java.util.UUID;
 @Setter
 @Entity
 @Slf4j
-public final class Dictionary extends EcmConfig {
+public class Dictionary extends EcmConfig {
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dictionary")
     @Setter(AccessLevel.NONE)
+    @Column(nullable = false)
     private List<DictionaryValue> values;
 
     public String getLabel(String key) {

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 /**
@@ -16,5 +17,6 @@ import javax.persistence.ManyToOne;
 @Setter
 public final class Upsert extends EcmConfig {
     @ManyToOne
+    @JoinColumn(nullable = false)
     private PropertyPage propertyPage;
 }
