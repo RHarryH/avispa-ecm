@@ -1,5 +1,7 @@
 package com.avispa.ecm.util.reflect;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -18,11 +20,8 @@ import java.util.Map;
  * @author Rafał Hiszpański
  */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PropertyUtils {
-
-    private PropertyUtils() {
-
-    }
 
     /**
      * Converts object to map where the key is a property name and value is the field value.

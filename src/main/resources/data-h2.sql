@@ -34,12 +34,6 @@ insert into ecm_entity (id, object_name, version) values (@FormatTypeId, 'Format
 insert into ecm_object (id, creation_date, modification_date) values (@FormatTypeId, current_timestamp, current_timestamp);
 insert into type (id, class_name) values (@FormatTypeId, 'com.avispa.ecm.model.format.Format');
 
--- add Context type
-SET @ContextTypeId=random_uuid();
-insert into ecm_entity (id, object_name, version) values (@ContextTypeId, 'Context', 0);
-insert into ecm_object (id, creation_date, modification_date) values (@ContextTypeId, current_timestamp, current_timestamp);
-insert into type (id, class_name) values (@ContextTypeId, 'com.avispa.ecm.model.context.Context');
-
 -- add Autolink type
 SET @AutolinkTypeId=random_uuid();
 insert into ecm_entity (id, object_name, version) values (@AutolinkTypeId, 'Autolink', 0);
@@ -52,11 +46,29 @@ insert into ecm_entity (id, object_name, version) values (@AutonameTypeId, 'Auto
 insert into ecm_object (id, creation_date, modification_date) values (@AutonameTypeId, current_timestamp, current_timestamp);
 insert into type (id, class_name) values (@AutonameTypeId, 'com.avispa.ecm.model.configuration.callable.autoname.Autoname');
 
+-- add Context type
+SET @ContextTypeId=random_uuid();
+insert into ecm_entity (id, object_name, version) values (@ContextTypeId, 'Context', 0);
+insert into ecm_object (id, creation_date, modification_date) values (@ContextTypeId, current_timestamp, current_timestamp);
+insert into type (id, class_name) values (@ContextTypeId, 'com.avispa.ecm.model.configuration.context.Context');
+
+-- add Dictionary type
+SET @DictionaryTypeId=random_uuid();
+insert into ecm_entity (id, object_name, version) values (@DictionaryTypeId, 'Dictionary', 0);
+insert into ecm_object (id, creation_date, modification_date) values (@DictionaryTypeId, current_timestamp, current_timestamp);
+insert into type (id, class_name) values (@DictionaryTypeId, 'com.avispa.ecm.model.configuration.dictionary.Dictionary');
+
 -- add Property Page type
 SET @PropertyPageTypeId=random_uuid();
 insert into ecm_entity (id, object_name, version) values (@PropertyPageTypeId, 'Property Page', 0);
 insert into ecm_object (id, creation_date, modification_date) values (@PropertyPageTypeId, current_timestamp, current_timestamp);
 insert into type (id, class_name) values (@PropertyPageTypeId, 'com.avispa.ecm.model.configuration.propertypage.PropertyPage');
+
+-- add Template type
+SET @TemplateTypeId=random_uuid();
+insert into ecm_entity (id, object_name, version) values (@TemplateTypeId, 'Template', 0);
+insert into ecm_object (id, creation_date, modification_date) values (@TemplateTypeId, current_timestamp, current_timestamp);
+insert into type (id, class_name) values (@TemplateTypeId, 'com.avispa.ecm.model.configuration.template.Template');
 
 -- add Upsert type
 SET @UpsertTypeId=random_uuid();
@@ -117,33 +129,3 @@ SET @RarFormatId=random_uuid();
 insert into ecm_entity (id, object_name, version) values (@RarFormatId, 'rar', 0);
 insert into ecm_object (id, creation_date, modification_date) values (@RarFormatId, current_timestamp, current_timestamp);
 insert into format (id, description, mime_type) values (@RarFormatId, 'RAR archive', 'application/vnd.rar');
-
--- FOLDER CONTEXT
-SET @FolderContextId=random_uuid();
-insert into ecm_entity (id, object_name, version) values (@FolderContextId, 'Folder context', 0);
-insert into ecm_object (id) values (@FolderContextId);
-insert into context (id, type_id, importance) values (@FolderContextId, @FolderTypeId, 0);
-
--- DOCUMENT CONTEXT
-SET @DocumentContextId=random_uuid();
-insert into ecm_entity (id, object_name, version) values (@DocumentContextId, 'Document context', 0);
-insert into ecm_object (id) values (@DocumentContextId);
-insert into context (id, type_id, importance) values (@DocumentContextId, @DocumentTypeId, 1);
-
--- FOLDER PROPERTY PAGE
-SET @FolderPropertyPageId=random_uuid();
-insert into ecm_entity (id, object_name, version) values (@FolderPropertyPageId, 'Folder property page', 0);
-insert into ecm_config (id) values (@FolderPropertyPageId);
-insert into property_page (id) values (@FolderPropertyPageId);
-
--- DOCUMENT PROPERTY PAGE
-SET @DocumentPropertyPageId=random_uuid();
-insert into ecm_entity (id, object_name, version) values (@DocumentPropertyPageId, 'Document property page', 0);
-insert into ecm_config (id) values (@DocumentPropertyPageId);
-insert into property_page (id) values (@DocumentPropertyPageId);
-
--- assign Folder Property Page to the Folder Context
-insert into context_ecm_configs (context_id, ecm_configs_id) values (@FolderContextId, @FolderPropertyPageId);
-
--- assign Document Property Page to the Document Context
-insert into context_ecm_configs (context_id, ecm_configs_id) values (@DocumentContextId, @DocumentPropertyPageId);

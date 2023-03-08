@@ -1,11 +1,12 @@
 package com.avispa.ecm.model.configuration.dictionary;
 
-import com.avispa.ecm.model.EcmEntity;
+import com.avispa.ecm.model.configuration.EcmConfig;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,10 +19,11 @@ import java.util.Map;
 @Getter
 @Setter
 @Entity
-public final class DictionaryValue extends EcmEntity {
+public final class DictionaryValue extends EcmConfig {
     @ElementCollection
     private Map<String, String> columns;
 
+    @Column(nullable = false)
     private String label;
 
     @Setter(AccessLevel.PACKAGE)

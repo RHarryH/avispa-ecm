@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 /**
@@ -16,6 +17,9 @@ import javax.persistence.Entity;
 @Setter
 @ToString(callSuper = true)
 public final class Autoname extends EcmConfig implements CallableConfigObject {
+    @Column(nullable = false)
     private String rule;
+
+    @Column(nullable = false)
     private String propertyName;
 }

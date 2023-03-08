@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "additionalProperties": false,
+  "description": "Schema for autolink configuration",
+  "type": "object",
+  "properties": {
+    "autolink": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "defaultValue": {
+          "type": "string",
+          "default": "Unknown"
+        }
+      },
+      "required": [
+        "name",
+        "rules"
+      ]
+    }
+  },
+  "required": [
+    "autolink"
+  ]
+}

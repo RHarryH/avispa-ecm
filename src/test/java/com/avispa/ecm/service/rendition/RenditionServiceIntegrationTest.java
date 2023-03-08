@@ -13,7 +13,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
@@ -23,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -35,13 +33,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Rafał Hiszpański
  */
 @SpringBootTest(properties = "jodconverter.local.existing-process-action=connect_or_kill")
-@ActiveProfiles(profiles = {"test"})
 class RenditionServiceIntegrationTest {
-    private static final String fileStorePath = Path.of("target", "rendition-test").toAbsolutePath().toString();
+    private static final String TEST_STORE_PATH = "src/test/resources/test-store";
 
     @DynamicPropertySource
     static void dynamicProperties(DynamicPropertyRegistry registry) {
-        registry.add("avispa.ecm.file-store.path", () -> fileStorePath);
+        registry.add("avispa.ecm.file-store.path", () -> TEST_STORE_PATH);
     }
 
     @Autowired
@@ -65,7 +62,7 @@ class RenditionServiceIntegrationTest {
     }
 
     @Test
-    void givenTestFile_whenGeneratingPdf_thenPdfAndContentExist() throws ExecutionException, InterruptedException, TimeoutException {
+    void givenTestFile_whenGeneratingPdf_thenPdfAndContentExist() throws ExecutionException, InterruptedException {
         // given
         Document document = getDocument();
         documentRepository.save(document);

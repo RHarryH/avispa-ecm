@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "additionalProperties": false,
+  "description": "Schema for dictionary value configuration",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "columns": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "label": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "required": [
+    "key",
+    "label"
+  ]
+}

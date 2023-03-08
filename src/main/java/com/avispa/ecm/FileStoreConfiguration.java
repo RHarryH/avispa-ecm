@@ -23,8 +23,8 @@ public class FileStoreConfiguration {
     private final FileStoreRepository fileStoreRepository;
 
     @Bean
-    public FileStore getFileStore(@Value("${avispa.ecm.file-store.name:defaultFileStore}") String fileStoreName,
-                                  @Value("${avispa.ecm.file-store.path:defaultFileStore}") String defaultFileStorePath) {
+    public FileStore getFileStore(@Value("${avispa.ecm.file-store.name:default-file-store}") String fileStoreName,
+                                  @Value("${avispa.ecm.file-store.path:default-file-store}") String defaultFileStorePath) {
         FileStore fileStore = fileStoreRepository.findByObjectName(fileStoreName)
                 .orElse(createFileStore(fileStoreName, defaultFileStorePath, fileStoreRepository));
 

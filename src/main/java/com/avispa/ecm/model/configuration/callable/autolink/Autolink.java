@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.OrderColumn;
@@ -22,10 +23,11 @@ import java.util.List;
 public final class Autolink extends EcmConfig implements CallableConfigObject {
 
     @ElementCollection
-    @OrderColumn
+    @OrderColumn(nullable = false)
     private List<String> rules = new ArrayList<>();
 
-    private String defaultValue;
+    @Column(nullable = false, columnDefinition = "varchar(255) default 'Unknown'")
+    private String defaultValue = "Unknown";
 
     public void addRule(String rule) {
         this.rules.add(rule);

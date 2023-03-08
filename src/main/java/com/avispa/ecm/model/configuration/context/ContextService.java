@@ -1,4 +1,4 @@
-package com.avispa.ecm.model.context;
+package com.avispa.ecm.model.configuration.context;
 
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.configuration.EcmConfig;
@@ -34,13 +34,14 @@ public class ContextService {
         applyMatchingConfigurations(object, List.of(config));
     }
 
-        /**
-         * Automatically applies configurations of selected classes
-         * @param object
-         * @param configs
-         * @param <T>
-         * @param <C>
-         */
+    /**
+     * Automatically applies configurations of selected classes
+     * @param object
+     * @param configs
+     * @param <T>
+     * @param <C>
+     */
+    @SuppressWarnings("unchecked")
     public <T extends EcmObject, C extends CallableConfigObject> void applyMatchingConfigurations(T object, List<Class<? extends C>> configs) {
         Set<EcmConfig> availableConfigurations = getConfigurations(object).stream()
                 .filter(e -> configs.contains(e.getClass())) // filter only elements from the list

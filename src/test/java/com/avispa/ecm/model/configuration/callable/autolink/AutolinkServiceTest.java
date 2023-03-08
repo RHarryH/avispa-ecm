@@ -7,18 +7,15 @@ import com.avispa.ecm.util.expression.ExpressionResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Rafał Hiszpański
  */
-@ExtendWith(SpringExtension.class)
 // it is used only to test persistence layer thus it loads only part of context - repositories and so on
 @DataJpaTest
 // adding classes not related to data jpa test but required by tests

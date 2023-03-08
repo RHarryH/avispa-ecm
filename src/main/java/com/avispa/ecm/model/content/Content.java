@@ -17,7 +17,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 /**
@@ -53,7 +52,10 @@ public final class Content extends EcmObject {
      */
     private void updateSize() {
         try {
-            size = Files.size(Path.of(fileStorePath));
+            Path path = Path.of(fileStorePath);
+            if(Files.exists(path)) {
+                size = Files.size(path);
+            }
         } catch (IOException e) {
             log.error("Can't determine the size of the content file", e);
             size = -1;
@@ -63,9 +65,10 @@ public final class Content extends EcmObject {
     @PostRemove
     private void removeFile() {
         try {
-            Files.delete(Path.of(fileStorePath));
-        } catch (NoSuchFileException e) {
-            log.error("'{}' content file does not exist", fileStorePath);
+            Path path = Path.of(fileStorePath);
+            if(Files.exists(path)) {
+                Files.delete(path);
+            }
         } catch (IOException e) {
             log.error("Can't delete '{}' content file", fileStorePath, e);
             throw new EcmException("Can't delete content file because it is in use by a different process");
