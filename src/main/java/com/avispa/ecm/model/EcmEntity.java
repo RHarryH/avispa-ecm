@@ -60,8 +60,8 @@ public abstract class EcmEntity implements Serializable {
      * Returns true if document has PDF rendition or is already a pdf document
      * @return
      */
-    public boolean hasPdfRendition() {
-        return contents.stream().anyMatch(Content::isPdf);
+    public boolean isPdfRenditionAvailable() {
+        return null != contents && contents.stream().anyMatch(Content::isPdf);
     }
 
     /**

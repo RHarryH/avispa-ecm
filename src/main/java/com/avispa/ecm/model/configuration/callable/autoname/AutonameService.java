@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 
-
 /**
  * Autonaming is a process of changing objects name by resolving expression provided in the autonaming configuration.
  *
