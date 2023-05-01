@@ -27,7 +27,7 @@ class ConfigurationReaderTest {
 
     private final JsonValidator jsonValidator = new JsonValidator(objectMapper);
 
-    private final ConfigurationReader configurationReader = new ConfigurationReader(objectMapper, jsonValidator);
+    private final ConfigurationReader configurationReader = new ConfigurationReader(objectMapper, jsonValidator, new ConfigurationRegistry());
 
     @Test
     void givenConfiguration_whenRead_thenAllItemsCreated() {

@@ -1,5 +1,6 @@
 package com.avispa.ecm;
 
+import com.avispa.ecm.model.configuration.load.ConfigurationRegistry;
 import com.avispa.ecm.util.CustomAsyncExceptionHandler;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
@@ -36,6 +37,11 @@ public class EcmConfiguration implements AsyncConfigurer {
                 .serializationInclusion(JsonInclude.Include.NON_NULL)
                 .featuresToEnable()
                 .modulesToInstall(Hibernate5Module.class); // disables serialization of lazy collections
+    }
+
+    @Bean
+    public ConfigurationRegistry configurationRegistry() {
+        return new ConfigurationRegistry();
     }
 
     @Override

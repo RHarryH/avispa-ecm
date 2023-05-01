@@ -2,6 +2,7 @@ package com.avispa.ecm.model;
 
 import com.avispa.ecm.model.content.Content;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
 import lombok.Setter;
@@ -60,6 +61,7 @@ public abstract class EcmEntity implements Serializable {
      * Returns true if document has PDF rendition or is already a pdf document
      * @return
      */
+    @JsonIgnore
     public boolean isPdfRenditionAvailable() {
         return null != contents && contents.stream().anyMatch(Content::isPdf);
     }
