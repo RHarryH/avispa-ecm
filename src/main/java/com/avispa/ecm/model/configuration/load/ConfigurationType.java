@@ -7,7 +7,7 @@ import lombok.Value;
  * @author Rafał Hiszpański
  */
 @Value(staticConstructor="of")
-class ConfigurationType {
+public class ConfigurationType {
     String name;
     Class<? extends EcmConfigDto> dto;
     boolean contentRequired;

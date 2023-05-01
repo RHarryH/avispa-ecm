@@ -100,4 +100,10 @@ public class Dictionary extends EcmConfig {
             value.setDictionary(null);
         }
     }
+
+    public void clearValues() {
+        if(null != this.values) {
+            this.values.clear();
+        }
+    }
 }

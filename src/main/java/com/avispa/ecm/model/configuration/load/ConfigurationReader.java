@@ -1,13 +1,6 @@
 package com.avispa.ecm.model.configuration.load;
 
-import com.avispa.ecm.model.configuration.load.dto.AutolinkDto;
-import com.avispa.ecm.model.configuration.load.dto.AutonameDto;
-import com.avispa.ecm.model.configuration.load.dto.ContextDto;
-import com.avispa.ecm.model.configuration.load.dto.DictionaryDto;
 import com.avispa.ecm.model.configuration.load.dto.EcmConfigDto;
-import com.avispa.ecm.model.configuration.load.dto.PropertyPageDto;
-import com.avispa.ecm.model.configuration.load.dto.TemplateDto;
-import com.avispa.ecm.model.configuration.load.dto.UpsertDto;
 import com.avispa.ecm.util.exception.EcmConfigurationException;
 import com.avispa.ecm.util.json.JsonValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +15,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -34,23 +26,11 @@ import java.util.stream.Stream;
 class ConfigurationReader {
     private static final int END_OF_ECM_PREFIX = 4;
 
-    /**
-     * List of supported configurations. Order of insertion matters as it defines the priority of configurations.
-     * For example dictionary has to be loaded before property page as it is used in property pages
-     */
-    private static final List<ConfigurationType> CONFIG_TYPES = List.of(
-            ConfigurationType.of("ecm_dictionary", DictionaryDto.class, false),
-            ConfigurationType.of("ecm_property_page", PropertyPageDto.class, true),
-            ConfigurationType.of("ecm_autolink", AutolinkDto.class, false),
-            ConfigurationType.of("ecm_autoname", AutonameDto.class, false),
-            ConfigurationType.of("ecm_upsert", UpsertDto.class, false),
-            ConfigurationType.of("ecm_template", TemplateDto.class, true),
-            ConfigurationType.of("ecm_context", ContextDto.class, false)
-    );
-
     private final ObjectMapper objectMapper;
 
     private final JsonValidator jsonValidator;
+
+    private final ConfigurationRegistry configurationRegistry;
 
     public Configuration read(Path zipConfigPath) {
         if(!Files.exists(zipConfigPath)) {
@@ -59,7 +39,7 @@ class ConfigurationReader {
 
         Configuration config = new Configuration();
         try(FileSystem fileSystem = FileSystems.newFileSystem(zipConfigPath, null)) {
-            for(var configType : CONFIG_TYPES) {
+            for(var configType : configurationRegistry) {
                 Path configPath = fileSystem.getPath(configType.getName());
                 processDirectory(configType, config, configPath);
             }

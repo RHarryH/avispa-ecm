@@ -6,6 +6,7 @@ import com.avispa.ecm.model.configuration.EcmConfig;
 import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import com.avispa.ecm.model.configuration.callable.autolink.Autolink;
 import com.avispa.ecm.model.configuration.dictionary.Dictionary;
+import com.avispa.ecm.model.configuration.dictionary.DictionaryValue;
 import com.avispa.ecm.model.configuration.load.dto.AutolinkDto;
 import com.avispa.ecm.model.configuration.load.dto.AutonameDto;
 import com.avispa.ecm.model.configuration.load.dto.DictionaryDto;
@@ -54,6 +55,7 @@ class LoaderTest {
     private EcmObjectRepository<EcmObject> ecmObjectRepository;
 
     private static final String AUTOLINK_NAME = "Autolink";
+    private static final String DICTIONARY_NAME = "Dictionary";
     private static final String TEST_STORE_PATH = "src/test/resources/test-store";
 
     @Autowired
@@ -137,14 +139,14 @@ class LoaderTest {
     @Test
     void updateExistingConfigWhenOverwriteIsAllowed() {
         // given
-        var autolinkDto = new AutolinkDto();
-        autolinkDto.setName(AUTOLINK_NAME);
-        autolinkDto.setDefaultValue("DefaultDTO");
-
         var autolinkEntity = new Autolink();
         autolinkEntity.setObjectName(AUTOLINK_NAME);
         autolinkEntity.setDefaultValue("DefaultOriginal");
         ecmConfigRepository.save(autolinkEntity);
+
+        var autolinkDto = new AutolinkDto();
+        autolinkDto.setName(AUTOLINK_NAME);
+        autolinkDto.setDefaultValue("DefaultDTO");
 
         // when
         autolinkLoader.load(autolinkDto, true);
@@ -154,6 +156,45 @@ class LoaderTest {
                 config -> {
                     var autolink = (Autolink)config;
                     assertEquals("DefaultDTO", autolink.getDefaultValue());
+                },
+                Assertions::fail
+        );
+    }
+
+    @Test
+    void updateExistingDictionaryWithClearedValuesWhenOverwriteIsAllowed() {
+        // given
+        var dictionaryEntity = new Dictionary();
+        dictionaryEntity.setObjectName(DICTIONARY_NAME);
+        dictionaryEntity.setDescription("Desc");
+
+        var dictionaryValue = new DictionaryValue();
+        dictionaryValue.setKey("key1");
+        dictionaryValue.setLabel("value1");
+
+        dictionaryEntity.addValue(dictionaryValue);
+
+        var dictionaryDto = new DictionaryDto();
+        dictionaryDto.setName(DICTIONARY_NAME);
+        dictionaryDto.setDescription("New desc");
+
+        var dictionaryValueDto = getDictionaryValueDto("key2", "value2");
+
+        dictionaryDto.setValues(List.of(dictionaryValueDto));
+
+        ecmConfigRepository.save(dictionaryEntity);
+
+        // when
+        dictionaryLoader.load(dictionaryDto, true);
+
+        // then
+        ecmConfigRepository.findByObjectName(DICTIONARY_NAME).ifPresentOrElse(
+                config -> {
+                    var dictionary = (Dictionary)config;
+                    assertEquals("New desc", dictionary.getDescription());
+                    var dictionaryValues = dictionary.getValues();
+                    assertEquals(1, dictionaryValues.size());
+                    assertEquals("key2", dictionaryValues.get(0).getKey());
                 },
                 Assertions::fail
         );
@@ -213,16 +254,11 @@ class LoaderTest {
     void dictionaryLoadingTest() {
         // given
         var dictionaryDto = new DictionaryDto();
-        dictionaryDto.setName("Test dictionary");
+        dictionaryDto.setName(DICTIONARY_NAME);
         dictionaryDto.setDescription("Some dictionary");
 
-        var dictionaryValue1Dto = new DictionaryValueDto();
-        dictionaryValue1Dto.setKey("key1");
-        dictionaryValue1Dto.setLabel("value1");
-
-        var dictionaryValue2Dto = new DictionaryValueDto();
-        dictionaryValue2Dto.setKey("key2");
-        dictionaryValue2Dto.setLabel("value2");
+        DictionaryValueDto dictionaryValue1Dto = getDictionaryValueDto("key1", "value1");
+        DictionaryValueDto dictionaryValue2Dto = getDictionaryValueDto("key2", "value2");
 
         dictionaryDto.setValues(List.of(dictionaryValue1Dto, dictionaryValue2Dto));
 
@@ -230,7 +266,7 @@ class LoaderTest {
         dictionaryLoader.load(dictionaryDto, false);
 
         // then
-        ecmConfigRepository.findByObjectName("Test dictionary").ifPresentOrElse(
+        ecmConfigRepository.findByObjectName(DICTIONARY_NAME).ifPresentOrElse(
                 config -> {
                     var dictionary = (Dictionary)config;
                     assertEquals("Some dictionary", dictionary.getDescription());
@@ -246,5 +282,13 @@ class LoaderTest {
                 },
                 Assertions::fail
         );
+    }
+
+    private static DictionaryValueDto getDictionaryValueDto(String key, String value) {
+        var dictionaryValueDto = new DictionaryValueDto();
+        dictionaryValueDto.setKey(key);
+        dictionaryValueDto.setLabel(value);
+
+        return dictionaryValueDto;
     }
 }

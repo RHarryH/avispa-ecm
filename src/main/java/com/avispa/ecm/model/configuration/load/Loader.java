@@ -1,6 +1,7 @@
 package com.avispa.ecm.model.configuration.load;
 
 import com.avispa.ecm.model.configuration.load.dto.EcmConfigDto;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.Path;
 
@@ -12,6 +13,7 @@ import java.nio.file.Path;
  *
  * @author Rafał Hiszpański
  */
+@Transactional
 interface Loader<D extends EcmConfigDto> {
     /**
      * Loads configuration represented by DTO to the database.

@@ -16,7 +16,7 @@ import java.util.Optional;
  * @author Rafał Hiszpański
  */
 @Slf4j
-abstract class GenericLoader<C extends EcmConfig, D extends EcmConfigDto, M extends EcmConfigMapper<C, D>> implements Loader<D> {
+public abstract class GenericLoader<C extends EcmConfig, D extends EcmConfigDto, M extends EcmConfigMapper<C, D>> implements Loader<D> {
     private final EcmConfigRepository<C> ecmConfigRepository;
     private final M ecmConfigMapper;
     private final ContentService contentService;
