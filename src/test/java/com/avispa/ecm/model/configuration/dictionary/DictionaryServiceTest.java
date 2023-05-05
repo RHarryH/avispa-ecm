@@ -34,7 +34,7 @@ class DictionaryServiceTest {
                 return Optional.of(getTestDictionary());
             }
 
-            throw new DictionaryNotFoundException();
+            throw new DictionaryNotFoundException("TestDict");
         });
     }
 
