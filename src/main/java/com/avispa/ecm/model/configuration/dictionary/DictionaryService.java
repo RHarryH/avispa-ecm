@@ -39,7 +39,7 @@ public class DictionaryService extends AnnotationService {
     }
 
     public Dictionary getDictionary(String dictionaryName) {
-        return dictionaryRepository.findByObjectName(dictionaryName).orElseThrow(DictionaryNotFoundException::new);
+        return dictionaryRepository.findByObjectName(dictionaryName).orElseThrow(() -> new DictionaryNotFoundException(dictionaryName));
     }
 
     public String getDictionaryNameFromAnnotation(Class<?> objectClass, String propertyName) {
