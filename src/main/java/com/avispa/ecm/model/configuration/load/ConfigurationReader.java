@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -58,6 +59,8 @@ class ConfigurationReader {
                         log.debug("Found '{}' file", path);
                         readConfig(configType, path, config);
                     });
+        } catch(NoSuchFileException ignored) {
+            // missing configuration type is not a problem
         } catch (IOException e) {
             log.error("Error when traversing configuration file", e);
         }
@@ -148,7 +151,9 @@ class ConfigurationReader {
      */
     private static void addContent(Configuration config, Path contentPath) {
         try {
-            Path tempPath = Files.createTempFile("ecm_content_", null);
+            String extension = FilenameUtils.getExtension(contentPath.toString());
+
+            Path tempPath = Files.createTempFile("ecm_content_", "." + extension);
             Files.write(tempPath, Files.readAllBytes(contentPath));
             config.addContent(FilenameUtils.getBaseName(contentPath.toString()), tempPath);
         } catch (IOException e) {
