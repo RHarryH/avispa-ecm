@@ -26,7 +26,7 @@ public class FileStoreConfiguration {
     public FileStore getFileStore(@Value("${avispa.ecm.file-store.name:default-file-store}") String fileStoreName,
                                   @Value("${avispa.ecm.file-store.path:default-file-store}") String defaultFileStorePath) {
         FileStore fileStore = fileStoreRepository.findByObjectName(fileStoreName)
-                .orElse(createFileStore(fileStoreName, defaultFileStorePath, fileStoreRepository));
+                .orElseGet(() -> createFileStore(fileStoreName, defaultFileStorePath, fileStoreRepository));
 
         createFileStorePath(fileStore);
 
