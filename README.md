@@ -2,22 +2,58 @@
 
 Small framework for implementing ECM (Enterprise Content Management) solution.
 
+## ECM specific properties
+
+| Property name                        | Description                                                                                                                       |
+|--------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `avispa.ecm.file-store.path`         | Path where the documents will be physically stored. By default it will be `default-file-store` folder in home directory on `dev`. |
+| `avispa.ecm.file-store.name`         | Name of the file store in the database.                                                                                           |
+| `avispa.ecm.configuration.paths`     | Comma separated paths to `.zip` configuration loaded during tests and `dev` setup.                                                |
+| `avispa.ecm.configuration.overwrite` | `true` if the existing configuration should be overwritten                                                                        |
+| `avispa.ecm.office.home`             | Home location to LibreOffice. `C:\Program Files\LibreOffice` by default.                                                          |
+
 ## Rendition generating
 
-Rendition is the source document converted to different format (for instance `.docx` to `.odt`). 
+Rendition is the source document converted to different format (for instance `.docx` to `.odt`).
 In this ECM context it is always conversion from any format supported by `JODConverter` library to PDF.
+It requires LibreOffice instance installed to properly performs the conversion as `JODConverter` is only a proxy
+for LibreOffice CLI environment. In the future this solution might be externalized as separate Rendition Service.
+
+## Zip configuration
+
+Avispa ECM is designed for easy customization for specific needs. It has 3 levels of application configuration:
+
+1. SQL scripts. Used to initialize ECM database by creating schema and inserting configurations entries for basic
+   functionality.
+2. `ecm-applicatin.properties` used for configuration of peripherals like file store or LibreOffice location.
+3. Zip file containing JSON-based specific configuration telling how specific objects should behave at certain
+   conditions or how they should be managed.
+
+The last level is designated for the end-users. It allows to configure following aspects of ECM:
+- **Autolink** - rules telling to which logical folder the document should be linked after creation
+- **Autoname** - rules telling what should be the name of the document withing the ECM
+- **Dictionary** - dictionary is used in property pages for selecting only purposed values
+- **Property page** - definition of insert or update form used by GUI applications (like ECM Application)
+- **Template** - template document used by the customizations. It can be used for example to generate invoices, brochures or reports with fixed structure.
+- **Upsert** - configuration item telling, which property page should be used when inserting or updating document
+
+All documents in ECM are of `Document` type. It is possible to extend it to create more specific types with additional properties.
+These types and their properties can be used to link with different properties. It is done using **Context** configuration
+item, which defines kind of a configuration matrix telling, for which kind of documents configuration items should be triggered.
+This enables for example using different naming conventions or templates for different documents types. Documents applicable
+for a context are defined as a *match rule* using Conditions.
 
 ## Conditions processing
 
-Conditions provide a way to define simple queries without the need to know languages like SQL. 
+Conditions provide a way to define simple queries without the need to know languages like SQL.
 It has also security benefits narrowing the possibilities only to narrow set of operations.
 Conditions use JSON data interchange format specified in [RFC-8259](https://www.rfc-editor.org/rfc/rfc8259.html) and
 MongoDB-like syntax described in `context-rule.json` JSON Schema.
 
-Conditions are used for example in context match rules, but they can also be used on the frontend in 
+Conditions are used for example in context match rules, but they can also be used on the frontend in
 conditional controls visibility or requirement.
 
-Please note that RFC document (chapter 4) specifies that the JSON keys within an object must be unique 
+Please note that RFC document (chapter 4) specifies that the JSON keys within an object must be unique
 otherwise their behavior is unpredictable but in many cases the latter value is used.
 
 ### Syntax
@@ -168,17 +204,17 @@ to concatenate constants and functions results into single string. Example:
 
 #### Functions
 
-Functions use following syntax: `$<function_name>([param_1][,param_2]...)`. When there will be used non-existing 
+Functions use following syntax: `$<function_name>([param_1][,param_2]...)`. When there will be used non-existing
 function then it will be treated as a text.
 
 ##### Value extraction
 
-`$value(propertyName)` - extracts value from object property. Works with nested values. 
+`$value(propertyName)` - extracts value from object property. Works with nested values.
 Examples: `$value('objectName')` `$value('payment.bankAccount')`
 
 ##### Date value extraction
 
-`$datevalue(propertyName, format)` - works like above but for properties of `LocalDate` or `LocalDateTime` type 
+`$datevalue(propertyName, format)` - works like above but for properties of `LocalDate` or `LocalDateTime` type
 returns value formatted according to the format in `format` parameter. The format used by `format` parameter is defined
 in [Java documentation](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/format/DateTimeFormatter.html)
 Example: `$datevalue('testDateTime', 'MM')`
@@ -190,13 +226,14 @@ with other functions. Examples: `$default($value('testString'), 'This is default
 
 ##### Padding
 
-`$pad(value, n[, paddingCharacter])` - pad left string to `n` characters in total using padding character or if not provided - default `0` value.
-If number of characters will not be a correct positive integer then original input will be returned. 
+`$pad(value, n[, paddingCharacter])` - pad left string to `n` characters in total using padding character or if not
+provided - default `0` value.
+If number of characters will not be a correct positive integer then original input will be returned.
 Examples: `$pad('a', '4') => 000a` `$pad('a', '4', 'X') => XXXa`
 
 ## Antlr4 support
 
-By default, Antlr4 grammar files (`.g4`) should be located in `/src/main/antlr4` 
+By default, Antlr4 grammar files (`.g4`) should be located in `/src/main/antlr4`
 folder. In order to properly use generated files, this folder has to be marked as
 `Sources Root`. You can double-check if everything is correct by opening `Module Settings` and checking
 the paths for `Source Folders`.
