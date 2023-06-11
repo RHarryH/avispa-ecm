@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -22,7 +21,6 @@ import java.time.format.DateTimeFormatter;
  */
 @SpringBootApplication
 @EnableAsync
-@PropertySource(value = "classpath:ecm-application.properties")
 @Slf4j
 public class EcmConfiguration implements AsyncConfigurer {
     public static final String DATETIME_FORMAT = "dd-MM-yyyy HH:mm:ss";

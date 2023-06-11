@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
@@ -45,8 +44,6 @@ public abstract class EcmEntity implements Serializable {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     @Type(type = "uuid-char") // do not store as binary type
-    // TODO: hibernate annotation, consider use of columnDefinition
-    @ColumnDefault("random_uuid()") // this function will be used when running manual inserts
     private UUID id;
 
     private String objectName;
@@ -86,7 +83,7 @@ public abstract class EcmEntity implements Serializable {
     public Content getPrimaryContent() {
         return null == this.contents ? null :
                 this.contents.stream().filter(Content::isPdf).findFirst()
-                        .orElse(contents.stream().min(Comparator.comparing(EcmObject::getCreationDate)).orElse(null));
+                        .orElseGet(() -> contents.stream().min(Comparator.comparing(EcmObject::getCreationDate)).orElse(null));
     }
 
     @Override
