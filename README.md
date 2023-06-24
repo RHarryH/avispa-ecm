@@ -2,8 +2,8 @@
 
 # Avispa ECM
 
-A small framework for implementing basic ECM (Enterprise Content Management) solution. It is a second more general and
-highly inspired by OpenText Documentum ECM iteration of previous (not published) solution for knowledge base application.
+A small framework for implementing basic ECM (Enterprise Content Management) solution. It is a second, more general and
+highly inspired by OpenText Documentum ECM, iteration of previous (not published) solution for knowledge base application.
 
 It provides basic feature for storing and managing documents:
 - custom property pages, which can be utilized in any UI application basing on the Avispa ECM
