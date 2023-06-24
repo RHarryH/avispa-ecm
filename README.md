@@ -1,6 +1,30 @@
+![Status](https://github.com/RHarryH/avispa-ecm/actions/workflows/main.yml/badge.svg) ![Coverage](.github/badges/jacoco.svg)  [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
 # Avispa ECM
 
-Small framework for implementing ECM (Enterprise Content Management) solution.
+A small framework for implementing basic ECM (Enterprise Content Management) solution. It is a second more general and
+highly inspired by OpenText Documentum ECM iteration of previous (not published) solution for knowledge base application.
+
+It provides basic feature for storing and managing documents:
+- custom property pages, which can be utilized in any UI application basing on the Avispa ECM
+- using documents templates
+- creation of logical folders structure within an ECM allowing to keep documents in an organized way without any further actions
+- auto-generating of documents names
+- possibility of extension and customization to fit the application needs
+- multiple configurations for different document types using custom MongoDB-like query language for conditions resolving
+- auto-generating (thanks to LibreOffice) of so called renditions - pdf variants of original documents 
+
+## Roadmap
+
+As mentioned at the beginning, Avispa ECM provides support for the basic features only. The high-level roadmap for extension looks like below
+- basic authentication and authorization mechanisms (now the ECM is designed only for one-person use)
+- localization
+- documents versioning
+- linking documents using relations (for example for including attachments)
+- checking in and checking out documents for editing with autoversioning
+- uploading files with external content rather than relying only on templates
+- lifecycles
+- workflows
 
 ## ECM specific properties
 
