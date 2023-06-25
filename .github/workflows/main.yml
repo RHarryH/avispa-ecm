@@ -11,10 +11,10 @@ jobs:
         uses: actions/checkout@v3.2.0
 
       - name: Build with Maven
-        run: mvn -Davispa.ecm.office.home='/usr/lib/libreoffice' -B test
+        run: mvn -Davispa.ecm.office.home='/usr/lib/libreoffice' -B verify
 
       - name: Generate JaCoCo Badge
-        uses: cicirello/jacoco-badge-generator@v2.8.1
+        uses: cicirello/jacoco-badge-generator@v2.9.0
         with:
           generate-branches-badge: true
 
