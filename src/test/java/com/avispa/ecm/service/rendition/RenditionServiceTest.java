@@ -27,6 +27,7 @@ import com.avispa.ecm.model.filestore.FileStore;
 import com.avispa.ecm.model.format.Format;
 import com.avispa.ecm.model.format.FormatRepository;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
@@ -77,7 +78,7 @@ class RenditionServiceTest {
         this.fileStore = getFileStore();
 
         this.officeManager = LocalOfficeManager.builder()
-                .officeHome("C:\\Program Files\\LibreOffice")
+                .officeHome(SystemUtils.IS_OS_LINUX ? "/usr/lib/libreoffice" : "C:\\Program Files\\LibreOffice")
                 .existingProcessAction(ExistingProcessAction.CONNECT_OR_KILL)
                 .build();
 
