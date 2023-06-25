@@ -4,11 +4,14 @@ jobs:
   build_job: # job name
     runs-on: ubuntu-22.04
     steps:
+      - name: Install libreoffice
+        run: sudo apt-get install -y libreoffice
+
       - name: Standard Checkout
         uses: actions/checkout@v3.2.0
 
       - name: Build with Maven
-        run: mvn -B test
+        run: mvn -Davispa.ecm.office.home='/usr/lib/libreoffice' -B test
 
       - name: Generate JaCoCo Badge
         uses: cicirello/jacoco-badge-generator@v2.8.1
