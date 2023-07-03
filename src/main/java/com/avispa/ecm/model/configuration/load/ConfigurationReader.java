@@ -22,13 +22,16 @@ import com.avispa.ecm.model.configuration.load.dto.EcmConfigDto;
 import com.avispa.ecm.util.exception.EcmConfigurationException;
 import com.avispa.ecm.util.json.JsonValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.text.CaseUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -50,6 +53,33 @@ class ConfigurationReader {
     private final JsonValidator jsonValidator;
 
     private final ConfigurationRegistry configurationRegistry;
+
+    /**
+     * When file comes in a form of an input stream, it is stored in a temp location and then
+     * read using regular logic.
+     * @param configurationStream
+     * @return
+     */
+    public Configuration read(@NonNull InputStream configurationStream) {
+        Path tempConfigurationFilePath = null;
+        try(configurationStream) {
+            tempConfigurationFilePath = Files.createTempFile("ecm-configuration-", ".zip.tmp");
+            FileUtils.copyInputStreamToFile(configurationStream, tempConfigurationFilePath.toFile());
+
+            return read(tempConfigurationFilePath);
+        } catch (IOException e) {
+            throw new EcmConfigurationException("Can't save configuration in temp location", e);
+        } finally {
+            // always try to remove temp file
+            try {
+                if(tempConfigurationFilePath != null) {
+                    Files.delete(tempConfigurationFilePath);
+                }
+            } catch (IOException e) {
+                log.error("Couldn't delete configuration file located in {}", tempConfigurationFilePath, e);
+            }
+        }
+    }
 
     public Configuration read(Path zipConfigPath) {
         if(!Files.exists(zipConfigPath)) {

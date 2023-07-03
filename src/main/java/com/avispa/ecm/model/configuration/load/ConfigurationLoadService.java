@@ -19,12 +19,12 @@
 package com.avispa.ecm.model.configuration.load;
 
 import com.avispa.ecm.model.configuration.load.dto.EcmConfigDto;
-import com.avispa.ecm.util.exception.EcmConfigurationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.WordUtils;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +41,15 @@ import java.util.Optional;
 public class ConfigurationLoadService {
     private final ConfigurationReader reader;
     private final Map<String, Loader<? extends EcmConfigDto>> loaders;
+
+    public void load(InputStream inputStream) {
+        load(inputStream, false);
+    }
+
+    public void load(InputStream inputStream, boolean overwrite) {
+        Configuration config = reader.read(inputStream);
+        load(config, overwrite);
+    }
 
     public void load(Path zipConfigPath) {
         load(zipConfigPath, false);

@@ -31,6 +31,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FolderService {
+    public static final String FILE_SEPARATOR = "/";
+
     private final FolderRepository folderRepository;
 
     public Folder findFolderByNameAndAncestor(String name, Folder ancestor) {
@@ -55,8 +57,8 @@ public class FolderService {
 
     /**
      * If there is no ancestor insert root path ("/").
-     * If there is ancestor but it is a root folder then just append ancestor name
-     * If there is ancestor and it is not a root folder then append slash and ancestor name
+     * If there is ancestor, but it is a root folder then just append ancestor name
+     * If there is ancestor, and it is not a root folder then append slash and ancestor name
      * @param name
      * @param ancestor
      * @return
@@ -67,7 +69,7 @@ public class FolderService {
             ancestorPath = ancestor.getPath();
         }
 
-        return ancestorPath + "/" + name;
+        return ancestorPath + FILE_SEPARATOR + name;
     }
 
     public List<Folder> getAllFolders() {
@@ -100,5 +102,14 @@ public class FolderService {
     public List<EcmObject> getAllFoldersAndLinkedObjects(Folder root, boolean descend) {
         return descend ? folderRepository.findAllFoldersAndDocumentsDescend(root) :
                          folderRepository.findAllFoldersAndDocuments(root);
+    }
+
+    /**
+     * Check if folder is not empty.
+     * @param folder
+     * @return true if folder contains any subfolder or document, false otherwise
+     */
+    public boolean isEmpty(Folder folder) {
+        return !folderRepository.existsEcmObjectByFolder(folder);
     }
 }

@@ -31,6 +31,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Rafał Hiszpański
@@ -138,5 +140,14 @@ class FolderServiceTest {
         List<EcmObject> objects = folderService.getAllFoldersAndLinkedObjects(folder2_1, true);
         Set<String> objectNames = objects.stream().map(EcmObject::getObjectName).collect(Collectors.toSet());
         assertEquals(Set.of("folder2.2", "Document2"), objectNames);
+    }
+
+    @Test
+    void checkIfFolderIsEmpty() {
+        Folder root = folderService.createNewFolder("root", null);
+        Folder folder1_1 = folderService.createNewFolder("folder1.1", root);
+
+        assertFalse(folderService.isEmpty(root));
+        assertTrue(folderService.isEmpty(folder1_1));
     }
 }
