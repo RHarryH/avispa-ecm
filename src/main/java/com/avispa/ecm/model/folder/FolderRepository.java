@@ -46,4 +46,6 @@ public interface FolderRepository extends EcmObjectRepository<Folder> {
 
     @Query("select o from EcmObject o where o.folder = ?1")
     List<EcmObject> findAllFoldersAndDocuments(Folder folder);
+
+    boolean existsEcmObjectByFolder(Folder folder);
 }

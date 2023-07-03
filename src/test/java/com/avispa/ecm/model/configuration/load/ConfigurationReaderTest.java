@@ -28,6 +28,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -51,34 +53,7 @@ class ConfigurationReaderTest {
     void givenConfiguration_whenRead_thenAllItemsCreated() {
         Configuration config = configurationReader.read(Path.of("src/test/resources/configuration/basic-configuration.zip"));
 
-        var configItems = config.getConfigDtos();
-        var contents = config.getContents();
-
-        PropertyPageDto documentPPDto = new PropertyPageDto();
-        documentPPDto.setName("Document property page");
-
-        PropertyPageDto folderPPDto = new PropertyPageDto();
-        folderPPDto.setName("Folder property page");
-
-        ContextDto documentContextDto = new ContextDto();
-        documentContextDto.setName("Document context");
-        documentContextDto.setType("Document");
-        documentContextDto.setImportance(1);
-        documentContextDto.setConfigNames(List.of("Document property page"));
-
-        ContextDto folderContextDto = new ContextDto();
-        folderContextDto.setName("Folder context");
-        folderContextDto.setType("Folder");
-        folderContextDto.setImportance(0);
-        folderContextDto.setConfigNames(List.of("Folder property page"));
-
-        var expectedItems = List.of(folderPPDto, documentPPDto, folderContextDto, documentContextDto);
-
-        assertEquals(4, configItems.size());
-        assertEquals(2, contents.size());
-        for(int i = 0; i < configItems.size(); i++) {
-            assertEquals(expectedItems.get(i), configItems.get(i));
-        }
+        assertConfiguration(config);
     }
 
     @ParameterizedTest
@@ -116,5 +91,44 @@ class ConfigurationReaderTest {
 
         assertTrue(configuration.getContents().isEmpty());
         assertEquals(1, configuration.getConfigDtos().size());
+    }
+
+    @Test
+    void givenInputStream_whenRead_thenConfigurationIsRead() throws IOException {
+        var is = Files.newInputStream(Path.of("src/test/resources/configuration/basic-configuration.zip"));
+        Configuration config = configurationReader.read(is);
+
+        assertConfiguration(config);
+    }
+
+    private static void assertConfiguration(Configuration config) {
+        var configItems = config.getConfigDtos();
+        var contents = config.getContents();
+
+        PropertyPageDto documentPPDto = new PropertyPageDto();
+        documentPPDto.setName("Document property page");
+
+        PropertyPageDto folderPPDto = new PropertyPageDto();
+        folderPPDto.setName("Folder property page");
+
+        ContextDto documentContextDto = new ContextDto();
+        documentContextDto.setName("Document context");
+        documentContextDto.setType("Document");
+        documentContextDto.setImportance(1);
+        documentContextDto.setConfigNames(List.of("Document property page"));
+
+        ContextDto folderContextDto = new ContextDto();
+        folderContextDto.setName("Folder context");
+        folderContextDto.setType("Folder");
+        folderContextDto.setImportance(0);
+        folderContextDto.setConfigNames(List.of("Folder property page"));
+
+        var expectedItems = List.of(folderPPDto, documentPPDto, folderContextDto, documentContextDto);
+
+        assertEquals(4, configItems.size());
+        assertEquals(2, contents.size());
+        for(int i = 0; i < configItems.size(); i++) {
+            assertEquals(expectedItems.get(i), configItems.get(i));
+        }
     }
 }
