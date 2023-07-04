@@ -15,7 +15,8 @@ src/test/resources/configuration/ecm_**
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/*
+!.idea/copyright/
 *.iws
 *.iml
 *.ipr
