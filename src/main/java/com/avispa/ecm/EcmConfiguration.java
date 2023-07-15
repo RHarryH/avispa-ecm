@@ -20,12 +20,14 @@ package com.avispa.ecm;
 
 import com.avispa.ecm.model.configuration.load.ConfigurationRegistry;
 import com.avispa.ecm.util.CustomAsyncExceptionHandler;
+import com.avispa.ecm.util.Version;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -58,6 +60,11 @@ public class EcmConfiguration implements AsyncConfigurer {
     @Bean
     public ConfigurationRegistry configurationRegistry() {
         return new ConfigurationRegistry();
+    }
+
+    @Bean
+    public Version ecmVersion(@Value("${avispa.ecm.name}") String applicationName, @Value("${avispa.ecm.version}") String number) {
+        return new Version(applicationName, number);
     }
 
     @Override
