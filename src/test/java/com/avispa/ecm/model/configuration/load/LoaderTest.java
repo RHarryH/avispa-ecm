@@ -69,12 +69,12 @@ import static org.mockito.Mockito.when;
         ContentService.class})
 @Slf4j
 class LoaderTest {
-    @Autowired
-    private EcmObjectRepository<EcmObject> ecmObjectRepository;
-
     private static final String AUTOLINK_NAME = "Autolink";
     private static final String DICTIONARY_NAME = "Dictionary";
     private static final String TEST_STORE_PATH = "src/test/resources/test-store";
+
+    @Autowired
+    private EcmObjectRepository<EcmObject> ecmObjectRepository;
 
     @Autowired
     private EcmConfigRepository<EcmConfig> ecmConfigRepository;

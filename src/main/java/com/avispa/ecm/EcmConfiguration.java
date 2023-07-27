@@ -28,18 +28,20 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.time.format.DateTimeFormatter;
 
+import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS;
+
 /**
  * @author Rafał Hiszpański
  */
-@SpringBootApplication
+@Configuration
 @EnableAsync
 @Slf4j
 public class EcmConfiguration implements AsyncConfigurer {
@@ -53,7 +55,7 @@ public class EcmConfiguration implements AsyncConfigurer {
                 .serializers(LOCAL_DATETIME_SERIALIZER)
                 .deserializers(LOCAL_DATETIME_DESERIALIZER)
                 .serializationInclusion(JsonInclude.Include.NON_NULL)
-                .featuresToEnable()
+                .featuresToEnable(ACCEPT_CASE_INSENSITIVE_ENUMS)
                 .modulesToInstall(Hibernate5Module.class); // disables serialization of lazy collections
     }
 
