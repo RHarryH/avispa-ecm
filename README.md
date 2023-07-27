@@ -3,20 +3,25 @@
 # Avispa ECM
 
 A small framework for implementing basic ECM (Enterprise Content Management) solution. It is a second, more general and
-highly inspired by OpenText Documentum ECM, iteration of previous (not published) solution for knowledge base application.
+highly inspired by OpenText Documentum ECM, iteration of previous (not published) solution for knowledge base
+application.
 
 It provides basic feature for storing and managing documents:
+
 - custom property pages, which can be utilized in any UI application basing on the Avispa ECM
 - using documents templates
-- creation of logical folders structure within an ECM allowing to keep documents in an organized way without any further actions
+- creation of logical folders structure within an ECM allowing to keep documents in an organized way without any further
+  actions
 - auto-generating of documents names
 - possibility of extension and customization to fit the application needs
 - multiple configurations for different document types using custom MongoDB-like query language for conditions resolving
-- auto-generating (thanks to LibreOffice) of so called renditions - pdf variants of original documents 
+- auto-generating (thanks to LibreOffice) of so called renditions - pdf variants of original documents
 
 ## Roadmap
 
-As mentioned at the beginning, Avispa ECM provides support for the basic features only. The high-level roadmap for extension looks like below
+As mentioned at the beginning, Avispa ECM provides support for the basic features only. The high-level roadmap for
+extension looks like below
+
 - basic authentication and authorization mechanisms (now the ECM is designed only for one-person use)
 - localization
 - documents versioning
@@ -30,6 +35,7 @@ As mentioned at the beginning, Avispa ECM provides support for the basic feature
 
 | Property name                        | Description                                                                                                                       |
 |--------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `avispa.ecm.name`                    | Name of the ECM solution                                                                                                          |
 | `avispa.ecm.file-store.path`         | Path where the documents will be physically stored. By default it will be `default-file-store` folder in home directory on `dev`. |
 | `avispa.ecm.file-store.name`         | Name of the file store in the database.                                                                                           |
 | `avispa.ecm.configuration.paths`     | Comma separated paths to `.zip` configuration loaded during tests and `dev` setup.                                                |
@@ -54,17 +60,23 @@ Avispa ECM is designed for easy customization for specific needs. It has 3 level
    conditions or how they should be managed.
 
 The last level is designated for the end-users. It allows to configure following aspects of ECM:
+
 - **Autolink** - rules telling to which logical folder the document should be linked after creation
 - **Autoname** - rules telling what should be the name of the document withing the ECM
 - **Dictionary** - dictionary is used in property pages for selecting only purposed values
 - **Property page** - definition of insert or update form used by GUI applications (like ECM Application)
-- **Template** - template document used by the customizations. It can be used for example to generate invoices, brochures or reports with fixed structure.
+- **Template** - template document used by the customizations. It can be used for example to generate invoices,
+  brochures or reports with fixed structure.
 - **Upsert** - configuration item telling, which property page should be used when inserting or updating document
 
-All documents in ECM are of `Document` type. It is possible to extend it to create more specific types with additional properties.
-These types and their properties can be used to link with different properties. It is done using **Context** configuration
-item, which defines kind of a configuration matrix telling, for which kind of documents configuration items should be triggered.
-This enables for example using different naming conventions or templates for different documents types. Documents applicable
+All documents in ECM are of `Document` type. It is possible to extend it to create more specific types with additional
+properties.
+These types and their properties can be used to link with different properties. It is done using **Context**
+configuration
+item, which defines kind of a configuration matrix telling, for which kind of documents configuration items should be
+triggered.
+This enables for example using different naming conventions or templates for different documents types. Documents
+applicable
 for a context are defined as a *match rule* using Conditions.
 
 ## Conditions processing

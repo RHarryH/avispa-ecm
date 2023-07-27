@@ -18,6 +18,7 @@
 
 package com.avispa.ecm.model.configuration.dictionary;
 
+import com.avispa.ecm.EcmConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
+import org.springframework.context.annotation.Import;
 
 import java.util.Map;
 import java.util.UUID;
@@ -39,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author Rafał Hiszpański
  */
+@Import(EcmConfiguration.class)
 @JsonTest
 @Slf4j
 class DictionaryValueSerDesTest {

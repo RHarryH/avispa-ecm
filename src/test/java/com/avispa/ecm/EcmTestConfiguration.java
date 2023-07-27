@@ -16,30 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.avispa.ecm.util.json;
+package com.avispa.ecm;
 
-import com.avispa.ecm.util.Version;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author Rafał Hiszpański
  */
-class VersionTest {
-    private final Version snapshotVersion = new Version("AVISPA ECM", "1.0.3-SNAPSHOT");
-    private final Version releaseVersion = new Version("AVISPA ECM", "1.0.3");
-
-    @Test
-    void snapshotVersion() {
-        assertEquals("AVISPA ECM", snapshotVersion.getComponentName());
-        assertEquals("1.0.3-SNAPSHOT", snapshotVersion.getNumber());
-        assertEquals("1.0.3", snapshotVersion.getReleaseNumber());
-    }
-
-    @Test
-    void releaseVersion() {
-        assertEquals("1.0.3", releaseVersion.getNumber());
-        assertEquals("1.0.3", releaseVersion.getReleaseNumber());
-    }
+@SpringBootApplication
+public class EcmTestConfiguration {
 }

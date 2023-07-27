@@ -26,11 +26,11 @@ import lombok.Getter;
  */
 @Getter
 public class Version {
-    private final String applicationName;
+    private final String componentName;
     private final String number;
 
-    public Version(String applicationName, String number) {
-        this.applicationName = applicationName;
+    public Version(String componentName, String number) {
+        this.componentName = componentName;
         this.number = number;
     }
 

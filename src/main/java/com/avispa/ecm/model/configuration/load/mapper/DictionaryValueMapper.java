@@ -30,8 +30,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
  * @author Rafał Hiszpański
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-public
-interface DictionaryValueMapper extends EcmConfigMapper<DictionaryValue, DictionaryValueDto> {
+public interface DictionaryValueMapper extends EcmConfigMapper<DictionaryValue, DictionaryValueDto> {
     @Override
     @Mapping(source = "key", target = "objectName")
     DictionaryValue convertToEntity(DictionaryValueDto dto);
