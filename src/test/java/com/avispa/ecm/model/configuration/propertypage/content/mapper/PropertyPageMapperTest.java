@@ -42,6 +42,7 @@ import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.format.Format;
 import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeRepository;
+import com.avispa.ecm.util.NestedObject;
 import com.avispa.ecm.util.TestDocument;
 import com.avispa.ecm.util.expression.ExpressionResolver;
 import lombok.extern.slf4j.Slf4j;
@@ -56,13 +57,17 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -74,7 +79,7 @@ import static org.mockito.Mockito.when;
 @DataJpaTest
 @AutoConfigureJson
 @Import({PropertyPageMapper.class, ExpressionResolver.class, DictionaryService.class, DisplayService.class})
-class PropertyPageMapperIntegrationTest {
+class PropertyPageMapperTest {
     private Document document;
 
     @MockBean
@@ -146,6 +151,24 @@ class PropertyPageMapperIntegrationTest {
         document.setObjectName("It's me");
         document.setTestDate(LocalDate.of(2010, 11, 12));
         document.setTestInt(10);
+        document.setTable(generateTableDocuments());
+
+        NestedObject nestedObject = new NestedObject();
+        nestedObject.setNestedField("Nested field");
+        document.setNestedObject(nestedObject);
+        return document;
+    }
+
+    private List<Document> generateTableDocuments() {
+        return IntStream.range(0, 5).mapToObj(this::generateTableDocument).collect(Collectors.toList());
+    }
+
+    private Document generateTableDocument(int number) {
+        TestDocument document = new TestDocument();
+        document.setId(UUID.randomUUID());
+        document.setObjectName("table" + number);
+        document.setTestInt(number);
+
         return document;
     }
 
@@ -267,7 +290,7 @@ class PropertyPageMapperIntegrationTest {
         assertEquals("testString", radio.getProperty());
 
         Map<String, String> values = Map.of("1", "10", "2", "20", "3", "30");
-        assertEquals(values, radio.getValues());
+        assertEquals(values, radio.getOptions());
     }
 
     @Test
@@ -283,12 +306,15 @@ class PropertyPageMapperIntegrationTest {
         assertEquals(1, controls.size());
 
         assertTrue(controls.get(0) instanceof Table);
-        Table tabs = (Table) controls.get(0);
-        assertEquals("table", tabs.getProperty());
-        assertEquals(1, tabs.getControls().size());
+        Table table = (Table) controls.get(0);
+        assertEquals("table", table.getProperty());
+        assertEquals(2, table.getControls().size());
 
-        Control control = tabs.getControls().get(0);
-        assertTrue(control instanceof Number);
+        Control control1 = table.getControls().get(0);
+        assertTrue(control1 instanceof Text);
+
+        Control control2 = table.getControls().get(1);
+        assertTrue(control2 instanceof Number);
     }
 
     @Test
@@ -363,7 +389,7 @@ class PropertyPageMapperIntegrationTest {
         // then
         ComboRadio combo = (ComboRadio) propertyPageContent.getControls().get(0);
         Map<String, String> values = Map.of("1", "10", "2", "20", "3", "30");
-        assertEquals(values, combo.getValues());
+        assertEquals(values, combo.getOptions());
     }
 
     @Test
@@ -377,7 +403,7 @@ class PropertyPageMapperIntegrationTest {
         // then
         ComboRadio combo = (ComboRadio) propertyPageContent.getControls().get(0);
         Map<String, String> values = Map.of("1", "10", "2", "20", "3", "30");
-        assertEquals(values, combo.getValues());
+        assertEquals(values, combo.getOptions());
     }
 
     @Test
@@ -400,7 +426,7 @@ class PropertyPageMapperIntegrationTest {
         // then
         ComboRadio combo = (ComboRadio) propertyPageContent.getControls().get(0);
         Map<String, String> values = Map.of("a", "A", "b", "B");
-        assertEquals(values, combo.getValues());
+        assertEquals(values, combo.getOptions());
     }
 
     @Test
@@ -429,6 +455,45 @@ class PropertyPageMapperIntegrationTest {
         assertEquals(2, propertyPageContent.getControls().size());
         Text text = (Text) propertyPageContent.getControls().get(1);
         assertEquals("Some test integer", text.getLabel());
+    }
+
+    @Test
+    void nestedPropertyTest() {
+        // given
+        PropertyPage propertyPage = createPropertyPage("content/nestedProperty.json");
+
+        // when
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+
+        // then
+        List<Control> controls = propertyPageContent.getControls();
+        assertEquals(1, controls.size());
+
+        assertTrue(controls.get(0) instanceof Text);
+        Text text = (Text) controls.get(0);
+        assertEquals("Nested field", text.getValue());
+    }
+
+    @Test
+    void tablePropertyTest() {
+        // given
+        PropertyPage propertyPage = createPropertyPage("content/table.json");
+
+        // when
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+
+        // then
+        List<Control> controls = propertyPageContent.getControls();
+        assertEquals(1, controls.size());
+
+        assertTrue(controls.get(0) instanceof Table);
+        Table table = (Table) controls.get(0);
+
+        PropertyControl control1 = table.getControls().get(0);
+        assertEquals(List.of("table0", "table1", "table2", "table3", "table4"), control1.getValue());
+
+        PropertyControl control2 = table.getControls().get(1);
+        assertEquals(List.of("0", "1", "2", "3", "4"), control2.getValue());
     }
 
     private PropertyPage createPropertyPage(String contentPath) {

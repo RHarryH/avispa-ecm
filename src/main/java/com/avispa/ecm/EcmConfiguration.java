@@ -37,6 +37,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import java.time.format.DateTimeFormatter;
 
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS;
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
 /**
  * @author Rafał Hiszpański
@@ -45,7 +46,8 @@ import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITI
 @EnableAsync
 @Slf4j
 public class EcmConfiguration implements AsyncConfigurer {
-    public static final String DATETIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
+    public static final String DATETIME_FORMAT = "dd MMM yyyy, hh:mm:ss";
+
     public static final LocalDateTimeSerializer LOCAL_DATETIME_SERIALIZER = new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
     public static final LocalDateTimeDeserializer LOCAL_DATETIME_DESERIALIZER = new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
 
@@ -56,6 +58,7 @@ public class EcmConfiguration implements AsyncConfigurer {
                 .deserializers(LOCAL_DATETIME_DESERIALIZER)
                 .serializationInclusion(JsonInclude.Include.NON_NULL)
                 .featuresToEnable(ACCEPT_CASE_INSENSITIVE_ENUMS)
+                .featuresToDisable(WRITE_DATES_AS_TIMESTAMPS)
                 .modulesToInstall(Hibernate5Module.class); // disables serialization of lazy collections
     }
 
