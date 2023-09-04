@@ -40,6 +40,8 @@ import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeRepository;
 import com.avispa.ecm.util.expression.ExpressionResolver;
 import com.avispa.ecm.util.expression.ExpressionResolverException;
+import com.avispa.ecm.util.reflect.PropertyUtils;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +58,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +110,7 @@ public class PropertyPageMapper {
         }
         table.setPropertyType(rowClass);
 
-        processTableControls(table);
+        processTableControls(table, null);
 
         return table;
     }
@@ -154,7 +159,7 @@ public class PropertyPageMapper {
                 }
                 table.setPropertyType(rowClass);
 
-                processTableControls(table);
+                processTableControls(table, context);
             } else {
                 processControl(control, context);
             }
@@ -193,7 +198,7 @@ public class PropertyPageMapper {
         return null;
     }
 
-    private void processTableControls(Table table) {
+    private void processTableControls(Table table, Object context) {
         table.getControls().stream()
                 .filter(ComboRadio.class::isInstance)
                 .map(ComboRadio.class::cast)
@@ -204,6 +209,49 @@ public class PropertyPageMapper {
                     }
                     loadDictionary(comboRadio, table.getPropertyType());
                 });
+
+        fillTablePropertyValue(table, context);
+    }
+
+    private void fillTablePropertyValue(Table table, Object context) {
+        String propertyName = table.getProperty(); // get property path
+
+        // convert context object to tree representation and navigate to the node
+        JsonNode root = objectMapper.valueToTree(context);
+
+        int size = getTableSize(table, context);
+        table.setSize(size);
+
+        for (PropertyControl control : table.getControls()) {
+            List<Object> row = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                String jsonPtrExpression = "/" + propertyName.replace(".", "/") + "/" + i + "/" + control.getProperty();
+                JsonNode node = root.at(jsonPtrExpression);
+
+                if (node.isMissingNode()) {
+                    log.warn("Value for {} property has bee not found", propertyName);
+                } else if (node.isObject()) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("objectName", node.get("objectName"));
+                    map.put("id", node.get("id"));
+                    row.add(map);
+                } else {
+                    row.add(node.asText());
+                }
+            }
+            control.setValue(row);
+        }
+    }
+
+    private static int getTableSize(Table table, Object context) {
+        int rows = 0;
+        var value = PropertyUtils.getPropertyValue(context, table.getProperty());
+        if(value instanceof Collection) {
+            rows = ((Collection<?>) value).size();
+        } else {
+            log.warn("Property {} does not contain a collection of values", table.getProperty());
+        }
+        return rows;
     }
 
     private void processControl(Control control, Object context) {
@@ -232,6 +280,27 @@ public class PropertyPageMapper {
                 }
                 loadDictionary(comboRadio, context.getClass());
             }
+
+            fillPropertyValue(propertyControl, context);
+        }
+    }
+
+    private void fillPropertyValue(PropertyControl propertyControl, Object context) {
+        String propertyName = propertyControl.getProperty(); // get property path
+
+        // convert context object to tree representation and navigate to the node
+        JsonNode root = objectMapper.valueToTree(context);
+        JsonNode node = root.at("/" + propertyName.replace(".", "/"));
+
+        if(node.isMissingNode()) {
+            log.warn("Value for {} property has bee not found", propertyName);
+        } else if(node.isObject()) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("objectName", node.get("objectName"));
+            map.put("id", node.get("id"));
+            propertyControl.setValue(map);
+        } else {
+            propertyControl.setValue(node.asText());
         }
     }
 
@@ -259,7 +328,7 @@ public class PropertyPageMapper {
                     .sorted(Comparator.comparing(EcmObject::getObjectName))
                     .collect(Collectors.toMap(ecmObject -> ecmObject.getId().toString(), EcmObject::getObjectName, (x, y) -> x, LinkedHashMap::new));
 
-            comboRadio.setValues(values);
+            comboRadio.setOptions(values);
         } else {
             log.error("Type '{}' was not found", comboRadio.getTypeName());
         }
@@ -308,6 +377,6 @@ public class PropertyPageMapper {
                 .sorted(Comparator.comparing(EcmEntity::getObjectName))
                 .collect(Collectors.toMap(DictionaryValue::getKey, DictionaryValue::getLabel, (x, y) -> x, LinkedHashMap::new));
 
-        comboRadio.setValues(values);
+        comboRadio.setOptions(values);
     }
 }

@@ -51,8 +51,8 @@ import lombok.Setter;
         @JsonSubTypes.Type(value = Tabs.class, name = "tabs"),
         @JsonSubTypes.Type(value = Text.class, name = "text"),
         @JsonSubTypes.Type(value = Textarea.class, name = "textarea"),
+        @JsonSubTypes.Type(value = Hidden.class, name = "hidden")
 })
 public abstract class Control {
-    private String type;
     private Conditions conditions;
 }
