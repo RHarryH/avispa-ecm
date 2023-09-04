@@ -18,7 +18,6 @@
 
 package com.avispa.ecm.model.configuration.propertypage.content.control;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,6 +34,5 @@ public class ComboRadio extends PropertyControl {
     private String dictionary;
     private boolean sortByLabel;
 
-    @JsonIgnore
-    private Map<String, String> values;
+    private Map<String, String> options;
 }

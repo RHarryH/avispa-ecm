@@ -30,6 +30,7 @@ import lombok.Setter;
 public abstract class PropertyControl extends Control {
     private String label;
     private String property;
+    private Object value;
     private CustomValidation customValidation;
     private boolean required;
 }

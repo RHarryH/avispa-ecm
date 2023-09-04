@@ -1,0 +1,12 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "text",
+        "label": "Text test",
+        "property": "nestedObject.nestedField",
+        "minLength": 10
+      }
+    ]
+  }
+}

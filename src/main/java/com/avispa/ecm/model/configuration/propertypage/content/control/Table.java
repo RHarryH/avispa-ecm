@@ -30,9 +30,11 @@ import java.util.List;
 @Getter
 @Setter
 public class Table extends PropertyControl {
-    private List<Control> controls;
+    private List<PropertyControl> controls;
     @JsonIgnore
-    private Class<?> propertyType;
+    private Class<?> propertyType; // TODO: required?
+
+    private int size;
 
     public Table() {
         this.setRequired(true); // table (and actually it's content) is always required
