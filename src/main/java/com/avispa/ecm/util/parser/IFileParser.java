@@ -18,12 +18,12 @@
 
 package com.avispa.ecm.util.parser;
 
-import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
 /**
  * @author Rafał Hiszpański
  */
 public interface IFileParser {
-    List<List<String>> parse(File file);
+    List<List<String>> parse(InputStream inputStream);
 }
