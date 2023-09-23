@@ -36,14 +36,14 @@ class CsvParserTest {
         var result = csvParser.parse(getInputStream("parser/test.csv"));
 
         assertEquals(List.of(
-              List.of("1", "2", "3"),
-              List.of("4", "5", "6")
+                List.of("1", "2", "3"),
+                List.of("4", "5", "6")
         ), result);
     }
 
     @Test
     void givenCsvFileWithUnsupportedSeparator_whenParse_thenParsed() {
-        var result = csvParser.parse(getInputStream("parser/test_unsupported_separator.csv"));
+        var result = csvParser.parse(getInputStream("parser/test-unsupported-separator.csv"));
 
         assertEquals(List.of(
                 List.of("1;2;3"),
@@ -53,7 +53,7 @@ class CsvParserTest {
 
     @Test
     void givenCsvFileWithQuotes_whenParse_thenParsed() {
-        var result = csvParser.parse(getInputStream("parser/test_quotes.csv"));
+        var result = csvParser.parse(getInputStream("parser/test-quotes.csv"));
 
         assertEquals(List.of(
                 List.of("1,2", "3"),
@@ -63,7 +63,7 @@ class CsvParserTest {
 
     @Test
     void givenCsvFileWithUnevenColumns_whenParse_thenParsed() {
-        var result = csvParser.parse(getInputStream("parser/test_uneven_columns.csv"));
+        var result = csvParser.parse(getInputStream("parser/test-uneven-columns.csv"));
 
         assertEquals(List.of(
                 List.of("1", "2", "3"),
