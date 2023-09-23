@@ -27,10 +27,11 @@ import com.opencsv.exceptions.CsvValidationException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,18 +40,18 @@ import java.util.List;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public class CSVParser implements IFileParser {
-    private char attributeSeparator;
+public class CsvParser implements IFileParser {
+    private final char attributeSeparator;
 
-    public CSVParser(char attributeSeparator) {
+    public CsvParser(char attributeSeparator) {
         this.attributeSeparator = attributeSeparator;
     }
 
     @Override
-    public List<List<String>> parse(File file) {
+    public List<List<String>> parse(InputStream inputStream) {
         List<List<String>> result = new ArrayList<>();
         RFC4180Parser rfc4180Parser = new RFC4180ParserBuilder().withSeparator(attributeSeparator).build();
-        try (Reader reader = new BufferedReader(new FileReader(file));
+        try (Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
              CSVReader cvsReader = new CSVReaderBuilder(reader)
                      .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
                      .withCSVParser(rfc4180Parser)
@@ -60,9 +61,9 @@ public class CSVParser implements IFileParser {
                 result.add(Arrays.asList(tokens));
             }
         } catch (IOException e) {
-            log.error("Could not parse file: {}", file, e);
+            log.error("Could not parse file: {}", inputStream, e);
         } catch (CsvValidationException e) {
-            log.error("CSV validation failed for file {}", file, e);
+            log.error("CSV validation failed for file {}", inputStream, e);
         }
 
         return result;

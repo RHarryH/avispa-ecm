@@ -18,30 +18,30 @@
 
 package com.avispa.ecm.util.parser;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.junit.jupiter.api.Test;
+
+import java.io.InputStream;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Rafał Hiszpański
  */
-@Component
-public final class ParserFactory {
-    @Value("${csv.separator:,}")
-    private char attributeSeparator;
+class TxtParserTest {
+    private final TxtParser txtParser = new TxtParser();
 
-    /**
-     * Get correct parser based on the extension of the file
-     * @param extension
-     * @return
-     */
-    public IFileParser get(String extension) {
-        switch (extension) {
-            case "txt":
-                return new TxtParser();
-            case "csv":
-                return new CsvParser(attributeSeparator);
-            default:
-                throw new IllegalArgumentException(String.format("Unsupported format: %s", extension));
-        }
+    @Test
+    void givenTxtFile_whenParse_thenParsed() {
+        var result = txtParser.parse(getInputStream("parser/test.txt"));
+
+        assertEquals(List.of(
+                List.of("Line 1"),
+                List.of("Line 2")
+        ), result);
+    }
+
+    private InputStream getInputStream(String name) {
+        return getClass().getClassLoader().getResourceAsStream(name);
     }
 }

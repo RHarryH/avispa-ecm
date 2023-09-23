@@ -18,30 +18,33 @@
 
 package com.avispa.ecm.util.parser;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Rafał Hiszpański
  */
-@Component
-public final class ParserFactory {
-    @Value("${csv.separator:,}")
-    private char attributeSeparator;
-
-    /**
-     * Get correct parser based on the extension of the file
-     * @param extension
-     * @return
-     */
-    public IFileParser get(String extension) {
-        switch (extension) {
-            case "txt":
-                return new TxtParser();
-            case "csv":
-                return new CsvParser(attributeSeparator);
-            default:
-                throw new IllegalArgumentException(String.format("Unsupported format: %s", extension));
+@Slf4j
+public class TxtParser implements IFileParser {
+    @Override
+    public List<List<String>> parse(InputStream inputStream) {
+        List<List<String>> result = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.add(List.of(line));
+            }
+        } catch (IOException e) {
+            log.error(String.format("Could not parse file: %s", inputStream), e);
         }
+
+        return result;
     }
 }
