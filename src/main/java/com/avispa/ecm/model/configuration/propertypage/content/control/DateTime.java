@@ -18,15 +18,8 @@
 
 package com.avispa.ecm.model.configuration.propertypage.content.control;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 /**
  * @author Rafał Hiszpański
  */
-@Getter
-@Setter
-@NoArgsConstructor
-public class Hidden extends PropertyControl {
+public class DateTime extends Date {
 }

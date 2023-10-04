@@ -30,6 +30,7 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.Columns;
 import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadio;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Control;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Group;
+import com.avispa.ecm.model.configuration.propertypage.content.control.Hidden;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Label;
 import com.avispa.ecm.model.configuration.propertypage.content.control.PropertyControl;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Tab;
@@ -75,6 +76,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class PropertyPageMapper {
+    private static final String OBJECT_NAME = "objectName";
+    
     private final ExpressionResolver expressionResolver;
     private final TypeRepository typeRepository;
     private final ObjectMapper objectMapper;
@@ -210,6 +213,11 @@ public class PropertyPageMapper {
                     loadDictionary(comboRadio, table.getPropertyType());
                 });
 
+        // always add row id
+        Hidden hidden = new Hidden();
+        hidden.setProperty("id");
+        table.getControls().add(hidden);
+
         fillTablePropertyValue(table, context);
     }
 
@@ -230,9 +238,10 @@ public class PropertyPageMapper {
 
                 if (node.isMissingNode()) {
                     log.warn("Value for {} property has bee not found", propertyName);
+                    row.add(""); // empty
                 } else if (node.isObject()) {
                     Map<String, Object> map = new HashMap<>();
-                    map.put("objectName", node.get("objectName"));
+                    map.put(OBJECT_NAME, node.get(OBJECT_NAME));
                     map.put("id", node.get("id"));
                     row.add(map);
                 } else {
@@ -296,7 +305,7 @@ public class PropertyPageMapper {
             log.warn("Value for {} property has bee not found", propertyName);
         } else if(node.isObject()) {
             Map<String, Object> map = new HashMap<>();
-            map.put("objectName", node.get("objectName"));
+            map.put(OBJECT_NAME, node.get(OBJECT_NAME));
             map.put("id", node.get("id"));
             propertyControl.setValue(map);
         } else {
