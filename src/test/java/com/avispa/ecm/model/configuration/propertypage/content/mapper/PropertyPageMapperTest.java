@@ -28,6 +28,7 @@ import com.avispa.ecm.model.configuration.propertypage.content.PropertyPageConte
 import com.avispa.ecm.model.configuration.propertypage.content.control.Columns;
 import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadio;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Control;
+import com.avispa.ecm.model.configuration.propertypage.content.control.Hidden;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Label;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Money;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Number;
@@ -57,7 +58,6 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,7 +67,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -308,13 +307,17 @@ class PropertyPageMapperTest {
         assertTrue(controls.get(0) instanceof Table);
         Table table = (Table) controls.get(0);
         assertEquals("table", table.getProperty());
-        assertEquals(2, table.getControls().size());
+        assertEquals(3, table.getControls().size());
 
         Control control1 = table.getControls().get(0);
         assertTrue(control1 instanceof Text);
 
         Control control2 = table.getControls().get(1);
         assertTrue(control2 instanceof Number);
+
+        Control control3 = table.getControls().get(2);
+        assertTrue(control3 instanceof Hidden);
+        assertEquals("id", ((Hidden) control3).getProperty());
     }
 
     @Test
