@@ -213,6 +213,10 @@ public class PropertyPageMapper {
                     loadDictionary(comboRadio, table.getPropertyType());
                 });
 
+        // table controls are always required
+        table.getControls()
+                .forEach(control -> control.setRequired(true));
+
         // always add row id
         Hidden hidden = new Hidden();
         hidden.setProperty("id");
@@ -303,6 +307,7 @@ public class PropertyPageMapper {
 
         if(node.isMissingNode()) {
             log.warn("Value for {} property has bee not found", propertyName);
+            propertyControl.setValue(""); // empty
         } else if(node.isObject()) {
             Map<String, Object> map = new HashMap<>();
             map.put(OBJECT_NAME, node.get(OBJECT_NAME));
