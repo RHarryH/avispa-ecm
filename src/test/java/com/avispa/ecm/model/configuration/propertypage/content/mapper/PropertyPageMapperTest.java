@@ -309,15 +309,17 @@ class PropertyPageMapperTest {
         assertEquals("table", table.getProperty());
         assertEquals(3, table.getControls().size());
 
-        Control control1 = table.getControls().get(0);
+        PropertyControl control1 = table.getControls().get(0);
         assertTrue(control1 instanceof Text);
+        assertTrue(control1.isRequired());
 
-        Control control2 = table.getControls().get(1);
+        PropertyControl control2 = table.getControls().get(1);
         assertTrue(control2 instanceof Number);
+        assertTrue(control2.isRequired());
 
-        Control control3 = table.getControls().get(2);
+        PropertyControl control3 = table.getControls().get(2);
         assertTrue(control3 instanceof Hidden);
-        assertEquals("id", ((Hidden) control3).getProperty());
+        assertEquals("id", control3.getProperty());
     }
 
     @Test
