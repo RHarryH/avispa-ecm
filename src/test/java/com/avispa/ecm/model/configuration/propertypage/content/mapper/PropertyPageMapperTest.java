@@ -503,6 +503,7 @@ class PropertyPageMapperTest {
 
     private PropertyPage createPropertyPage(String contentPath) {
         PropertyPage propertyPage = new PropertyPage();
+        propertyPage.setId(UUID.randomUUID());
         Content content = createContent(contentPath);
 
         propertyPage.setContents(Set.of(content));
