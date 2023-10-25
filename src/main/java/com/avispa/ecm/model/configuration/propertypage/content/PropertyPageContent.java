@@ -19,10 +19,12 @@
 package com.avispa.ecm.model.configuration.propertypage.content;
 
 import com.avispa.ecm.model.configuration.propertypage.content.control.Control;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Rafał Hiszpański
@@ -30,6 +32,8 @@ import java.util.List;
 @Getter
 @Setter
 public class PropertyPageContent {
+    @JsonIgnore
+    private UUID id;
     private boolean readonly;
     private String size = "normal";
     private List<Control> controls;

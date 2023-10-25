@@ -90,32 +90,11 @@ public class PropertyPageMapper {
     public PropertyPageContent convertToContent(PropertyPage propertyPage, Object context, boolean readonly) {
         PropertyPageContent propertyPageContent = getPropertyPageContent(propertyPage.getPrimaryContent()).orElseThrow();
         propertyPageContent.setReadonly(readonly);
+        propertyPageContent.setId(propertyPage.getId());
 
         processControls(propertyPageContent.getControls(), context);
 
         return propertyPageContent;
-    }
-
-    public Table getTable(PropertyPage propertyPage, String tableName, Class<?> contextClass) {
-        PropertyPageContent propertyPageContent = getPropertyPageContent(propertyPage.getPrimaryContent()).orElseThrow();
-
-        Table table = propertyPageContent.getControls().stream()
-                .filter(Table.class::isInstance)
-                .map(Table.class::cast)
-                .filter(t -> t.getProperty().equals(tableName))
-                .findFirst().orElseThrow();
-
-        Class<?> rowClass = getTableRowClass(table, contextClass);
-        if(null == rowClass) {
-            String errorMessage = String.format("Class of the table row can't be identified based on the '%s' property of '%s' context type.", table.getProperty(), contextClass.getClass());
-            log.error(errorMessage);
-            throw new IllegalStateException(errorMessage);
-        }
-        table.setPropertyType(rowClass);
-
-        processTableControls(table, null);
-
-        return table;
     }
 
     /**
