@@ -19,6 +19,8 @@
 package com.avispa.ecm.model;
 
 import com.avispa.ecm.model.type.TypeService;
+import com.avispa.ecm.util.exception.EcmException;
+import com.avispa.ecm.util.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,10 +43,10 @@ public class EcmObjectService {
      * @return
      */
     public EcmObject getEcmObjectFrom(UUID id, String typeName) {
-        EcmObject entity = ecmObjectRepository.findById(id).orElseThrow();
+        EcmObject entity = ecmObjectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format("The object '%s' does not exist", id)));
         String foundTypeName = typeService.getTypeName(entity.getClass());
         if(!foundTypeName.equals(typeName)) {
-            throw new IllegalStateException(String.format("The object '%s' is not an object of '%s' type", id, typeName));
+            throw new EcmException(String.format("The object '%s' is not an object of '%s' type", id, typeName));
         }
 
         return entity;
