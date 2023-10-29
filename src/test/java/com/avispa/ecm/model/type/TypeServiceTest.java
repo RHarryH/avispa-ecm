@@ -18,8 +18,10 @@
 
 package com.avispa.ecm.model.type;
 
+import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.util.DiscriminatedTestDocument;
 import com.avispa.ecm.util.TestDocument;
+import com.avispa.ecm.util.exception.RepositoryCorruptionError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,8 +30,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import javax.persistence.Entity;
+
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Rafał Hiszpański
@@ -44,11 +49,7 @@ class TypeServiceTest {
 
     @BeforeEach
     void init() {
-        type = new Type();
-        type.setObjectName("Test document");
-        type.setEntityClass(TestDocument.class);
-
-        type = typeService.registerType(type);
+        type = createType("Test document", TestDocument.class);
     }
 
     @Test
@@ -65,8 +66,28 @@ class TypeServiceTest {
         assertEquals(type.getObjectName(), typeService.getType(typeName).getObjectName());
     }
 
+    @Entity
+    static class TestDocument2 extends TestDocument {
+
+    }
+
+    @Test
+    void givenMultipleTypesMatchingSameName_whenGetType_thenThrowException() {
+        createType("test Document", TestDocument2.class);
+
+        assertThrows(RepositoryCorruptionError.class, () -> typeService.getType("TeST DoCUMenT"));
+    }
+
     @Test
     void givenTypeClass_whenGetName_thenNameReturned() {
         assertEquals("test document", typeService.getTypeName(TestDocument.class));
+    }
+
+    private Type createType(String typeName, Class<? extends EcmObject> typeClass) {
+        Type type = new Type();
+        type.setObjectName(typeName);
+        type.setEntityClass(typeClass);
+
+        return typeService.registerType(type);
     }
 }

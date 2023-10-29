@@ -42,7 +42,39 @@ extension looks like below
 | `avispa.ecm.configuration.overwrite` | `true` if the existing configuration should be overwritten                                                                        |
 | `avispa.ecm.office.home`             | Home location to LibreOffice. `C:\Program Files\LibreOffice` by default.                                                          |
 
-## Rendition generating
+## Types and objects
+
+Each document or configuration which is stored in the database has a _type_ assigned to it. This type has to be registered
+in special `TYPE` database table. This type contains type name (reused `OBJECT_NAME` column) and Java class name which
+corresponds to the registered type. Class name has to be a unique value. The type can be persisted in the database in form
+of an _objects_. Avispa ECM considers types name as case-insensitive.
+
+### Objects hierarchy
+
+The root of all objects is `ECM_ENTITY` table. It later divides to `ECM_CONFIG` and `ECM_OBJECT`. Latter one is designated for
+objects related to [zip configuration](#zip-configuration) while former is a base for all other types.
+
+None of the three mentioned tables are not registered in `TYPE` table what means they are not designated to exist as
+independent objects. An actual type is represented by `DOCUMENT` table. Documents inherits from ECM objects and can be used
+as independent objects within the ECM solution.
+
+Full object metadata is a join of all tables tracked down to `ECM_ENTITY` table. For example for Document type, its metadata will
+be in `DOCUMENT`, `ECM_OBJECT` and `ECM_ENTITY` tables identified by common UUID.
+
+### Objects contents
+
+Any object can have a _content_ file assigned to it. The file is stored in a _repository_, which is a special
+folder in the OS configured in the properties file. Details about object content are stored in the `CONTENT` table and
+are represented by `Content` type.
+
+### Discriminators
+
+Discriminators are a special columns marked on entity definition by `@TypeDiscriminator` annotation. They can serve as
+a column allowing to distinct between some categories of subtypes, which are not "physical" types registered in `TYPE` table.
+For example, we'd like to distinct between retail or customer client, but we want to store the data of both within
+single database table.
+
+### Rendition generating
 
 Rendition is the source document converted to different format (for instance `.docx` to `.odt`).
 In this ECM context it is always conversion from any format supported by `JODConverter` library to PDF.
