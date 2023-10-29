@@ -28,7 +28,7 @@ import com.avispa.ecm.model.configuration.callable.autoname.AutonameService;
 import com.avispa.ecm.model.configuration.propertypage.PropertyPage;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.type.Type;
-import com.avispa.ecm.model.type.TypeRepository;
+import com.avispa.ecm.model.type.TypeService;
 import com.avispa.ecm.util.TestDocument;
 import com.avispa.ecm.util.condition.ConditionParser;
 import com.avispa.ecm.util.condition.ConditionResolver;
@@ -63,7 +63,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         ConditionService.class,
         ConditionResolver.class,
         ConditionParser.class,
-        JsonValidator.class})
+        JsonValidator.class,
+        TypeService.class})
 class ContextServiceTest {
     @Autowired
     private EcmObjectRepository<EcmObject> ecmObjectRepository;
@@ -72,7 +73,7 @@ class ContextServiceTest {
     private EcmConfigRepository<EcmConfig> ecmConfigRepository;
 
     @Autowired
-    private TypeRepository typeRepository;
+    private TypeService typeService;
 
     @Autowired
     private ContextService contextService;
@@ -82,15 +83,15 @@ class ContextServiceTest {
 
     @BeforeEach
     void init() {
-        documentType = typeRepository.findByTypeName("Document");
+        documentType = typeService.getType("Document");
 
         // this is not a default type so create it
-        testDocumentType = typeRepository.findByObjectName("Test Document").orElseGet(() -> {
+        testDocumentType = typeService.findType("Test Document").orElseGet(() -> {
                 testDocumentType = new Type();
                 testDocumentType.setObjectName("Test Document");
                 testDocumentType.setEntityClass(TestDocument.class);
 
-                return typeRepository.save(testDocumentType);
+                return typeService.registerType(testDocumentType);
         });
     }
 
