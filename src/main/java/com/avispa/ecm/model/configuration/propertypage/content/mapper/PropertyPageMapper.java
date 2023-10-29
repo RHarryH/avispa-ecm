@@ -38,7 +38,7 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.Table;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Tabs;
 import com.avispa.ecm.model.content.Content;
 import com.avispa.ecm.model.type.Type;
-import com.avispa.ecm.model.type.TypeRepository;
+import com.avispa.ecm.model.type.TypeService;
 import com.avispa.ecm.util.expression.ExpressionResolver;
 import com.avispa.ecm.util.expression.ExpressionResolverException;
 import com.avispa.ecm.util.reflect.PropertyUtils;
@@ -79,7 +79,7 @@ public class PropertyPageMapper {
     private static final String OBJECT_NAME = "objectName";
     
     private final ExpressionResolver expressionResolver;
-    private final TypeRepository typeRepository;
+    private final TypeService typeService;
     private final ObjectMapper objectMapper;
     private final DictionaryService dictionaryService;
     private final DisplayService displayService;
@@ -312,7 +312,7 @@ public class PropertyPageMapper {
     }
 
     private void loadValuesFromObject(ComboRadio comboRadio) {
-        Type type = typeRepository.findByTypeName(comboRadio.getTypeName());
+        Type type = typeService.getType(comboRadio.getTypeName());
         if (null != type) {
             List<? extends EcmObject> ecmObjects = getEcmObjects(type);
 

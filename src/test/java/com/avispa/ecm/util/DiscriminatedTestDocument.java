@@ -16,28 +16,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.avispa.ecm.model.type;
+package com.avispa.ecm.util;
 
-import com.avispa.ecm.model.EcmObjectRepository;
-import com.avispa.ecm.util.exception.RepositoryCorruptionError;
-import org.springframework.stereotype.Repository;
+import com.avispa.ecm.model.document.Document;
+import com.avispa.ecm.model.type.TypeDiscriminator;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Optional;
+import javax.persistence.Entity;
 
 /**
  * @author Rafał Hiszpański
  */
-@Repository
-public interface TypeRepository extends EcmObjectRepository<Type> {
-    default Type findByTypeName(String typeName) throws RepositoryCorruptionError {
-        return findByObjectNameIgnoreCase(typeName).orElseThrow(RepositoryCorruptionError::new);
-    }
-
-    Optional<Type> findByObjectNameIgnoreCase(String objectName);
-
-    Optional<Type> findByEntityClass(Class<?> clazz);
-
-    default Type findByClass(Class<?> clazz) throws RepositoryCorruptionError {
-        return findByEntityClass(clazz).orElseThrow(RepositoryCorruptionError::new);
-    }
+@Getter
+@Setter
+@Entity
+@TypeDiscriminator(name = "type")
+public class DiscriminatedTestDocument extends Document {
+    private String type;
 }

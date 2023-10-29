@@ -23,7 +23,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
+import java.util.Optional;
+
 /**
+ * Service for registering and finding types in the ECM.
+ *
  * @author Rafał Hiszpański
  */
 @Service
@@ -32,7 +37,7 @@ import org.springframework.stereotype.Service;
 public class TypeService {
     private final TypeRepository typeRepository;
 
-    public String getTypeDiscriminatorFromAnnotation(Class<? extends EcmObject> entityClass) {
+    public static String getTypeDiscriminatorFromAnnotation(Class<? extends EcmObject> entityClass) {
         if (null != entityClass && entityClass.isAnnotationPresent(TypeDiscriminator.class)) {
             return entityClass.getAnnotation(TypeDiscriminator.class).name();
         }
@@ -48,7 +53,21 @@ public class TypeService {
         return typeRepository.findByTypeName(name);
     }
 
+    public Optional<Type> findType(String name) {
+        return typeRepository.findByObjectNameIgnoreCase(name);
+    }
+
     public String getTypeName(Class<? extends EcmObject> entityClass) {
         return typeRepository.findByClass(entityClass).getObjectName();
+    }
+
+    /**
+     * Register new type programmatically. This ensures the type name will always be stored in lower case.
+     * @param type
+     * @return
+     */
+    public Type registerType(Type type) {
+        type.setObjectName(type.getObjectName().toLowerCase(Locale.ROOT));
+        return typeRepository.save(type);
     }
 }

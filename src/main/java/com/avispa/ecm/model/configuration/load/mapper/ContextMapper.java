@@ -23,7 +23,7 @@ import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import com.avispa.ecm.model.configuration.context.Context;
 import com.avispa.ecm.model.configuration.load.dto.ContextDto;
 import com.avispa.ecm.model.type.Type;
-import com.avispa.ecm.model.type.TypeRepository;
+import com.avispa.ecm.model.type.TypeService;
 import com.avispa.ecm.util.exception.RepositoryCorruptionError;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
@@ -45,7 +45,7 @@ public abstract class ContextMapper implements EcmConfigMapper<Context, ContextD
     private EcmConfigRepository<EcmConfig> ecmConfigRepository;
 
     @Autowired
-    private TypeRepository typeRepository;
+    private TypeService typeService;
 
     @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
     protected abstract List<EcmConfig> configNameToConfigObject(List<String> configNames);
@@ -61,7 +61,7 @@ public abstract class ContextMapper implements EcmConfigMapper<Context, ContextD
     }
 
     protected Type typeNameToType(String typeName) {
-        return typeRepository.findByTypeName(typeName);
+        return typeService.getType(typeName);
     }
 
     @Override
