@@ -1,9 +1,3 @@
--- add EcmObject type
-SET @EcmObjectTypeId=random_uuid();
-insert into ecm_entity (id, object_name, version) values (@EcmObjectTypeId, 'ECM Object', 0);
-insert into ecm_object (id, creation_date, modification_date) values (@EcmObjectTypeId, current_timestamp, current_timestamp);
-insert into type (id, class_name) values (@EcmObjectTypeId, 'com.avispa.ecm.model.EcmObject');
-
 -- add Folder type
 SET @FolderTypeId=random_uuid();
 insert into ecm_entity (id, object_name, version) values (@FolderTypeId, 'Folder', 0);

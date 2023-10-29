@@ -1,13 +1,3 @@
--- Add EcmObject type
-DO $$
-DECLARE
-    EcmObjectTypeId UUID := gen_random_uuid();
-BEGIN
-    INSERT INTO ecm_entity (id, object_name, version) VALUES (EcmObjectTypeId, 'ECM Object', 0);
-    INSERT INTO ecm_object (id, creation_date, modification_date) VALUES (EcmObjectTypeId, current_timestamp, current_timestamp);
-    INSERT INTO type (id, class_name) VALUES (EcmObjectTypeId, 'com.avispa.ecm.model.EcmObject');
-END $$;
-
 -- Add Folder type
 DO $$
 DECLARE

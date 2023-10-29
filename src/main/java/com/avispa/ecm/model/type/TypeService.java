@@ -19,8 +19,10 @@
 package com.avispa.ecm.model.type;
 
 import com.avispa.ecm.model.EcmObject;
+import com.avispa.ecm.util.exception.RepositoryCorruptionError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
@@ -50,7 +52,11 @@ public class TypeService {
     }
 
     public Type getType(String name) {
-        return typeRepository.findByTypeName(name);
+        try {
+            return typeRepository.findByTypeName(name);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new RepositoryCorruptionError("The type name '" + name + "' matches to more than one result. Type names are case-insensitive.");
+        }
     }
 
     public Optional<Type> findType(String name) {
