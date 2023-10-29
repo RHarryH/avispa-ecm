@@ -21,20 +21,17 @@ package com.avispa.ecm.util.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-/**
- * @author Rafał Hiszpański
- */
-@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-public class RepositoryCorruptionError extends Error {
-    public RepositoryCorruptionError() {
-
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class ResourceNotFoundException extends EcmException {
+    public ResourceNotFoundException() {
+        super("Resource not found");
     }
 
-    public RepositoryCorruptionError(String message) {
+    public ResourceNotFoundException(Class<?> clazz) {
+        super(clazz.getSimpleName() + " not found");
+    }
+
+    public ResourceNotFoundException(String message) {
         super(message);
-    }
-
-    public RepositoryCorruptionError(String message, Throwable cause) {
-        super(message, cause);
     }
 }

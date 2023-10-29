@@ -18,9 +18,13 @@
 
 package com.avispa.ecm.util.exception;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 /**
  * @author Rafał Hiszpański
  */
+@ResponseStatus(HttpStatus.BAD_REQUEST)
 public class EcmException extends RuntimeException {
     public EcmException(String message) {
         super(message);
