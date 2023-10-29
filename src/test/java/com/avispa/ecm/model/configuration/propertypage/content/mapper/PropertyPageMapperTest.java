@@ -42,7 +42,7 @@ import com.avispa.ecm.model.content.Content;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.format.Format;
 import com.avispa.ecm.model.type.Type;
-import com.avispa.ecm.model.type.TypeRepository;
+import com.avispa.ecm.model.type.TypeService;
 import com.avispa.ecm.util.NestedObject;
 import com.avispa.ecm.util.TestDocument;
 import com.avispa.ecm.util.expression.ExpressionResolver;
@@ -82,7 +82,7 @@ class PropertyPageMapperTest {
     private Document document;
 
     @MockBean
-    private TypeRepository typeRepository;
+    private TypeService typeService;
 
     @MockBean
     private EcmConfigRepository<Dictionary> dictionaryRepository;
@@ -141,7 +141,7 @@ class PropertyPageMapperTest {
         type.setObjectName("Test Document");
         type.setEntityClass(TestDocument.class);
 
-        when(typeRepository.findByTypeName("Test Document")).thenReturn(type);
+        when(typeService.getType("Test Document")).thenReturn(type);
     }
 
     private Document createTestDocument() {
