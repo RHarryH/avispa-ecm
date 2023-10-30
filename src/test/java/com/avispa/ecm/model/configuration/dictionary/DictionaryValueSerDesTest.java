@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Map;
 import java.util.UUID;
@@ -41,8 +42,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author Rafał Hiszpański
  */
-@Import(EcmConfiguration.class)
 @JsonTest
+@ContextConfiguration(classes = EcmConfiguration.class)
 @Slf4j
 class DictionaryValueSerDesTest {
     private static Dictionary dictionary;

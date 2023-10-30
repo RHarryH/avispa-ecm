@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Rafał Hiszpański
  */
 @JsonTest
-@Import({ConditionParser.class, JsonValidator.class})
+@ContextConfiguration(classes = {ConditionParser.class, JsonValidator.class})
 @Slf4j
 class ConditionParserTest {
 
