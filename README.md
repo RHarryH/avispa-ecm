@@ -44,22 +44,22 @@ extension looks like below
 
 ## Types and objects
 
-Each document or configuration which is stored in the database has a _type_ assigned to it. This type has to be registered
-in special `TYPE` database table. This type contains type name (reused `OBJECT_NAME` column) and Java class name which
-corresponds to the registered type. Class name has to be a unique value. The type can be persisted in the database in form
-of an _objects_. Avispa ECM considers types name as case-insensitive.
+Each document or configuration which is stored in the database has a _type_ assigned to it. This type has to be
+registered in special `TYPE` database table. This type contains type name (reused `OBJECT_NAME` column) and Java class 
+name which corresponds to the registered type. Class name has to be a unique value. The type can be persisted in the 
+database in form of an _objects_. Avispa ECM considers types name as case-insensitive.
 
 ### Objects hierarchy
 
-The root of all objects is `ECM_ENTITY` table. It later divides to `ECM_CONFIG` and `ECM_OBJECT`. Latter one is designated for
-objects related to [zip configuration](#zip-configuration) while former is a base for all other types.
+The root of all objects is `ECM_ENTITY` table. It later divides to `ECM_CONFIG` and `ECM_OBJECT`. Latter one is
+designated for objects related to [zip configuration](#zip-configuration) while former is a base for all other types.
 
 None of the three mentioned tables are not registered in `TYPE` table what means they are not designated to exist as
-independent objects. An actual type is represented by `DOCUMENT` table. Documents inherits from ECM objects and can be used
-as independent objects within the ECM solution.
+independent objects. An actual type is represented by `DOCUMENT` table. Documents inherits from ECM objects and can be
+used as independent objects within the ECM solution.
 
-Full object metadata is a join of all tables tracked down to `ECM_ENTITY` table. For example for Document type, its metadata will
-be in `DOCUMENT`, `ECM_OBJECT` and `ECM_ENTITY` tables identified by common UUID.
+Full object metadata is a join of all tables tracked down to `ECM_ENTITY` table. For example for Document type, its 
+metadata will be in `DOCUMENT`, `ECM_OBJECT` and `ECM_ENTITY` tables identified by common UUID.
 
 ### Objects contents
 
@@ -70,9 +70,9 @@ are represented by `Content` type.
 ### Discriminators
 
 Discriminators are a special columns marked on entity definition by `@TypeDiscriminator` annotation. They can serve as
-a column allowing to distinct between some categories of subtypes, which are not "physical" types registered in `TYPE` table.
-For example, we'd like to distinct between retail or customer client, but we want to store the data of both within
-single database table.
+a column allowing to distinct between some categories of subtypes, which are not "physical" types registered in `TYPE`
+table. For example, we'd like to distinct between retail or customer client, but we want to store the data of both 
+within single database table.
 
 ### Rendition generating
 
@@ -102,14 +102,44 @@ The last level is designated for the end-users. It allows to configure following
 - **Upsert** - configuration item telling, which property page should be used when inserting or updating document
 
 All documents in ECM are of `Document` type. It is possible to extend it to create more specific types with additional
-properties.
-These types and their properties can be used to link with different properties. It is done using **Context**
-configuration
-item, which defines kind of a configuration matrix telling, for which kind of documents configuration items should be
-triggered.
-This enables for example using different naming conventions or templates for different documents types. Documents
-applicable
-for a context are defined as a *match rule* using Conditions.
+properties. These types and their properties can be used to link with different properties. It is done using **Context**
+configuration item, which defines kind of a configuration matrix telling, for which kind of documents configuration 
+items should be triggered. This enables for example using different naming conventions or templates for different 
+documents types. Documents applicable for a context are defined as a _match rule_ using Conditions.
+
+### Dictionary
+
+_Dictionaries__ are key-value maps for storing expected values for objects fields. They can be later used for example on
+the UI as options for combo or radio boxes. The key is called a _label_ while value is a map of columns and their 
+respective values. It means single dictionary value can keep multiple values in fact. For example if we want to use 
+dictionary to store VAT rates the label will look like `VAT_08` and the value can contain `multiplier` column with 
+`0.08` value and `description` column with some additional explanation about the purpose of the value.
+
+Dictionary can be linked to the object field by annotating it with `@Dictionary` annotation and providing dictionary
+name.
+
+### Property page
+
+Property page is used to define the layout of UI form for displaying object fields (known also as _properties_).
+Property page configuration requires a JSON content file with the layout details. Object fields are wrapped in so-called
+_property controls_. There are also different kind of _controls_ which are not related to properties
+like `separator`, `label` or _grouping controls_ like `group`, `columns`, `table` or `tabs`. The file structure is 
+defined in JSON Schema files found [here](src/main/resources/json-schemas).
+
+Apart from controls defined in `table`, property controls can have a `required` property defined, which tells if the
+value of property must be provided or is optional.
+
+Additionally, all controls apart from `table` nested properties and `columns` can have a visibility and requirement
+conditions defined. See more about [conditions](#conditions). Visibility condition tells the control should be hidden.
+Requirement conditions overwrites `required` property if specified.
+
+Below are some of the general details about grouping limitations:
+
+- `columns` can have up to 4 nested controls, which are not a grouping controls.
+- `table` can use only `combo`, `date`, `datetime`, `money`, `number`, and `text` controls. Conditions are not allowed
+  for these controls, and they are always required. Tables cannot be present in any grouping control.
+- `group` does not allow to nest another group within it. However `columns` or `tabs` are allowed.
+- `tabs` allows to nest `columns` and `groups` without `tabs` nested.
 
 ## Conditions processing
 
