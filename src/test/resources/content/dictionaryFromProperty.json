@@ -5,7 +5,7 @@
         "type": "combo",
         "label": "Combo test",
         "property": "testString",
-        "dictionary": "TestDict",
+        "dictionary": "Test Dictionary",
         "required": true
       }
     ]

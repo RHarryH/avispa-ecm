@@ -40,7 +40,7 @@ import java.util.Set;
 @Setter
 @Entity
 public class TestDocument extends Document {
-    @Dictionary(name = "TestDict")
+    @Dictionary(name = "Test Dictionary")
     private String testString;
     private LocalDateTime testDateTime;
     private LocalDate testDate;

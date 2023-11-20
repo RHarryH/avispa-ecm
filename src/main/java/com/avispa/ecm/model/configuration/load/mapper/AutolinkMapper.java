@@ -20,6 +20,8 @@ package com.avispa.ecm.model.configuration.load.mapper;
 
 import com.avispa.ecm.model.configuration.callable.autolink.Autolink;
 import com.avispa.ecm.model.configuration.load.dto.AutolinkDto;
+import com.avispa.ecm.util.Generated;
+import org.mapstruct.AnnotateWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -29,6 +31,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 /**
  * @author Rafał Hiszpański
  */
+@AnnotateWith(Generated.class)
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface AutolinkMapper extends EcmConfigMapper<Autolink, AutolinkDto> {
     @Override

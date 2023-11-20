@@ -50,6 +50,7 @@ public class SpringContext implements ApplicationContextAware {
     }
 
     @Override
+    @SuppressWarnings("java:S2696")
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         // store ApplicationContext reference to access required beans later on
         SpringContext.context = context;
