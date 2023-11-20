@@ -18,6 +18,7 @@
 
 package com.avispa.ecm.model.configuration.annotation;
 
+import com.avispa.ecm.util.exception.EcmException;
 import com.avispa.ecm.util.reflect.PropertyUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,15 +37,19 @@ public abstract class AnnotationService {
 
         Field classMemberField = PropertyUtils.getField(actualClass, actualProperty);
 
-        if (null != classMemberField && classMemberField.isAnnotationPresent(annotationClass)) {
-            return classMemberField.getAnnotation(annotationClass);
+        if (null != classMemberField) {
+            if(classMemberField.isAnnotationPresent(annotationClass)){
+                return classMemberField.getAnnotation(annotationClass);
+            } else {
+                if (log.isWarnEnabled()) {
+                    log.warn("{} annotation not found for {} field", annotationClass.getSimpleName(), propertyName);
+                }
+                return null;
+            }
+        } else {
+            log.error("There is no field {} in {} class", propertyName, objectClass);
+            throw new EcmException("Can't determine display name for non existing '" + propertyName + "' property");
         }
-
-        if(log.isWarnEnabled()) {
-            log.warn("{} annotation not found for {} field", annotationClass.getSimpleName(), propertyName);
-        }
-
-        return null;
     }
 
     /**
@@ -61,7 +66,8 @@ public abstract class AnnotationService {
             Field field = PropertyUtils.getField(actualClass, individual);
 
             if(null == field) {
-                log.error("Error");
+                log.error("There is no field {} in {} class", individual, actualClass);
+                throw new EcmException("Can't determine display name for non existing '" + individual + "' property");
             } else {
                 actualClass = field.getType();
             }

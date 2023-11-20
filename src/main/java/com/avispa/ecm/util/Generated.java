@@ -18,28 +18,17 @@
 
 package com.avispa.ecm.util;
 
-import com.avispa.ecm.model.EcmObject;
-import com.avispa.ecm.model.configuration.dictionary.annotation.Dictionary;
-import com.avispa.ecm.model.configuration.display.annotation.DisplayName;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import javax.persistence.Entity;
+import static java.lang.annotation.ElementType.CONSTRUCTOR;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/**
- * @author Rafał Hiszpański
- */
-@Getter
-@Setter
-@NoArgsConstructor
-@Entity
-public class NestedObject extends EcmObject {
-    public NestedObject(String objectName, String nestedField) {
-        this.setObjectName(objectName);
-        this.nestedField = nestedField;
-    }
-    @Dictionary(name = "Test Dictionary")
-    @DisplayName("Nested field")
-    private String nestedField;
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD, CONSTRUCTOR})
+public @interface Generated {
 }

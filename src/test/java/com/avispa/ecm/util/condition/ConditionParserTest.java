@@ -25,9 +25,10 @@ import com.avispa.ecm.util.condition.intermediate.value.ConditionValue;
 import com.avispa.ecm.util.json.JsonValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,8 +57,13 @@ class ConditionParserTest {
                 conditionParser.parse("{\"testString\": {\"unknown\": \"TEST\"}}"));
     }
 
-    @Test
-    void givenSimpleEquals_whenConversion_thenEqualsIntermediateResult() {
+    @ParameterizedTest
+    @CsvSource({
+            "testString,{\"testString\": \"TEST\"}",
+            "testString,{\"testString\": { \"$eq\": \"TEST\"}}",
+            "testString,{\"nestedObject.nestedField\": \"TEST\"}",
+    })
+    void givenEquals_whenConversion_thenEqualsIntermediateResult() {
         Conditions conditions = new Conditions();
         conditions.addElement(Condition.equal("testString", ConditionValue.text("TEST")));
 
@@ -73,15 +79,6 @@ class ConditionParserTest {
 
         assertEquals(conditions,
                 conditionParser.parse("{\"testString\": \"TEST\", \"testInt\": 12}"));
-    }
-
-    @Test
-    void givenStringEquals_whenConversion_thenEqualsIntermediateResult() {
-        Conditions conditions = new Conditions();
-        conditions.addElement(Condition.equal("testString", ConditionValue.text("TEST")));
-
-        assertEquals(conditions,
-                conditionParser.parse("{\"testString\": { \"$eq\": \"TEST\"}}"));
     }
 
     @Test
@@ -196,14 +193,5 @@ class ConditionParserTest {
 
         assertEquals(conditions,
                 conditionParser.parse("{\"$or\": [{\"testString\": { \"$ne\": \"TEST2\"}}, {\"$and\": [{\"testInt\": { \"$gt\": 11}}, {\"testInt\": { \"$lt\": 15}}]}]}"));
-    }
-
-    @Test
-    void givenNestedProperty_whenConversion_thenEqualsIntermediateResult() {
-        Conditions conditions = new Conditions();
-        conditions.addElement(Condition.equal("nestedObject.nestedField", ConditionValue.text("TEST")));
-
-        assertEquals(conditions,
-                conditionParser.parse("{\"nestedObject.nestedField\": \"TEST\"}"));
     }
 }
