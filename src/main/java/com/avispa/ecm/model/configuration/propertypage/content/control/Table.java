@@ -18,7 +18,6 @@
 
 package com.avispa.ecm.model.configuration.propertypage.content.control;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,8 +30,6 @@ import java.util.List;
 @Setter
 public class Table extends PropertyControl {
     private List<PropertyControl> controls;
-    @JsonIgnore
-    private Class<?> propertyType; // TODO: required?
 
     private int size;
 

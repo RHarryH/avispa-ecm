@@ -31,7 +31,6 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Rafał Hiszpański
@@ -41,6 +40,9 @@ import java.util.UUID;
 @Entity
 @Slf4j
 public class Dictionary extends EcmConfig {
+    private static final String UNKNOWN_COLUMN = "UNKNOWN COLUMN";
+    private static final String UNKNOWN_KEY = "UNKNOWN KEY";
+
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dictionary")
@@ -57,7 +59,7 @@ public class Dictionary extends EcmConfig {
                 .filter(dictionaryValue -> dictionaryValue.getKey().equals(key))
                 .map(DictionaryValue::getLabel)
                 .findFirst()
-                .orElse("UNKNOWN KEY");
+                .orElse(UNKNOWN_KEY);
     }
 
     public String getColumnValue(String key, String columnName) {
@@ -67,21 +69,9 @@ public class Dictionary extends EcmConfig {
 
         return values.stream()
                 .filter(dictionaryValue -> dictionaryValue.getKey().equals(key))
-                .map(dictionaryValue -> dictionaryValue.getColumns().get(columnName))
+                .map(dictionaryValue -> dictionaryValue.getColumns().getOrDefault(columnName, UNKNOWN_COLUMN))
                 .findFirst()
-                .orElse("UNKNOWN COLUMN");
-    }
-
-    public String getColumnValue(UUID valueId, String columnName) {
-        if (isEmpty()) {
-            return null;
-        }
-
-        return values.stream()
-                .filter(dictionaryValue -> dictionaryValue.getId().equals(valueId))
-                .map(dictionaryValue -> dictionaryValue.getColumns().get(columnName))
-                .findFirst()
-                .orElse("UNKNOWN COLUMN");
+                .orElse(UNKNOWN_COLUMN);
     }
 
     public DictionaryValue getValue(String key) {
