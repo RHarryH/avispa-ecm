@@ -48,17 +48,17 @@ class DictionaryServiceTest {
     @BeforeEach
     void init() {
         lenient().when(dictionaryRepository.findByObjectName(anyString())).thenAnswer(invocation -> {
-            if(invocation.getArgument(0).equals("TestDict")) {
+            if(invocation.getArgument(0).equals("Test Dictionary")) {
                 return Optional.of(getTestDictionary());
             }
 
-            throw new DictionaryNotFoundException("TestDict");
+            throw new DictionaryNotFoundException("Test Dictionary");
         });
     }
 
     private Dictionary getTestDictionary() {
         Dictionary testDict = new Dictionary();
-        testDict.setObjectName("TestDict");
+        testDict.setObjectName("Test Dictionary");
 
         DictionaryValue dv1 = new DictionaryValue();
         dv1.setKey("first");
@@ -81,9 +81,9 @@ class DictionaryServiceTest {
 
     @Test
     void givenDictionaryName_whenGetDictionary_thenReturnDictionary() {
-        Dictionary dictionary = dictionaryService.getDictionary("TestDict");
+        Dictionary dictionary = dictionaryService.getDictionary("Test Dictionary");
 
-        assertEquals("TestDict", dictionary.getObjectName());
+        assertEquals("Test Dictionary", dictionary.getObjectName());
     }
 
     @Test
@@ -94,14 +94,14 @@ class DictionaryServiceTest {
 
     @Test
     void givenEntityClassAndPropertyName_whenGetDictionaryName_thenReturnDictionary() {
-        assertEquals("TestDict", dictionaryService.getDictionaryNameFromAnnotation(TestDocument.class, "testString"));
+        assertEquals("Test Dictionary", dictionaryService.getDictionaryNameFromAnnotation(TestDocument.class, "testString"));
     }
 
     @Test
     void givenEntityClassAndPropertyName_whenGetDictionary_thenReturnDictionary() {
         Dictionary dictionary = dictionaryService.getDictionary(TestDocument.class, "testString");
 
-        assertEquals("TestDict", dictionary.getObjectName());
+        assertEquals("Test Dictionary", dictionary.getObjectName());
     }
 
     @Test

@@ -47,14 +47,14 @@ public abstract class ContextMapper implements EcmConfigMapper<Context, ContextD
     @Autowired
     private TypeService typeService;
 
-    @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
-    protected abstract List<EcmConfig> configNameToConfigObject(List<String> configNames);
-
     @Override
     @Mapping(source = "name", target = "objectName")
     @Mapping(source = "configNames", target = "ecmConfigs")
     @Mapping(target = "matchRule", defaultValue = "{}")
     public abstract Context convertToEntity(ContextDto dto);
+
+    @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
+    protected abstract List<EcmConfig> configNameToConfigObject(List<String> configNames);
 
     protected EcmConfig configNameToConfigObject(String configName) {
         return ecmConfigRepository.findByObjectName(configName).orElseThrow(RepositoryCorruptionError::new);

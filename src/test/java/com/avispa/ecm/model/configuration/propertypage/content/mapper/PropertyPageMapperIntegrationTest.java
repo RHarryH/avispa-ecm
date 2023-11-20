@@ -20,6 +20,7 @@ package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
 import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import com.avispa.ecm.model.configuration.dictionary.Dictionary;
+import com.avispa.ecm.model.configuration.dictionary.DictionaryNotFoundException;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryService;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryValue;
 import com.avispa.ecm.model.configuration.display.DisplayService;
@@ -77,8 +78,15 @@ import static org.mockito.Mockito.when;
 @Slf4j
 @DataJpaTest
 @AutoConfigureJson
-@Import({PropertyPageMapper.class, ExpressionResolver.class, DictionaryService.class, DisplayService.class})
-class PropertyPageMapperTest {
+@Import({
+        PropertyPageMapper.class,
+        ExpressionResolver.class,
+        DictionaryService.class,
+        DisplayService.class,
+        SimpleControlMapper.class,
+        TableMapper.class,
+        DictionaryControlLoader.class})
+class PropertyPageMapperIntegrationTest {
     private Document document;
 
     @MockBean
@@ -97,7 +105,7 @@ class PropertyPageMapperTest {
         // first dictionary
         {
             Dictionary testDict = new Dictionary();
-            testDict.setObjectName("TestDict");
+            testDict.setObjectName("Test Dictionary");
 
             DictionaryValue dv1 = new DictionaryValue();
             dv1.setKey("1");
@@ -115,13 +123,13 @@ class PropertyPageMapperTest {
             testDict.addValue(dv2);
             testDict.addValue(dv3);
 
-            when(dictionaryRepository.findByObjectName("TestDict")).thenReturn(Optional.of(testDict));
+            when(dictionaryRepository.findByObjectName("Test Dictionary")).thenReturn(Optional.of(testDict));
         }
 
         // second dictionary
         {
             Dictionary testDict = new Dictionary();
-            testDict.setObjectName("TestDict2");
+            testDict.setObjectName("Test Dictionary 2");
 
             DictionaryValue dv1 = new DictionaryValue();
             dv1.setKey("a");
@@ -134,7 +142,7 @@ class PropertyPageMapperTest {
             testDict.addValue(dv1);
             testDict.addValue(dv2);
 
-            when(dictionaryRepository.findByObjectName("TestDict2")).thenReturn(Optional.of(testDict));
+            when(dictionaryRepository.findByObjectName("Test Dictionary 2")).thenReturn(Optional.of(testDict));
         }
 
         Type type = new Type();
@@ -417,7 +425,7 @@ class PropertyPageMapperTest {
         PropertyPage propertyPage = createPropertyPage("content/dictionaryNotSpecified.json");
 
         // when
-        assertThrows(IllegalStateException.class, () -> propertyPageMapper.convertToContent(propertyPage, document, true));
+        assertThrows(DictionaryNotFoundException.class, () -> propertyPageMapper.convertToContent(propertyPage, document, true));
     }
 
     @Test

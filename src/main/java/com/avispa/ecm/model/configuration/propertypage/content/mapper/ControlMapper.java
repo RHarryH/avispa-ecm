@@ -16,30 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.avispa.ecm.util;
+package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
-import com.avispa.ecm.model.EcmObject;
-import com.avispa.ecm.model.configuration.dictionary.annotation.Dictionary;
-import com.avispa.ecm.model.configuration.display.annotation.DisplayName;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import javax.persistence.Entity;
+import com.avispa.ecm.model.configuration.propertypage.content.control.Control;
 
 /**
  * @author Rafał Hiszpański
  */
-@Getter
-@Setter
-@NoArgsConstructor
-@Entity
-public class NestedObject extends EcmObject {
-    public NestedObject(String objectName, String nestedField) {
-        this.setObjectName(objectName);
-        this.nestedField = nestedField;
-    }
-    @Dictionary(name = "Test Dictionary")
-    @DisplayName("Nested field")
-    private String nestedField;
+interface ControlMapper<C extends Control> {
+    void processControl(C control, Object context);
 }
