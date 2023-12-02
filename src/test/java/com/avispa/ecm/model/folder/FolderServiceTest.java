@@ -40,8 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @Slf4j
 class FolderServiceTest {
-    private FolderService folderService;
-    private DocumentRepository documentRepository;
+    private final FolderService folderService;
+    private final DocumentRepository documentRepository;
 
     @Autowired
     public FolderServiceTest(FolderService folderService, DocumentRepository documentRepository) {

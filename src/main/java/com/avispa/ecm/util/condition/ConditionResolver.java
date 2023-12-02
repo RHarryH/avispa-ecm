@@ -113,16 +113,13 @@ class ConditionResolver {
     private List<Predicate> resolveGroup(CriteriaBuilder criteriaBuilder, Root<? extends EcmObject> queryRoot, ConditionGroup group) {
         List<Predicate> predicates = new ArrayList<>(group.getConditions().size());
         for (IConditionElement element : group.getConditions()) {
-            if(element instanceof ConditionGroup) {
-                ConditionGroup nestedGroup = (ConditionGroup) element;
+            if (element instanceof ConditionGroup nestedGroup) {
                 List<Predicate> groupPredicates = resolveGroup(criteriaBuilder, queryRoot, nestedGroup);
 
                 Predicate predicate = getPredicate(nestedGroup.getGroupType(), criteriaBuilder, groupPredicates);
                 predicates.add(predicate);
 
-            } else if(element instanceof Condition) {
-                Condition condition = (Condition) element;
-
+            } else if (element instanceof Condition condition) {
                 predicates.add(getPredicate(condition, criteriaBuilder, queryRoot));
             }
         }
@@ -130,43 +127,25 @@ class ConditionResolver {
     }
 
     private Predicate getPredicate(GroupType groupType, CriteriaBuilder criteriaBuilder, List<Predicate> groupPredicates) {
-        switch(groupType) {
-            case AND:
-                return criteriaBuilder.and(groupPredicates.toArray(new Predicate[0]));
-            case OR:
-                return criteriaBuilder.or(groupPredicates.toArray(new Predicate[0]));
-            default:
-                if(log.isWarnEnabled()) {
-                    log.warn("Unknown group type: {}", groupType);
-                }
-                return null;
-        }
+        return switch (groupType) {
+            case AND -> criteriaBuilder.and(groupPredicates.toArray(new Predicate[0]));
+            case OR -> criteriaBuilder.or(groupPredicates.toArray(new Predicate[0]));
+        };
     }
 
     private Predicate getPredicate(Condition condition, CriteriaBuilder criteriaBuilder, Root<? extends EcmObject> queryRoot) {
-        String key = condition.getKey();
-        Operator operator = condition.getOperator();
-        ConditionValue<?> value = condition.getValue();
+        String key = condition.key();
+        Operator operator = condition.operator();
+        ConditionValue<?> value = condition.value();
 
-        switch(operator) {
-            case EQ:
-                return criteriaBuilder.equal(getPath(key, queryRoot), value.getValue());
-            case NE:
-                return criteriaBuilder.notEqual(getPath(key, queryRoot), value.getValue());
-            case GT:
-                return criteriaBuilder.gt(getPath(key, queryRoot), (Number) value.getValue());
-            case GTE:
-                return criteriaBuilder.ge(getPath(key, queryRoot), (Number) value.getValue());
-            case LT:
-                return criteriaBuilder.lt(getPath(key, queryRoot), (Number) value.getValue());
-            case LTE:
-                return criteriaBuilder.le(getPath(key, queryRoot), (Number) value.getValue());
-            default:
-                if(log.isWarnEnabled()) {
-                    log.warn("Unknown operator: {}", operator);
-                }
-                return null;
-        }
+        return switch (operator) {
+            case EQ -> criteriaBuilder.equal(getPath(key, queryRoot), value.getValue());
+            case NE -> criteriaBuilder.notEqual(getPath(key, queryRoot), value.getValue());
+            case GT -> criteriaBuilder.gt(getPath(key, queryRoot), (Number) value.getValue());
+            case GTE -> criteriaBuilder.ge(getPath(key, queryRoot), (Number) value.getValue());
+            case LT -> criteriaBuilder.lt(getPath(key, queryRoot), (Number) value.getValue());
+            case LTE -> criteriaBuilder.le(getPath(key, queryRoot), (Number) value.getValue());
+        };
     }
 
     private <Y> Path<Y> getPath(String key, Root<? extends EcmObject> queryRoot) {

@@ -143,7 +143,7 @@ public class ContextService {
                 .collect(Collectors.groupingBy(EcmConfig::getClass)) // group by class name
                 .values().stream()
                 .map(list -> list.get(0))// for each list get only first element
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

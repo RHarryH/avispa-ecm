@@ -52,22 +52,19 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
     }
 
     public void processControl(Control control, Object context) {
-        if(control instanceof Label) {
-            Label label = (Label)control;
+        if (control instanceof Label label) {
             try {
                 label.setExpression(expressionResolver.resolve(context, label.getExpression()));
             } catch (ExpressionResolverException e) {
                 log.error("Label expression couldn't be resolved", e);
             }
-        } else if(control instanceof PropertyControl) {
+        } else if (control instanceof PropertyControl propertyControl) {
             // TODO: validate if property is accessible?
-            PropertyControl propertyControl = (PropertyControl) control;
             if(Strings.isEmpty(propertyControl.getLabel())) {
                 propertyControl.setLabel(displayService.getDisplayValueFromAnnotation(context.getClass(), propertyControl.getProperty()));
             }
 
-            if(control instanceof ComboRadio) {
-                ComboRadio comboRadio = (ComboRadio) control;
+            if (control instanceof ComboRadio comboRadio) {
                 try {
                     if (StringUtils.isEmpty(comboRadio.getTypeName()) && StringUtils.isNotEmpty(comboRadio.getTypeNameExpression())) {
                         comboRadio.setTypeName(expressionResolver.resolve(context, comboRadio.getTypeNameExpression()));
