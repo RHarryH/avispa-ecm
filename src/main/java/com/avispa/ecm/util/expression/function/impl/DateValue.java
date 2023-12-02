@@ -46,14 +46,12 @@ public class DateValue extends ValueFunction {
     private String getValue(Object object, String propertyName, String format) {
         Object value = PropertyUtils.getPropertyValue(object, propertyName);
 
-        if(value instanceof LocalDateTime) {
-            LocalDateTime localDateTime = (LocalDateTime) value;
+        if (value instanceof LocalDateTime localDateTime) {
             return localDateTime.format(DateTimeFormatter.ofPattern(format));
-        } else if(value instanceof LocalDate) {
-            LocalDate localDate = (LocalDate) value;
+        } else if (value instanceof LocalDate localDate) {
             return localDate.format(DateTimeFormatter.ofPattern(format));
         } else {
-            log.warn("Value '{}' is not a date", value.toString());
+            log.warn("Value '{}' is not a date", value != null ? value.toString() : null);
         }
 
         return returnValue(propertyName, value);

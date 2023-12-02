@@ -44,22 +44,15 @@ public class FunctionFactory {
     public static String resolve(String functionName, String[] functionParams, Object object) {
         Function function;
 
-        switch(functionName) {
-            case VALUE_FUNCTION:
-                function = new Value();
-                break;
-            case DATEVALUE_FUNCTION:
-                function = new DateValue();
-                break;
-            case DEFAULT_FUNCTION:
-                function = new Default();
-                break;
-            case PAD_FUNCTION:
-                function = new Pad();
-                break;
-            default:
+        switch (functionName) {
+            case VALUE_FUNCTION -> function = new Value();
+            case DATEVALUE_FUNCTION -> function = new DateValue();
+            case DEFAULT_FUNCTION -> function = new Default();
+            case PAD_FUNCTION -> function = new Pad();
+            default -> {
                 log.error("Unknown function '{}'", functionName);
                 return null;
+            }
         }
 
         return resolveFunction(object, functionParams, function);

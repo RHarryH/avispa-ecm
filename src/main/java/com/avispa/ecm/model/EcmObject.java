@@ -39,17 +39,15 @@ import java.time.LocalDateTime;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
+@Getter
 public abstract class EcmObject extends EcmEntity {
 
-    @Getter
     @CreatedDate
     private LocalDateTime creationDate;
 
-    @Getter
     @LastModifiedDate
     private LocalDateTime modificationDate;
 
-    @Getter
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
     private Folder folder;

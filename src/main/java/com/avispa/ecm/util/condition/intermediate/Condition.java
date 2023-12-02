@@ -20,17 +20,11 @@ package com.avispa.ecm.util.condition.intermediate;
 
 import com.avispa.ecm.util.condition.Operator;
 import com.avispa.ecm.util.condition.intermediate.value.ConditionValue;
-import lombok.Value;
 
 /**
  * @author Rafał Hiszpański
  */
-@Value
-public class Condition implements IConditionElement {
-    String key;
-    Operator operator;
-    ConditionValue<?> value;
-
+public record Condition(String key, Operator operator, ConditionValue<?> value) implements IConditionElement {
     public static Condition equal(String key, ConditionValue<?> value) {
         return new Condition(key, Operator.EQ, value);
     }

@@ -35,13 +35,10 @@ public final class ParserFactory {
      * @return
      */
     public IFileParser get(String extension) {
-        switch (extension) {
-            case "txt":
-                return new TxtParser();
-            case "csv":
-                return new CsvParser(attributeSeparator);
-            default:
-                throw new IllegalArgumentException(String.format("Unsupported format: %s", extension));
-        }
+        return switch (extension) {
+            case "txt" -> new TxtParser();
+            case "csv" -> new CsvParser(attributeSeparator);
+            default -> throw new IllegalArgumentException(String.format("Unsupported format: %s", extension));
+        };
     }
 }
