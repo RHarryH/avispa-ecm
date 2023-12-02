@@ -36,7 +36,7 @@ jobs:
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
     needs: build_job
     steps:
-      - name: Get JaCoCo coverage repot
+      - name: Get JaCoCo coverage report
         uses: actions/download-artifact@v3.0.2
         with:
           name: jacoco-report
@@ -51,6 +51,11 @@ jobs:
         run: |
           echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
           echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
+
+      - name: Shallow Checkout
+        uses: actions/checkout@v3.2.0
+        with:
+          fetch-depth: 1
 
       - name: Commit and push the badge (if it changed)
         uses: EndBug/add-and-commit@v9.1.1
