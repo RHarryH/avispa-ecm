@@ -34,12 +34,12 @@ class VersionTest {
     void snapshotVersion() {
         assertEquals("AVISPA ECM", snapshotVersion.componentName());
         assertEquals("1.0.3-SNAPSHOT", snapshotVersion.number());
-        assertEquals("1.0.3", snapshotVersion.getReleaseNumber());
+        assertEquals("1.0.3", snapshotVersion.releaseNumber());
     }
 
     @Test
     void releaseVersion() {
         assertEquals("1.0.3", releaseVersion.number());
-        assertEquals("1.0.3", releaseVersion.getReleaseNumber());
+        assertEquals("1.0.3", releaseVersion.releaseNumber());
     }
 }
