@@ -83,19 +83,15 @@ public class PropertyPageMapper {
 
     private void processControls(List<Control> controls, Object context) {
         for(Control control : controls) {
-            if(control instanceof Columns) {
-                Columns columns = (Columns) control;
+            if (control instanceof Columns columns) {
                 processControls(columns.getControls(), context);
-            } else if(control instanceof Group) {
-                Group group = (Group) control;
+            } else if (control instanceof Group group) {
                 processControls(group.getControls(), context);
-            } else if(control instanceof Tabs) {
-                Tabs tabs = (Tabs)control;
+            } else if (control instanceof Tabs tabs) {
                 for(Tab tab : tabs.getTabs()) {
                     processControls(tab.getControls(), context);
                 }
-            } else if(control instanceof Table) {
-                Table table = (Table)control;
+            } else if (control instanceof Table table) {
                 tableMapper.processControl(table, context);
             } else {
                 simpleControlMapper.processControl(control, context);

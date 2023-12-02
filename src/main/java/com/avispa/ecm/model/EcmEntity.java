@@ -106,8 +106,8 @@ public abstract class EcmEntity implements Serializable {
 
     @Override
     public final boolean equals(Object that) {
-        return this == that || that instanceof EcmEntity
-                && Objects.equals(id, ((EcmEntity) that).id);
+        return this == that || that instanceof EcmEntity thatEntity
+                && Objects.equals(id, thatEntity.id);
     }
 
     @Override

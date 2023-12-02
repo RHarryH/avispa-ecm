@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class JsonValidatorTest {
 
-    private JsonValidator jsonValidator = new JsonValidator(new ObjectMapper());
+    private final JsonValidator jsonValidator = new JsonValidator(new ObjectMapper());
 
     @ParameterizedTest
     @ValueSource(strings = {

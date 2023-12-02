@@ -25,6 +25,7 @@ import com.avispa.ecm.model.configuration.load.dto.ContextDto;
 import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeService;
 import com.avispa.ecm.util.exception.RepositoryCorruptionError;
+import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -39,7 +40,8 @@ import java.util.List;
 /**
  * @author Rafał Hiszpański
  */
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        collectionMappingStrategy = CollectionMappingStrategy.TARGET_IMMUTABLE)
 public abstract class ContextMapper implements EcmConfigMapper<Context, ContextDto> {
     @Autowired
     private EcmConfigRepository<EcmConfig> ecmConfigRepository;

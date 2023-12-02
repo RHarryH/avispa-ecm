@@ -89,9 +89,8 @@ class TableMapper extends BaseControlsMapper<Table> {
         if(field != null && field.getType().isAssignableFrom(List.class)) {
             java.lang.reflect.Type genericFieldType = field.getGenericType();
 
-            if (genericFieldType instanceof ParameterizedType) {
-                ParameterizedType aType = (ParameterizedType) genericFieldType;
-                java.lang.reflect.Type[] fieldArgTypes = aType.getActualTypeArguments();
+            if (genericFieldType instanceof ParameterizedType parameterizedType) {
+                java.lang.reflect.Type[] fieldArgTypes = parameterizedType.getActualTypeArguments();
                 if(fieldArgTypes.length > 0) {
                     Class<?> rowClass = (Class<?>) fieldArgTypes[0];
                     log.debug("Found table type class: '{}'", rowClass);

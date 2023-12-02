@@ -87,7 +87,7 @@ class ConfigurationReader {
         }
 
         Configuration config = new Configuration();
-        try(FileSystem fileSystem = FileSystems.newFileSystem(zipConfigPath, null)) {
+        try (FileSystem fileSystem = FileSystems.newFileSystem(zipConfigPath, (ClassLoader) null)) {
             for(var configType : configurationRegistry) {
                 Path configPath = fileSystem.getPath(configType.getName());
                 processDirectory(configType, config, configPath);

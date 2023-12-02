@@ -151,8 +151,7 @@ class ExpressionResolverTest {
         buf.append("  ".repeat(Math.max(0, offset)));
 
         buf.append(Trees.getNodeText(aRoot, ruleNames)).append("\n");
-        if (aRoot instanceof ParserRuleContext) {
-            ParserRuleContext prc = (ParserRuleContext) aRoot;
+        if (aRoot instanceof ParserRuleContext prc) {
             if (prc.children != null) {
                 for (ParseTree child : prc.children) {
                     recursive(child, buf, offset + 1, ruleNames);

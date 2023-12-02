@@ -10,6 +10,12 @@ jobs:
       - name: Standard Checkout
         uses: actions/checkout@v3.2.0
 
+      - name: Use JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Build with Maven
         run: mvn -Davispa.ecm.office.home='/usr/lib/libreoffice' -B verify
 

@@ -179,36 +179,30 @@ class ConditionParser {
 
     private Condition processValue(String key, Operator operator, JsonNode value) {
         ConditionValue<?> conditionValue = getConditionValue(value);
-        switch(operator) {
-            case EQ:
-                return Condition.equal(key, conditionValue);
-            case NE:
-                return Condition.notEqual(key, conditionValue);
-            case GT:
-                return Condition.greaterThan(key, conditionValue);
-            case GTE:
-                return Condition.greaterThanOrEqual(key, conditionValue);
-            case LT:
-                return Condition.lessThan(key, conditionValue);
-            case LTE:
-                return Condition.lessThanOrEqual(key, conditionValue);
-        }
+        return switch (operator) {
+            case EQ -> Condition.equal(key, conditionValue);
+            case NE -> Condition.notEqual(key, conditionValue);
+            case GT -> Condition.greaterThan(key, conditionValue);
+            case GTE -> Condition.greaterThanOrEqual(key, conditionValue);
+            case LT -> Condition.lessThan(key, conditionValue);
+            case LTE -> Condition.lessThanOrEqual(key, conditionValue);
+        };
 
-        return null;
     }
 
     private ConditionValue<?> getConditionValue(JsonNode value) {
         JsonNodeType nodeType = value.getNodeType();
-        switch(nodeType) {
-            case STRING:
+        switch (nodeType) {
+            case STRING -> {
                 return ConditionValue.text(value.textValue());
-            case BOOLEAN:
+            }
+            case BOOLEAN -> {
                 return ConditionValue.bool(value.booleanValue());
-            case NUMBER:
+            }
+            case NUMBER -> {
                 return ConditionValue.number(value.numberValue());
-            default:
-                log.debug("Unsupported node type: {}", nodeType);
-                break;
+            }
+            default -> log.debug("Unsupported node type: {}", nodeType);
         }
         return null;
     }

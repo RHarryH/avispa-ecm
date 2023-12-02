@@ -19,25 +19,16 @@
 package com.avispa.ecm.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
 
 /**
  * @author Rafał Hiszpański
  */
-@Getter
-public class Version {
-    private final String componentName;
-    private final String number;
-
-    public Version(String componentName, String number) {
-        this.componentName = componentName;
-        this.number = number;
-    }
+public record Version(String componentName, String number) {
 
     @JsonIgnore
     public String getReleaseNumber() {
         int index = this.number.indexOf('-');
-        if(index != -1) {
+        if (index != -1) {
             return this.number.substring(0, index);
         }
         return this.number;
