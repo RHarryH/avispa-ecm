@@ -25,6 +25,10 @@ jobs:
       - name: Build with Maven
         run: mvn -Davispa.ecm.office.home='/usr/lib/libreoffice' -B verify
 
+  generate_badges:
+    runs-on: ubuntu-22.04
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
+    steps:
       - name: Generate JaCoCo Badge
         uses: cicirello/jacoco-badge-generator@v2.9.0
         with:
