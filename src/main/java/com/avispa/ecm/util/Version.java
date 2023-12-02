@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public record Version(String componentName, String number) {
 
     @JsonIgnore
-    public String getReleaseNumber() {
+    public String releaseNumber() {
         int index = this.number.indexOf('-');
         if (index != -1) {
             return this.number.substring(0, index);
