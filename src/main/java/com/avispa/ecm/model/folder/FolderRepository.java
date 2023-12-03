@@ -41,7 +41,7 @@ public interface FolderRepository extends EcmObjectRepository<Folder> {
 
     List<Folder> findByFolderIsNull();
 
-    @Query("select o from EcmObject o join Folder f on o.folder.id = f.id where ?1 member f.ancestors")
+    @Query("select o from EcmObject o join Folder f on o.folder.id = f.id where ?1 member of f.ancestors")
     List<EcmObject> findAllFoldersAndDocumentsDescend(Folder folder);
 
     @Query("select o from EcmObject o where o.folder = ?1")
