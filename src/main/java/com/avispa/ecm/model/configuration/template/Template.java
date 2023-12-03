@@ -19,8 +19,7 @@
 package com.avispa.ecm.model.configuration.template;
 
 import com.avispa.ecm.model.configuration.EcmConfig;
-
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * @author Rafał Hiszpański

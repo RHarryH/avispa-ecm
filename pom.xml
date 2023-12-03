@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.17</version>
+        <version>3.0.13</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.avispa</groupId>
@@ -73,11 +73,16 @@
         </dependency>
 
         <!-- Required to prevent serialization of lazy loaded collections -->
+        <!--<dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-hibernate6</artifactId>
+            <version>2.14.3</version> &lt;!&ndash; has to match with Jackson version in spring-boot-starter-json &ndash;&gt;
+            <scope>compile</scope>
+        </dependency>-->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-hibernate5</artifactId>
-            <version>2.12.6</version> <!-- has to match with Jackson version in spring-boot-starter-json -->
-            <scope>compile</scope>
+            <artifactId>jackson-datatype-hibernate5-jakarta</artifactId>
+            <version>2.14.2</version>
         </dependency>
 
         <dependency>
@@ -146,7 +151,7 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
-            <version>4.8</version>
+            <version>4.13.1</version>
         </dependency>
 
         <dependency>
@@ -192,7 +197,7 @@
             <plugin>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-maven-plugin</artifactId>
-                <version>4.8</version>
+                <version>4.13.1</version>
                 <executions>
                     <execution>
                         <goals>
@@ -208,7 +213,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
                 <configuration>
                     <annotationProcessorPaths>
                         <path>
