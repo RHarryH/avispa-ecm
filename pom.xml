@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.13</version>
+        <version>3.1.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.avispa</groupId>
@@ -73,16 +73,12 @@
         </dependency>
 
         <!-- Required to prevent serialization of lazy loaded collections -->
-        <!--<dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-hibernate6</artifactId>
-            <version>2.14.3</version> &lt;!&ndash; has to match with Jackson version in spring-boot-starter-json &ndash;&gt;
-            <scope>compile</scope>
-        </dependency>-->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-hibernate5-jakarta</artifactId>
-            <version>2.14.2</version>
+            <artifactId>jackson-datatype-hibernate6</artifactId>
+            <version>${jackson-bom.version}
+            </version> <!-- has to match with Jackson version in spring-boot-starter-json -->
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

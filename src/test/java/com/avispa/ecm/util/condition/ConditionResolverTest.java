@@ -32,8 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -53,7 +51,6 @@ class ConditionResolverTest {
     void init(@Autowired EcmObjectRepository<TestDocument> repository) {
         testDocument = new TestDocument();
         testDocument.setObjectName("Object Name");
-        testDocument.setId(UUID.randomUUID());
         testDocument.setTestString("TEST");
         testDocument.setTestInt(12);
         testDocument.setNestedObject(new NestedObject("Nested Object", "TEST"));

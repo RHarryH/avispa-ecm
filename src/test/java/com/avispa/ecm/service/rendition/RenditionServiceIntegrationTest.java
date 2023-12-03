@@ -131,7 +131,6 @@ class RenditionServiceIntegrationTest {
 
     private Document getDocument() {
         Document document = new Document();
-        document.setId(UUID.randomUUID());
         document.setObjectName("Document");
         return document;
     }
