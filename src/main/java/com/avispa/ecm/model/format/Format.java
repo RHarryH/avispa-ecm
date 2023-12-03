@@ -19,10 +19,9 @@
 package com.avispa.ecm.model.format;
 
 import com.avispa.ecm.model.EcmObject;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.persistence.Entity;
 
 /**
  * @author Rafał Hiszpański

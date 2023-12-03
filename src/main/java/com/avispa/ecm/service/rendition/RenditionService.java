@@ -32,7 +32,6 @@ import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.office.OfficeException;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +41,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 import static com.avispa.ecm.model.format.Format.PDF;
@@ -71,7 +71,7 @@ public class RenditionService {
 
         if(format.isPdf()) {
             log.warn("Document is already a pdf. Ignoring");
-            return new AsyncResult<>(null);
+            return CompletableFuture.completedFuture(null);
         }
 
         Path renditionFileStorePath = Path.of(fileStore.getRootPath(), UUID.randomUUID().toString());
@@ -87,7 +87,7 @@ public class RenditionService {
 
             log.info("PDF rendition generated successfully");
 
-            return new AsyncResult<>(rendition);
+            return CompletableFuture.completedFuture(rendition);
         } catch (Exception e) {
             String errorMessage = "PDF rendition cannot be generated";
             log.error(errorMessage, e);

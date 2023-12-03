@@ -22,7 +22,7 @@ import com.avispa.ecm.model.configuration.load.ConfigurationRegistry;
 import com.avispa.ecm.util.CustomAsyncExceptionHandler;
 import com.avispa.ecm.util.Version;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
+import com.fasterxml.jackson.datatype.hibernate5.jakarta.Hibernate5JakartaModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +59,7 @@ public class EcmConfiguration implements AsyncConfigurer {
                 .serializationInclusion(JsonInclude.Include.NON_NULL)
                 .featuresToEnable(ACCEPT_CASE_INSENSITIVE_ENUMS)
                 .featuresToDisable(WRITE_DATES_AS_TIMESTAMPS)
-                .modulesToInstall(Hibernate5Module.class); // disables serialization of lazy collections
+                .modulesToInstall(Hibernate5JakartaModule.class); // disables serialization of lazy collections
     }
 
     @Bean

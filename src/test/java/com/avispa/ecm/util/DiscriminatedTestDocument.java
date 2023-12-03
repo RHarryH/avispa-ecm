@@ -20,10 +20,9 @@ package com.avispa.ecm.util;
 
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.type.TypeDiscriminator;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.persistence.Entity;
 
 /**
  * @author Rafał Hiszpański

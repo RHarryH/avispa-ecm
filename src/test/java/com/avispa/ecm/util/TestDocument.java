@@ -21,13 +21,13 @@ package com.avispa.ecm.util;
 import com.avispa.ecm.model.configuration.dictionary.annotation.Dictionary;
 import com.avispa.ecm.model.configuration.display.annotation.DisplayName;
 import com.avispa.ecm.model.document.Document;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
