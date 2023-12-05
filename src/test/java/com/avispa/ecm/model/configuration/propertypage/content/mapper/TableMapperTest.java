@@ -63,7 +63,8 @@ class TableMapperTest {
         table.setProperty(propertyName);
 
         TestDocument testDocument = new TestDocument();
-        assertThrows(EcmException.class, () -> tableMapper.processControl(table, testDocument));
+        List<String> emptyList = List.of();
+        assertThrows(EcmException.class, () -> tableMapper.processControl(table, emptyList, testDocument));
     }
 
     @Test
@@ -82,7 +83,7 @@ class TableMapperTest {
         document.setObjectName("Table document");
         testDocument.setTable(List.of(document));
 
-        tableMapper.processControl(table, testDocument);
+        tableMapper.processControl(table, List.of(), testDocument);
 
         verify(dictionaryControlLoader).loadDictionary(any(ComboRadio.class), eq(Document.class));
     }
@@ -98,7 +99,7 @@ class TableMapperTest {
         controls.add(text);
         table.setControls(controls);
 
-        tableMapper.processControl(table,  new TestDocument());
+        tableMapper.processControl(table, List.of(), new TestDocument());
 
         assertEquals(0, table.getSize());
     }
@@ -119,7 +120,7 @@ class TableMapperTest {
         document.setObjectName("Table document");
         testDocument.setTable(List.of(document));
 
-        tableMapper.processControl(table, testDocument);
+        tableMapper.processControl(table, List.of(), testDocument);
 
         assertAll(() -> {
             assertEquals(1, table.getSize());
@@ -145,9 +146,40 @@ class TableMapperTest {
         TestDocument testDocument = new TestDocument();
         testDocument.setTable(List.of(new Document()));
 
-        tableMapper.processControl(table, testDocument);
+        tableMapper.processControl(table, List.of(), testDocument);
 
         PropertyControl control = table.getControls().get(0);
         assertEquals(List.of(""), control.getValue());
+    }
+
+    @Test
+    void givenPropertyFromBlackListInTable_whenProcessControl_thenValueNotFilled() {
+        Table table = new Table();
+        table.setProperty("table");
+
+        List<PropertyControl> controls = new ArrayList<>();
+        Text text = new Text();
+        text.setProperty("objectName");
+        controls.add(text);
+        table.setControls(controls);
+
+        TestDocument testDocument = new TestDocument();
+        Document document = new Document();
+        document.setObjectName("Table document");
+
+        Document document2 = new Document();
+        document2.setObjectName("Table document 2");
+        testDocument.setTable(List.of(document, document2));
+
+        tableMapper.processControl(table, List.of("objectName"), testDocument);
+
+        assertAll(() -> {
+            assertEquals(2, table.getSize());
+            assertEquals(2, table.getControls().size());
+
+            PropertyControl control = table.getControls().get(0);
+            assertTrue(control.isRequired());
+            assertEquals(List.of("", ""), control.getValue());
+        });
     }
 }

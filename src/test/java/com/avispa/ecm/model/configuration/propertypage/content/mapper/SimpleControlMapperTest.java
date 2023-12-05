@@ -30,6 +30,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -61,7 +62,7 @@ class SimpleControlMapperTest {
 
         TestDocument testDocument = new TestDocument();
 
-        simpleControlMapper.processControl(label, testDocument);
+        simpleControlMapper.processControl(label, List.of(), testDocument);
 
         verify(expressionResolver).resolve(testDocument, "$value('testString')");
     }
@@ -75,10 +76,23 @@ class SimpleControlMapperTest {
         testDocument.setObjectName("Test document");
         testDocument.setTestInt(12);
 
-        simpleControlMapper.processControl(text, testDocument);
+        simpleControlMapper.processControl(text, List.of(), testDocument);
 
         assertEquals("Some test integer", text.getLabel());
         assertEquals("12", text.getValue());
+    }
+
+    @Test
+    void givenPropertyFromBlacklist_whenProcess_thenValueNotFilled() {
+        Text text = new Text();
+        text.setProperty("testInt");
+
+        TestDocument testDocument = new TestDocument();
+        testDocument.setTestInt(12);
+
+        simpleControlMapper.processControl(text, List.of("testInt"), testDocument);
+
+        assertEquals("", text.getValue());
     }
 
     @Test
@@ -87,7 +101,7 @@ class SimpleControlMapperTest {
         text.setLabel("Label");
         text.setProperty("nonExisting");
 
-        simpleControlMapper.processControl(text, new TestDocument());
+        simpleControlMapper.processControl(text, List.of(), new TestDocument());
 
         assertEquals("", text.getValue());
     }
@@ -98,7 +112,7 @@ class SimpleControlMapperTest {
         comboRadio.setLabel("Label");
         comboRadio.setProperty("testString");
 
-        simpleControlMapper.processControl(comboRadio, new TestDocument());
+        simpleControlMapper.processControl(comboRadio, List.of(), new TestDocument());
 
         verify(dictionaryControlLoader).loadDictionary(comboRadio, TestDocument.class);
     }
@@ -112,7 +126,7 @@ class SimpleControlMapperTest {
         comboRadio.setTypeNameExpression("{\"testString\": \"Test\"}");
 
         TestDocument testDocument = new TestDocument();
-        simpleControlMapper.processControl(comboRadio, testDocument);
+        simpleControlMapper.processControl(comboRadio, List.of(), testDocument);
 
         verify(expressionResolver).resolve(testDocument, "{\"testString\": \"Test\"}");
     }
@@ -131,7 +145,7 @@ class SimpleControlMapperTest {
 
         testDocument.setNestedObject(nestedObject);
 
-        simpleControlMapper.processControl(text, testDocument);
+        simpleControlMapper.processControl(text, List.of(), testDocument);
 
         assertEquals(Map.of("objectName", "Nested", "id", id.toString()), text.getValue());
     }
@@ -141,7 +155,25 @@ class SimpleControlMapperTest {
         Text text = new Text();
         text.setProperty("nestedObject");
 
-        simpleControlMapper.processControl(text, new TestDocument());
+        simpleControlMapper.processControl(text, List.of(), new TestDocument());
+
+        assertEquals("", text.getValue());
+    }
+
+    @Test
+    void givenNestedPropertyOnBlacklist_whenProcess_thenValueNotFilled() {
+        Text text = new Text();
+        text.setProperty("nestedObject.objectName");
+
+        TestDocument testDocument = new TestDocument();
+        testDocument.setObjectName("Test document");
+
+        NestedObject nestedObject = new NestedObject();
+        nestedObject.setObjectName("Nested");
+
+        testDocument.setNestedObject(nestedObject);
+
+        simpleControlMapper.processControl(text, List.of("objectName"), testDocument);
 
         assertEquals("", text.getValue());
     }

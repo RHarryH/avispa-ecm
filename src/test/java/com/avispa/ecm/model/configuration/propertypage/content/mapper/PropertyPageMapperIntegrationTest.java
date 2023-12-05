@@ -185,7 +185,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/columns.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         List<Control> controls = propertyPageContent.getControls();
@@ -205,7 +205,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/combo.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         List<Control> controls = propertyPageContent.getControls();
@@ -225,7 +225,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/date.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         List<Control> controls = propertyPageContent.getControls();
@@ -244,7 +244,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/money.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         List<Control> controls = propertyPageContent.getControls();
@@ -264,7 +264,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/number.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         List<Control> controls = propertyPageContent.getControls();
@@ -283,7 +283,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/radio.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         assertTrue(propertyPageContent.isReadonly());
@@ -306,7 +306,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/table.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         List<Control> controls = propertyPageContent.getControls();
@@ -336,7 +336,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/tabs.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         List<Control> controls = propertyPageContent.getControls();
@@ -362,7 +362,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/textarea.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         List<Control> controls = propertyPageContent.getControls();
@@ -381,7 +381,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/twoControls.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         List<Control> controls = propertyPageContent.getControls();
@@ -397,7 +397,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/dictionaryFromProperty.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         ComboRadio combo = (ComboRadio) propertyPageContent.getControls().get(0);
@@ -411,7 +411,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/dictionaryFromAnnotation.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         ComboRadio combo = (ComboRadio) propertyPageContent.getControls().get(0);
@@ -425,7 +425,8 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/dictionaryNotSpecified.json");
 
         // when
-        assertThrows(DictionaryNotFoundException.class, () -> propertyPageMapper.convertToContent(propertyPage, document, true));
+        var configurer = PropertyPageMapperConfigurer.readonly();
+        assertThrows(DictionaryNotFoundException.class, () -> propertyPageMapper.convertToContent(configurer, propertyPage, document));
     }
 
     @Test
@@ -434,7 +435,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/dictionaryOverride.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         ComboRadio combo = (ComboRadio) propertyPageContent.getControls().get(0);
@@ -448,7 +449,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/propertyControlLabel.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         assertEquals(2, propertyPageContent.getControls().size());
@@ -462,7 +463,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/propertyControlLabel.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         assertEquals(2, propertyPageContent.getControls().size());
@@ -476,7 +477,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/nestedProperty.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         List<Control> controls = propertyPageContent.getControls();
@@ -493,7 +494,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/table.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(propertyPage, document, true);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
         List<Control> controls = propertyPageContent.getControls();
