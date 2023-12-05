@@ -34,6 +34,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,7 +52,7 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
         this.displayService = displayService;
     }
 
-    public void processControl(Control control, Object context) {
+    public void processControl(Control control, List<String> fillBlacklist, Object context) {
         if (control instanceof Label label) {
             try {
                 label.setExpression(expressionResolver.resolve(context, label.getExpression()));
@@ -75,12 +76,17 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
                 dictionaryControlLoader.loadDictionary(comboRadio, context.getClass());
             }
 
-            fillPropertyValue(propertyControl, context);
+            fillPropertyValue(propertyControl, fillBlacklist, context);
         }
     }
 
-    private void fillPropertyValue(PropertyControl propertyControl, Object context) {
+    private void fillPropertyValue(PropertyControl propertyControl, List<String> fillBlacklist, Object context) {
         String propertyName = propertyControl.getProperty(); // get property path
+
+        if (isOnBlacklist(propertyName, fillBlacklist)) {
+            propertyControl.setValue(""); // empty
+            return;
+        }
 
         // convert context object to tree representation and navigate to the node
         JsonNode root = objectMapper.valueToTree(context);
@@ -97,5 +103,22 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
         } else {
             propertyControl.setValue(node.asText());
         }
+    }
+
+    /**
+     * If property is on a blacklist of properties, it shouldn't be filled with a valie
+     *
+     * @param propertyName  property name
+     * @param fillBlacklist black list of properties
+     * @return
+     */
+    private static boolean isOnBlacklist(String propertyName, List<String> fillBlacklist) {
+        String[] dismantledPropertyName = propertyName.split("\\.");
+        String actualPropertyName = dismantledPropertyName[dismantledPropertyName.length - 1];
+        if (fillBlacklist.contains(actualPropertyName)) {
+            log.warn("Property {} is ignored and won't be filled with value", fillBlacklist);
+            return true;
+        }
+        return false;
     }
 }

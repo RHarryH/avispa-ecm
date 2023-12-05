@@ -18,13 +18,36 @@
 
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
-import com.avispa.ecm.model.configuration.propertypage.content.control.Control;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.util.List;
 
 /**
  * @author Rafał Hiszpański
  */
-interface ControlMapper<C extends Control> {
-    void processControl(C control, List<String> fillBlacklist, Object context);
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+@EqualsAndHashCode
+public class PropertyPageMapperConfigurer {
+    private boolean readonly;
+    private List<String> fillBlacklist;
+
+    public static PropertyPageMapperConfigurer readonly() {
+        return new PropertyPageMapperConfigurer(true, List.of("id"));
+    }
+
+    public static PropertyPageMapperConfigurer insert() {
+        return writable(List.of("id"));
+    }
+
+    public static PropertyPageMapperConfigurer edit() {
+        return writable(List.of());
+    }
+
+    private static PropertyPageMapperConfigurer writable(List<String> ignoredFields) {
+        return new PropertyPageMapperConfigurer(false, ignoredFields);
+    }
 }

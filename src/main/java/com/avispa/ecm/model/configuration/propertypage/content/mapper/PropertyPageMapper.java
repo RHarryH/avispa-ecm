@@ -51,12 +51,12 @@ public class PropertyPageMapper {
     private final SimpleControlMapper simpleControlMapper;
     private final TableMapper tableMapper;
 
-    public PropertyPageContent convertToContent(PropertyPage propertyPage, Object context, boolean readonly) {
+    public PropertyPageContent convertToContent(PropertyPageMapperConfigurer configurer, PropertyPage propertyPage, Object context) {
         PropertyPageContent propertyPageContent = getPropertyPageContent(propertyPage.getPrimaryContent()).orElseThrow();
-        propertyPageContent.setReadonly(readonly);
+        propertyPageContent.setReadonly(configurer.isReadonly());
         propertyPageContent.setId(propertyPage.getId());
 
-        processControls(propertyPageContent.getControls(), context);
+        processControls(propertyPageContent.getControls(), configurer.getFillBlacklist(), context);
 
         return propertyPageContent;
     }
@@ -81,20 +81,20 @@ public class PropertyPageMapper {
         return Optional.empty();
     }
 
-    private void processControls(List<Control> controls, Object context) {
+    private void processControls(List<Control> controls, List<String> fillBlacklist, Object context) {
         for(Control control : controls) {
             if (control instanceof Columns columns) {
-                processControls(columns.getControls(), context);
+                processControls(columns.getControls(), fillBlacklist, context);
             } else if (control instanceof Group group) {
-                processControls(group.getControls(), context);
+                processControls(group.getControls(), fillBlacklist, context);
             } else if (control instanceof Tabs tabs) {
                 for(Tab tab : tabs.getTabs()) {
-                    processControls(tab.getControls(), context);
+                    processControls(tab.getControls(), fillBlacklist, context);
                 }
             } else if (control instanceof Table table) {
-                tableMapper.processControl(table, context);
+                tableMapper.processControl(table, fillBlacklist, context);
             } else {
-                simpleControlMapper.processControl(control, context);
+                simpleControlMapper.processControl(control, fillBlacklist, context);
             }
         }
     }

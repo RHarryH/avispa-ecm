@@ -49,7 +49,7 @@ class TableMapper extends BaseControlsMapper<Table> {
         super(dictionaryControlLoader, objectMapper);
     }
 
-    public void processControl(Table table, Object context) {
+    public void processControl(Table table, List<String> fillBlacklist, Object context) {
         Class<?> tableRowClass = getTableRowClass(table, context.getClass());
 
         table.getControls().stream()
@@ -71,7 +71,7 @@ class TableMapper extends BaseControlsMapper<Table> {
         hidden.setProperty("id");
         table.getControls().add(hidden);
 
-        fillPropertyValue(table, context);
+        fillPropertyValue(table, fillBlacklist, context);
     }
 
     /**
@@ -109,7 +109,7 @@ class TableMapper extends BaseControlsMapper<Table> {
         throw new EcmException(errorMessage);
     }
 
-    private void fillPropertyValue(Table table, Object context) {
+    private void fillPropertyValue(Table table, List<String> fillBlacklist, Object context) {
         String propertyName = table.getProperty(); // get property path
 
         // convert context object to tree representation and navigate to the node
@@ -121,7 +121,14 @@ class TableMapper extends BaseControlsMapper<Table> {
         for (PropertyControl control : table.getControls()) {
             List<Object> row = new ArrayList<>();
             for (int i = 0; i < size; i++) {
-                String jsonPtrExpression = "/" + propertyName.replace(".", "/") + "/" + i + "/" + control.getProperty();
+                String controlProperty = control.getProperty();
+                if (fillBlacklist.contains(controlProperty)) {
+                    log.warn("Property {} is ignored and won't be filled with value", fillBlacklist);
+                    row.add(""); // empty
+                    continue;
+                }
+
+                String jsonPtrExpression = "/" + propertyName.replace(".", "/") + "/" + i + "/" + controlProperty;
                 JsonNode node = root.at(jsonPtrExpression);
 
                 if (node.isMissingNode()) {
