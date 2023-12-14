@@ -33,7 +33,7 @@ import java.util.List;
 
 /**
  * Auto linking is a process of linking document to correct folder based on some predefined rule.
- * It creates folder tree but does not (TODO: what I wanted to add there)
+ * When any folder resolved by the rule does not exist it will be created.
  *
  * @author Rafał Hiszpański
  */
