@@ -110,7 +110,7 @@ class ContextServiceTest {
     }
 
     @Test
-    @Disabled("Hibernate 6 SQM bug or behavior change. TBD.")
+    @Disabled("Hibernate 6 SQM bug or behavior change. https://hibernate.atlassian.net/jira/software/c/projects/HHH/issues/HHH-17527")
     void throwExceptionWhenInputJsonContainsNonExistingField() {
         Document document = createDocument();
         Autoname autoname = createAutoname();
@@ -244,6 +244,20 @@ class ContextServiceTest {
 
         assertEquals(1, configurations.size());
         assertTrue(configurations.contains(autoname2));
+    }
+
+    @Test
+    void givenContextWithMultipleConfigurationsOfTheSameType_whenGetConfigurations_thenReturnFirstInserted() {
+        Document document = createDocument();
+        Autoname autoname = createAutoname();
+        Autoname autoname2 = createAutoname("Another autoname");
+
+        createContext(documentType, "{ \"objectName\": \"It's me\" }", autoname, autoname2);
+
+        List<EcmConfig> configs = contextService.getConfigurations(document);
+
+        assertEquals(1, configs.size());
+        assertEquals(autoname, configs.get(0));
     }
 
     @Test

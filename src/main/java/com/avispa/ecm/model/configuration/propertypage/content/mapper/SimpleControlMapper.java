@@ -60,7 +60,6 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
                 log.error("Label expression couldn't be resolved", e);
             }
         } else if (control instanceof PropertyControl propertyControl) {
-            // TODO: validate if property is accessible?
             if(Strings.isEmpty(propertyControl.getLabel())) {
                 propertyControl.setLabel(displayService.getDisplayValueFromAnnotation(context.getClass(), propertyControl.getProperty()));
             }

@@ -131,7 +131,7 @@ public class ContextService {
      * If there are more than one configuration of the same type (for example two autolinkings) only first one will
      * be returned.
      * The same configuration might occur in two cases:
-     * - there are two configurations in the same context - order of insertion matters (TODO: are you sure?)
+     * - there are two configurations of the same in the same context - order of insertion matters (first inserted is returned)
      * - there are two contexts having same configuration type - importance of context matters
      * (cared by {@link #getMatchingConfigurations(EcmObject)})
      * @param object object for which we want to find matching configuration
