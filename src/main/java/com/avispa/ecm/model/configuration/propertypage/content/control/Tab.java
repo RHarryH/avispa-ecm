@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Rafał Hiszpański
@@ -29,6 +30,7 @@ import java.util.List;
 @Getter
 @Setter
 public class Tab {
+    private UUID id = UUID.randomUUID();
     private String name;
     private List<Control> controls;
 }
