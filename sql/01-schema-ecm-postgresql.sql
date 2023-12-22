@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS content (
     file_store_path VARCHAR(255),
     size BIGINT NOT NULL,
     id                CHAR(36) NOT NULL,
-    format_id VARCHAR(255) NOT NULL,
+    format_id CHAR(36) NOT NULL,
     related_entity_id CHAR(36) NOT NULL,
     PRIMARY KEY (id),
 	CONSTRAINT fk_content_format_id FOREIGN KEY (format_id) REFERENCES format,
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS autolink (
     id CHAR(36) NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_autolink_ecm_config_id FOREIGN KEY (id) REFERENCES ecm_config
-    );
+);
 
 CREATE TABLE IF NOT EXISTS autolink_rules (
                                               autolink_id CHAR(36) NOT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS autolink_rules (
     rules_order INT NOT NULL,
     PRIMARY KEY (autolink_id, rules_order),
     CONSTRAINT fk_autolink_rules_autolink_id FOREIGN KEY (autolink_id) REFERENCES autolink
-    );
+);
 
 CREATE TABLE IF NOT EXISTS autoname (
     property_name VARCHAR(255) NOT NULL,
