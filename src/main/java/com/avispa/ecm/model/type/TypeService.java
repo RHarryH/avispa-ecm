@@ -25,8 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Service for registering and finding types in the ECM.
@@ -37,6 +38,14 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class TypeService {
+    /**
+     * Ensures that a string starts with a letter, may contain any combination of letters, digits, or spaces in the middle
+     * and ends with a letter or a digit. It might be one character long.
+     * IMPORTANT: internally ECM treats type as case-insensitive. All uppercase characters are allowed only for cosmetic
+     * reasons.
+     */
+    private static final Pattern TYPE_NAME_PATTERN = Pattern.compile("[a-zA-Z](?:[a-zA-Z\\d ]*[a-zA-Z\\d])?+");
+
     private final TypeRepository typeRepository;
 
     public static String getTypeDiscriminatorFromAnnotation(Class<? extends EcmObject> entityClass) {
@@ -73,7 +82,11 @@ public class TypeService {
      * @return
      */
     public Type registerType(Type type) {
-        type.setObjectName(type.getObjectName().toLowerCase(Locale.ROOT));
+        Matcher matcher = TYPE_NAME_PATTERN.matcher(type.getObjectName());
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Type name should start with letter followed by alphanumeric characters or space and end with alphanumeric characters. Provided: " + type.getObjectName());
+        }
+
         return typeRepository.save(type);
     }
 }

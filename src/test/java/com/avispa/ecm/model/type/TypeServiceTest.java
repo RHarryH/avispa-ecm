@@ -32,6 +32,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -79,7 +80,23 @@ class TypeServiceTest {
 
     @Test
     void givenTypeClass_whenGetName_thenNameReturned() {
-        assertEquals("test document", typeService.getTypeName(TestDocument.class));
+        assertEquals("Test document", typeService.getTypeName(TestDocument.class));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"a", "a2", "a 2", "Ab 2C"})
+    void givenValidTypeNames_whenRegistering_thenNothingIsThrown(String typeName) {
+        Type type = new Type();
+        type.setObjectName(typeName);
+        assertDoesNotThrow(() -> typeService.registerType(type));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", " a", "A ", "\tB"})
+    void givenInvalidTypeNames_whenRegistering_thenExceptionIsThrown(String typeName) {
+        Type type = new Type();
+        type.setObjectName(typeName);
+        assertThrows(IllegalArgumentException.class, () -> typeService.registerType(type));
     }
 
     private Type createType(String typeName, Class<? extends EcmObject> typeClass) {
