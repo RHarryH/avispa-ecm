@@ -22,6 +22,9 @@
       "items": {
         "type": "object",
         "oneOf": [
+          {
+            "$ref": "../control-table/checkbox-table.json#"
+          },
           { "$ref": "../control-table/combo-table.json#" },
           { "$ref": "../control-table/date-table.json#" },
           { "$ref": "../control-table/datetime-table.json#" },

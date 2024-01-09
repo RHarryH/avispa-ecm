@@ -37,6 +37,7 @@ import java.util.UUID;
         property = "type",
         visible = true)
 @JsonSubTypes({
+        @JsonSubTypes.Type(value = Checkbox.class, name = "checkbox"),
         @JsonSubTypes.Type(value = Columns.class, name = "columns"),
         @JsonSubTypes.Type(value = ComboRadio.class, name = "combo"),
         @JsonSubTypes.Type(value = Date.class, name = "date"),

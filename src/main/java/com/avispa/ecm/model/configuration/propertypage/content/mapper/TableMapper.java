@@ -18,6 +18,7 @@
 
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
+import com.avispa.ecm.model.configuration.propertypage.content.control.Checkbox;
 import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadio;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Hidden;
 import com.avispa.ecm.model.configuration.propertypage.content.control.PropertyControl;
@@ -62,9 +63,9 @@ class TableMapper extends BaseControlsMapper<Table> {
                     dictionaryControlLoader.loadDictionary(comboRadio, tableRowClass);
                 });
 
-        // table controls are always required
+        // table controls except for checkboxes are always required
         table.getControls()
-                .forEach(control -> control.setRequired(true));
+                .forEach(control -> control.setRequired(!(control instanceof Checkbox)));
 
         // always add row id
         Hidden hidden = new Hidden();
