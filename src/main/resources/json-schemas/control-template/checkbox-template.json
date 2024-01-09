@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "checkbox"
+      ]
+    },
+    "label": {
+      "type": "string"
+    },
+    "property": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9.]*$"
+    },
+    "customValidation": {
+      "$ref": "../property/custom-validation.json#"
+    }
+  },
+  "required": [
+    "type",
+    "property"
+  ]
+}

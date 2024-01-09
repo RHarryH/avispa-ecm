@@ -23,6 +23,9 @@
           "items": {
             "type": "object",
             "oneOf": [
+              {
+                "$ref": "control/checkbox.json#"
+              },
               { "$ref": "control/columns.json#" },
               { "$ref": "control/combo.json#"},
               { "$ref": "control/date.json#" },
