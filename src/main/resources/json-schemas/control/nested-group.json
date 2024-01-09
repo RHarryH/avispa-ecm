@@ -18,6 +18,9 @@
       "items": {
         "type": "object",
         "oneOf": [
+          {
+            "$ref": "checkbox.json#"
+          },
           { "$ref": "columns.json#" },
           { "$ref": "combo.json#" },
           { "$ref": "date.json#" },

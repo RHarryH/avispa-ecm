@@ -136,8 +136,9 @@ Requirement conditions overwrites `required` property if specified.
 Below are some of the general details about grouping limitations:
 
 - `columns` can have up to 4 nested controls, which are not a grouping controls.
-- `table` can use only `combo`, `date`, `datetime`, `money`, `number`, and `text` controls. Conditions are not allowed
-  for these controls, and they are always required. Tables cannot be present in any grouping control.
+- `table` can use only `checkbox`, `combo`, `date`, `datetime`, `money`, `number`, and `text` controls. Conditions are
+  not allowed for these controls, and they are always required (except for checboxes, they have always only `true/false`
+  values). Tables cannot be present in any grouping control.
 - `group` does not allow to nest another group within it. However `columns` or `tabs` are allowed.
 - `tabs` allows to nest `columns` and `groups` without `tabs` nested.
 
