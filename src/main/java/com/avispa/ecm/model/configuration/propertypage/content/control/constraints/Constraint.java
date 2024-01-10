@@ -1,6 +1,6 @@
 /*
  * Avispa ECM - a small framework for implementing basic ECM solution
- * Copyright (C) 2023 Rafał Hiszpański
+ * Copyright (C) 2024 Rafał Hiszpański
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,25 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.avispa.ecm.model.configuration.propertypage.content;
+package com.avispa.ecm.model.configuration.propertypage.content.control.constraints;
 
-import com.avispa.ecm.model.configuration.propertypage.content.control.Control;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContext;
+import com.avispa.ecm.util.json.ConditionToStringDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Rafał Hiszpański
  */
 @Getter
 @Setter
-public class PropertyPageContent {
-    @JsonIgnore
-    private UUID id;
-    private PropertyPageContext context;
-    private String size = "normal";
-    private List<Control> controls;
+public class Constraint {
+    private List<PropertyPageContext> contexts;
+
+    @JsonDeserialize(using = ConditionToStringDeserializer.class)
+    private String condition;
 }

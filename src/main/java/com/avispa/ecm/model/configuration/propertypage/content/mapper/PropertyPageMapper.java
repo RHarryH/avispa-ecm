@@ -53,7 +53,7 @@ public class PropertyPageMapper {
 
     public PropertyPageContent convertToContent(PropertyPageMapperConfigurer configurer, PropertyPage propertyPage, Object context) {
         PropertyPageContent propertyPageContent = getPropertyPageContent(propertyPage.getPrimaryContent()).orElseThrow();
-        propertyPageContent.setReadonly(configurer.isReadonly());
+        propertyPageContent.setContext(configurer.getContext());
         propertyPageContent.setId(propertyPage.getId());
 
         processControls(propertyPageContent.getControls(), configurer.getFillBlacklist(), context);

@@ -11,8 +11,8 @@
     "required": {
       "type": "boolean"
     },
-    "conditions": {
-      "$ref": "../property/condition.json#"
+    "constraints": {
+      "$ref": "../property/constraints.json#"
     }
   }
 }

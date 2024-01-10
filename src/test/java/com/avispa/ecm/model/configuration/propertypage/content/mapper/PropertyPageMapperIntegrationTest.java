@@ -39,6 +39,8 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.Table;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Tabs;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Text;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Textarea;
+import com.avispa.ecm.model.configuration.propertypage.content.control.constraints.Constraint;
+import com.avispa.ecm.model.configuration.propertypage.content.control.constraints.Constraints;
 import com.avispa.ecm.model.content.Content;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.format.Format;
@@ -67,7 +69,11 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContext.EDIT;
+import static com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContext.INSERT;
+import static com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContext.READONLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -286,7 +292,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
 
         // then
-        assertTrue(propertyPageContent.isReadonly());
+        assertEquals(READONLY, propertyPageContent.getContext());
 
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(1, controls.size());
@@ -508,6 +514,35 @@ class PropertyPageMapperIntegrationTest {
 
         PropertyControl control2 = table.getControls().get(1);
         assertEquals(List.of("0", "1", "2", "3", "4"), control2.getValue());
+    }
+
+    @Test
+    void constraintsTest() {
+        // given
+        PropertyPage propertyPage = createPropertyPage("content/constraints.json");
+
+        // when
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
+
+        // then
+        List<Control> controls = propertyPageContent.getControls();
+        assertEquals(1, controls.size());
+
+        assertTrue(controls.get(0) instanceof Number);
+        Number number = (Number) controls.get(0);
+
+        Constraints constraints = number.getConstraints();
+        assertNotNull(constraints);
+
+        Constraint visibility = constraints.getVisibility();
+        assertNotNull(visibility);
+        assertEquals(List.of(INSERT), visibility.getContexts());
+        assertEquals("{\"objectName\":\"TEST\"}", visibility.getCondition());
+
+        Constraint requirement = constraints.getRequirement();
+        assertNotNull(requirement);
+        assertEquals(List.of(INSERT, EDIT), requirement.getContexts());
+        assertEquals("{\"objectName\":\"TEST\"}", requirement.getCondition());
     }
 
     private PropertyPage createPropertyPage(String contentPath) {

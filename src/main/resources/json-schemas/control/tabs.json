@@ -50,12 +50,12 @@
         }
       }
     },
-    "conditions": {
+    "constraints": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "visibility": {
-          "$ref": "../property/condition.json#/$defs/condition"
+          "$ref": "../property/constraints.json#/$defs/constraint"
         }
       }
     }
