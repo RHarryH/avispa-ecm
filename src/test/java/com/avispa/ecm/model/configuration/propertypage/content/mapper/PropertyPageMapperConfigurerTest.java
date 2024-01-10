@@ -22,9 +22,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContext.EDIT;
+import static com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContext.INSERT;
+import static com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContext.READONLY;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -36,7 +38,7 @@ class PropertyPageMapperConfigurerTest {
         var configurer = PropertyPageMapperConfigurer.readonly();
 
         assertAll(() -> {
-            assertTrue(configurer.isReadonly());
+            assertEquals(READONLY, configurer.getContext());
             assertEquals(List.of("id"), configurer.getFillBlacklist());
         });
     }
@@ -46,7 +48,7 @@ class PropertyPageMapperConfigurerTest {
         var configurer = PropertyPageMapperConfigurer.insert();
 
         assertAll(() -> {
-            assertFalse(configurer.isReadonly());
+            assertEquals(INSERT, configurer.getContext());
             assertEquals(List.of("id"), configurer.getFillBlacklist());
         });
     }
@@ -56,7 +58,7 @@ class PropertyPageMapperConfigurerTest {
         var configurer = PropertyPageMapperConfigurer.edit();
 
         assertAll(() -> {
-            assertFalse(configurer.isReadonly());
+            assertEquals(EDIT, configurer.getContext());
             assertTrue(configurer.getFillBlacklist().isEmpty());
         });
     }

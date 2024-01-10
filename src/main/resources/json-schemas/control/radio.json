@@ -14,7 +14,7 @@
     },
     "property": {
       "type": "string",
-      "pattern": "^[A-Za-z][A-Za-z0-9.]*$"
+      "pattern": "^[a-zA-Z](?:[a-zA-Z\\d.]*[a-zA-Z\\d])?+$"
     },
     "required": {
       "type": "boolean"
@@ -34,8 +34,8 @@
     "sortByLabel": {
       "type": "boolean"
     },
-    "conditions": {
-      "$ref": "../property/condition.json#"
+    "constraints": {
+      "$ref": "../property/constraints.json#"
     }
   },
   "allOf": [

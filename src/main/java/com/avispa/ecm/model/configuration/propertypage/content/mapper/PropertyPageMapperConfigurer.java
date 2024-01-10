@@ -18,6 +18,7 @@
 
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
+import com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContext;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -32,22 +33,22 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 public class PropertyPageMapperConfigurer {
-    private boolean readonly;
+    private PropertyPageContext context;
     private List<String> fillBlacklist;
 
     public static PropertyPageMapperConfigurer readonly() {
-        return new PropertyPageMapperConfigurer(true, List.of("id"));
+        return new PropertyPageMapperConfigurer(PropertyPageContext.READONLY, List.of("id"));
     }
 
     public static PropertyPageMapperConfigurer insert() {
-        return writable(List.of("id"));
+        return writable(PropertyPageContext.INSERT, List.of("id"));
     }
 
     public static PropertyPageMapperConfigurer edit() {
-        return writable(List.of());
+        return writable(PropertyPageContext.EDIT, List.of());
     }
 
-    private static PropertyPageMapperConfigurer writable(List<String> ignoredFields) {
-        return new PropertyPageMapperConfigurer(false, ignoredFields);
+    private static PropertyPageMapperConfigurer writable(PropertyPageContext context, List<String> ignoredFields) {
+        return new PropertyPageMapperConfigurer(context, ignoredFields);
     }
 }

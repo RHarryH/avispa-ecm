@@ -4,18 +4,39 @@
   "additionalProperties": false,
   "properties": {
     "visibility": {
-      "$ref": "#/$defs/condition"
+      "$ref": "#/$defs/constraint"
     },
     "requirement": {
-      "$ref": "#/$defs/condition"
+      "$ref": "#/$defs/constraint"
     }
   },
   "$defs": {
+    "constraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contexts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "READONLY",
+              "INSERT",
+              "EDIT"
+            ]
+          },
+          "minItems": 1
+        },
+        "condition": {
+          "$ref": "#/$defs/condition"
+        }
+      }
+    },
     "condition": {
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[A-Za-z][A-Za-z0-9.]*$": {
+        "^[a-zA-Z](?:[a-zA-Z\\d.]*[a-zA-Z\\d])?+$": {
           "$ref": "#/$defs/property"
         }
       },
@@ -76,7 +97,7 @@
             "type": "object",
             "additionalProperties": false,
             "patternProperties": {
-              "^[A-Za-z][A-Za-z0-9.]*$": {
+              "^[a-zA-Z](?:[a-zA-Z\\d.]*[a-zA-Z\\d])?+$": {
                 "$ref": "#/$defs/property"
               }
             }
