@@ -13,8 +13,10 @@
             "required": true
           }
         ],
-        "conditions": {
-          "visibility": []
+        "constraints": {
+          "visibility": {
+            "condition": []
+          }
         }
       }
     ]

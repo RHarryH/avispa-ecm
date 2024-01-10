@@ -1,0 +1,30 @@
+{
+  "propertyPage": {
+    "controls": [
+      {
+        "type": "number",
+        "label": "Number test",
+        "property": "testInt",
+        "constraints": {
+          "visibility": {
+            "contexts": [
+              "INSERT"
+            ],
+            "condition": {
+              "objectName": "TEST"
+            }
+          },
+          "requirement": {
+            "contexts": [
+              "INSERT",
+              "EDIT"
+            ],
+            "condition": {
+              "objectName": "TEST"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

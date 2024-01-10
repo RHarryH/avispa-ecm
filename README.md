@@ -126,21 +126,32 @@ _property controls_. There are also different kind of _controls_ which are not r
 like `separator`, `label` or _grouping controls_ like `group`, `columns`, `table` or `tabs`. The file structure is 
 defined in JSON Schema files found [here](src/main/resources/json-schemas).
 
-Apart from controls defined in `table`, property controls can have a `required` property defined, which tells if the
-value of property must be provided or is optional.
-
-Additionally, all controls apart from `table` nested properties and `columns` can have a visibility and requirement
-conditions defined. See more about [conditions](#conditions). Visibility condition tells the control should be hidden.
-Requirement conditions overwrites `required` property if specified.
-
 Below are some of the general details about grouping limitations:
 
 - `columns` can have up to 4 nested controls, which are not a grouping controls.
-- `table` can use only `checkbox`, `combo`, `date`, `datetime`, `money`, `number`, and `text` controls. Conditions are
+- `table` can use only `checkbox`, `combo`, `date`, `datetime`, `money`, `number`, and `text` controls. Constraints are
   not allowed for these controls, and they are always required (except for checboxes, they have always only `true/false`
   values). Tables cannot be present in any grouping control.
 - `group` does not allow to nest another group within it. However `columns` or `tabs` are allowed.
 - `tabs` allows to nest `columns` and `groups` without `tabs` nested.
+
+#### Context mode
+
+Property page can be run in one of multiple context modes:
+
+- `READONLY` - property page can be used only to show object data
+- `INSERT` - properties are editable but all `id` fields are hidden
+- `EDIT` - properties are editable, `id`s of objects are passed to the property page
+
+#### Visibility and requirement constraints
+
+Apart from controls defined in `table`, property controls can have a `required` property defined, which tells if the
+value of property must be provided or is optional. For `checkbox` requirement means, the checkbox has to be checked.
+
+Additionally, all controls apart from `table` nested properties and `columns` can have a visibility and requirement
+constraints defined. Visibility constraint tells the control should be hidden. Requirement constraint overwrites
+`required` property if specified. Constraints can be defined as [condition](#conditions) (visibility or requirement is
+determined based on the values of other properties) or by defining allowed property page context modes.
 
 ## Conditions processing
 
