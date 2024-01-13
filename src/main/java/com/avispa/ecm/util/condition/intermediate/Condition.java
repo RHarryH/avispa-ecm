@@ -48,4 +48,12 @@ public record Condition(String key, Operator operator, ConditionValue<?> value) 
     public static Condition lessThanOrEqual(String key, ConditionValue<?> value) {
         return new Condition(key, Operator.LTE, value);
     }
+
+    public static Condition like(String key, ConditionValue<?> value) {
+        return new Condition(key, Operator.LIKE, value);
+    }
+
+    public static Condition notLike(String key, ConditionValue<?> value) {
+        return new Condition(key, Operator.NOT_LIKE, value);
+    }
 }

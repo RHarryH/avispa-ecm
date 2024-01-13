@@ -30,7 +30,10 @@ public enum Operator {
     GT("$gt"),
     GTE("$gte"),
     LT("$lt"),
-    LTE("$lte");
+    LTE("$lte"),
+
+    LIKE("$like"),
+    NOT_LIKE("$notLike");
 
     private final String symbol;
 

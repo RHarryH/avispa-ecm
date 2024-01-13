@@ -208,6 +208,27 @@ To check if property does not equal certain value use `$ne` operator
 }
 ```
 
+##### String search
+
+Conditions support `like` and `not like` operators known from SQL. The escape character is set to `\ `. To apply this
+operators use `$like` and `$notLike` respectively. Only strings can be used with this operators.
+
+```json
+{
+  "propertyName": {
+    "$like": "val%e"
+  }
+}
+```
+
+```json
+{
+  "propertyName": {
+    "$notLike": "sampl_\\_text"
+  }
+}
+```
+
 ##### Comparison
 
 ###### Greater than
@@ -294,6 +315,18 @@ is equal to: `propertyName < 12 and propertyName2 = 'string'`
 is equal to: `propertyName < 12 or propertyName2 = 'string'`
 
 Groups can be nested within other groups.
+
+#### Limiting
+
+To limit number of rows returned use `$limit` operator at the root levels. Limiting number must be
+greater than zero.
+
+```json
+{
+  "propertyName": "value",
+  "$limit": 10
+}
+```
 
 ## Expressions processing
 
