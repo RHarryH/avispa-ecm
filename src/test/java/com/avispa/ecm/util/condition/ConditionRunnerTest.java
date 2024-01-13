@@ -25,25 +25,27 @@ import com.avispa.ecm.util.condition.intermediate.Condition;
 import com.avispa.ecm.util.condition.intermediate.ConditionGroup;
 import com.avispa.ecm.util.condition.intermediate.Conditions;
 import com.avispa.ecm.util.condition.intermediate.value.ConditionValue;
-import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Rafał Hiszpański
  */
 @DataJpaTest
-@Import({ConditionResolver.class})
-@Slf4j
-class ConditionResolverTest {
+@Import({ConditionRunner.class})
+class ConditionRunnerTest {
     @Autowired
-    private ConditionResolver conditionResolver;
+    private ConditionRunner conditionRunner;
 
     private TestDocument testDocument;
 
@@ -55,41 +57,88 @@ class ConditionResolverTest {
         testDocument.setTestInt(12);
         testDocument.setNestedObject(new NestedObject("Nested Object", "TEST"));
         repository.save(testDocument);
+
+        TestDocument testDocument2 = new TestDocument();
+        testDocument2.setObjectName("Object Name 2");
+        testDocument2.setTestString("TEST%2");
+        testDocument2.setTestInt(12);
+        repository.save(testDocument2);
+    }
+
+    @AfterEach
+    void cleanup(@Autowired EcmObjectRepository<TestDocument> repository) {
+        repository.deleteAll();
     }
 
     @Test
-    void givenSimpleEquals_whenResolve_thenReturnTrue() {
+    void givenSimpleEquals_whenCount_thenReturnOne() {
         Conditions conditions = new Conditions();
         conditions.addElement(Condition.equal("testString", ConditionValue.text("TEST")));
 
-        assertTrue(conditionResolver.resolve(conditions, TestDocument.class));
+        assertEquals(1, conditionRunner.count(conditions, TestDocument.class));
     }
 
     @Test
-    void givenCombinedSimpleEquals_whenResolve_thenReturnTrue() {
+    void givenSimpleEquals_whenFetch_thenReturnResult() {
+        Conditions conditions = new Conditions();
+        conditions.addElement(Condition.equal("testString", ConditionValue.text("TEST")));
+
+        assertEquals(Collections.singletonList(testDocument), conditionRunner.fetch(conditions, TestDocument.class));
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"TEST%,2", "TEST\\%2,1", "TEST\\%_,1"})
+    void givenLikeCondition_whenCount_thenReturnTwo(String testedValue, int expectedCount) {
+        Conditions conditions = new Conditions();
+        conditions.addElement(Condition.like("testString", ConditionValue.text(testedValue)));
+
+        assertEquals(expectedCount, conditionRunner.count(conditions, TestDocument.class));
+    }
+
+    @Test
+    void givenNotLikeCondition_whenFetch_thenReturnRightDocument() {
+        Conditions conditions = new Conditions();
+        conditions.addElement(Condition.notLike("testString", ConditionValue.text("TEST__")));
+
+        var results = conditionRunner.fetch(conditions, TestDocument.class);
+        assertEquals(1, results.size());
+        assertEquals("TEST", results.get(0).getTestString());
+    }
+
+    @Test
+    void givenSimpleEqualsWithLimit_whenFetch_thenReturnSingleResult() {
+        Conditions conditions = new Conditions();
+        conditions.setLimit(1);
+        conditions.addElement(Condition.equal("testInt", ConditionValue.number(12)));
+
+        assertEquals(1, conditionRunner.fetch(conditions, TestDocument.class).size());
+    }
+
+    @Test
+    void givenCombinedSimpleEquals_whenCount_thenReturnOne() {
         Conditions conditions = new Conditions();
         conditions.addElement(Condition.equal("testString", ConditionValue.text("TEST")));
         conditions.addElement(Condition.equal("testInt", ConditionValue.number(12)));
 
-        assertTrue(conditionResolver.resolve(conditions, TestDocument.class));
+        assertEquals(1, conditionRunner.count(conditions, TestDocument.class));
     }
 
     @Test
-    void givenGreaterThan_whenResolve_thenReturnTrue() {
+    void givenGreaterThan_whenCount_thenReturnTwo() {
         Conditions conditions = new Conditions();
         conditions.addElement(Condition.greaterThan("testInt", ConditionValue.number(11)));
 
-        assertTrue(conditionResolver.resolve(conditions, TestDocument.class));
+        assertEquals(2, conditionRunner.count(conditions, TestDocument.class));
     }
 
     @Test
-    void givenOrGroup_whenResolve_thenReturnTrue() {
+    void givenOrGroup_whenCount_thenReturnOne() {
         Conditions conditions = new Conditions();
         conditions.addElement(ConditionGroup.or()
                 .addElement(Condition.equal("testString", ConditionValue.text("TEST")))
                 .addElement(Condition.equal("testInt", ConditionValue.number(11))));
 
-        assertTrue(conditionResolver.resolve(conditions, TestDocument.class));
+        assertEquals(1, conditionRunner.count(conditions, TestDocument.class));
     }
 
     @Test
@@ -101,7 +150,7 @@ class ConditionResolverTest {
         conditions.addElement(Condition.greaterThan("testInt", ConditionValue.number(11)));
         conditions.addElement(Condition.lessThan("testInt", ConditionValue.number(15)));
 
-        assertTrue(conditionResolver.resolve(conditions, TestDocument.class));
+        assertEquals(2, conditionRunner.count(conditions, TestDocument.class));
     }
 
     @Test
@@ -112,11 +161,11 @@ class ConditionResolverTest {
                 .addElement(Condition.notEqual("testString", ConditionValue.text("TEST3"))));
         conditions.addElement(Condition.greaterThan("testInt", ConditionValue.number(11)));
 
-        assertTrue(conditionResolver.resolve(conditions, TestDocument.class));
+        assertEquals(2, conditionRunner.count(conditions, TestDocument.class));
     }
 
     @Test
-    void givenNestedGroups_whenConversion_thenReturnTrue() {
+    void givenNestedGroups_whenCount_thenReturnOne() {
         Conditions conditions = new Conditions();
         conditions.addElement(ConditionGroup.or()
                 .addElement(Condition.notEqual("testString", ConditionValue.text("TEST2")))
@@ -124,11 +173,11 @@ class ConditionResolverTest {
                         .addElement(Condition.greaterThan("testInt", ConditionValue.number(11)))
                         .addElement(Condition.lessThan("testInt", ConditionValue.number(15)))));
 
-        assertTrue(conditionResolver.resolve(conditions, TestDocument.class));
+        assertEquals(2, conditionRunner.count(conditions, TestDocument.class));
     }
 
     @Test
-    void givenNestedGroups_whenConversion_thenReturnFalse() {
+    void givenNestedGroups_whenCount_thenReturnNothing() {
         Conditions conditions = new Conditions();
         conditions.addElement(ConditionGroup.and()
                 .addElement(Condition.equal("testString", ConditionValue.text("TEST2")))
@@ -136,22 +185,14 @@ class ConditionResolverTest {
                         .addElement(Condition.greaterThan("testInt", ConditionValue.number(11)))
                         .addElement(Condition.lessThan("testInt", ConditionValue.number(15)))));
 
-        assertFalse(conditionResolver.resolve(conditions, TestDocument.class));
+        assertEquals(0, conditionRunner.count(conditions, TestDocument.class));
     }
 
     @Test
-    void givenNestedProperty_whenConversion_thenReturnTrue() {
+    void givenNestedProperty_whenCount_thenReturnOne() {
         Conditions conditions = new Conditions();
         conditions.addElement(Condition.equal("nestedObject.nestedField", ConditionValue.text("TEST")));
 
-        assertTrue(conditionResolver.resolve(conditions, TestDocument.class));
-    }
-
-    @Test
-    void givenObjectWithId_whenConversion_thenReturnTrue() {
-        Conditions conditions = new Conditions();
-        conditions.addElement(Condition.equal("testString", ConditionValue.text("TEST")));
-
-        assertTrue(conditionResolver.resolve(conditions, testDocument));
+        assertEquals(1, conditionRunner.count(conditions, TestDocument.class));
     }
 }

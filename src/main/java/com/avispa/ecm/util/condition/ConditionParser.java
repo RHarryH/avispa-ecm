@@ -22,6 +22,7 @@ import com.avispa.ecm.util.condition.intermediate.Condition;
 import com.avispa.ecm.util.condition.intermediate.ConditionGroup;
 import com.avispa.ecm.util.condition.intermediate.Conditions;
 import com.avispa.ecm.util.condition.intermediate.GroupType;
+import com.avispa.ecm.util.condition.intermediate.misc.Misc;
 import com.avispa.ecm.util.condition.intermediate.value.ConditionValue;
 import com.avispa.ecm.util.json.JsonValidator;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -101,7 +102,12 @@ class ConditionParser {
 
         Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
         while (fields.hasNext()) {
-            processField(fields.next(), conditions.getConditionGroup(), true);
+            Map.Entry<String, JsonNode> field = fields.next();
+            if (field.getKey().equals(Misc.LIMIT.getSymbol())) {
+                conditions.setLimit(field.getValue().intValue());
+            }
+
+            processField(field, conditions.getConditionGroup(), true);
         }
 
         return conditions;
@@ -186,8 +192,9 @@ class ConditionParser {
             case GTE -> Condition.greaterThanOrEqual(key, conditionValue);
             case LT -> Condition.lessThan(key, conditionValue);
             case LTE -> Condition.lessThanOrEqual(key, conditionValue);
+            case LIKE -> Condition.like(key, conditionValue);
+            case NOT_LIKE -> Condition.notLike(key, conditionValue);
         };
-
     }
 
     private ConditionValue<?> getConditionValue(JsonNode value) {

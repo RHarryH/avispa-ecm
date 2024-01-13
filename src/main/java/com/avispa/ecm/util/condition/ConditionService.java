@@ -19,12 +19,17 @@
 package com.avispa.ecm.util.condition;
 
 import com.avispa.ecm.model.EcmObject;
+import com.avispa.ecm.util.condition.intermediate.Condition;
+import com.avispa.ecm.util.condition.intermediate.Conditions;
+import com.avispa.ecm.util.condition.intermediate.value.ConditionValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author Rafał Hiszpański
@@ -34,16 +39,65 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ConditionService {
     private final ConditionParser conditionParser;
-    private final ConditionResolver conditionResolver;
+    private final ConditionRunner conditionRunner;
     private final ObjectMapper objectMapper;
 
-    public boolean hasObjectMatching(String conditions, EcmObject object) {
-        return conditionResolver.resolve(conditionParser.parse(conditions), object);
+    /**
+     * Verify if context match rule finds object matching that context. If context rule is empty then everything is
+     * matched, otherwise match happens when the match rule returns exactly one result.
+     *
+     * @param conditions context match rule
+     * @param object     object, which is checked against the context match rule
+     * @return
+     */
+    public boolean hasContextMatch(String conditions, EcmObject object) {
+        Conditions parsedConditions = conditionParser.parse(conditions);
+
+        if (parsedConditions.isEmpty()) {
+            return true;
+        }
+        // add test if match rule matches exactly provided object
+        parsedConditions.addElement(Condition.equal("id", ConditionValue.text(object.getId().toString())));
+
+        return conditionRunner.count(parsedConditions, object.getClass()) == 1;
     }
 
-    public boolean hasObjectOfClassMatching(String conditions, Class<? extends EcmObject> objectClass) {
-        return conditionResolver.resolve(conditionParser.parse(conditions), objectClass);
+    /**
+     * Verify if context match rule finds object matching that context. If context rule is empty then everything is
+     * matched, otherwise match happens when the match rule returns at least one result.
+     *
+     * @param conditions  context match rule
+     * @param objectClass object type, which is checked against the context match rule
+     * @return
+     */
+    public boolean hasContextMatch(String conditions, Class<? extends EcmObject> objectClass) {
+        Conditions parsedConditions = conditionParser.parse(conditions);
+        return parsedConditions.isEmpty() ||
+                conditionRunner.count(parsedConditions, objectClass) > 0;
     }
+
+    /**
+     * Return number of objects matching the provided conditions
+     *
+     * @param conditions
+     * @param objectClass
+     * @return
+     */
+    public long count(String conditions, Class<? extends EcmObject> objectClass) {
+        return conditionRunner.count(conditionParser.parse(conditions), objectClass);
+    }
+
+    /**
+     * Return objects matching the provided conditions
+     *
+     * @param conditions
+     * @param objectClass
+     * @return
+     */
+    public <T extends EcmObject> List<T> fetch(String conditions, Class<T> objectClass) {
+        return conditionRunner.fetch(conditionParser.parse(conditions), objectClass);
+    }
+
 
     public boolean isEmptyCondition(String condition) {
         try {

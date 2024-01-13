@@ -46,6 +46,10 @@
         },
         "$or": {
           "$ref": "#/$defs/operator"
+        },
+        "$limit": {
+          "type": "integer",
+          "minimum": 1
         }
       }
     },
@@ -83,6 +87,12 @@
             },
             "$lte": {
               "type": "number"
+            },
+            "$like": {
+              "type": "string"
+            },
+            "$notLike": {
+              "type": "string"
             }
           }
         }
