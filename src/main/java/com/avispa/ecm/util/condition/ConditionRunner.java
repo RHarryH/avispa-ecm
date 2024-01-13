@@ -34,6 +34,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.sqm.internal.QuerySqmImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -46,65 +47,81 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public
-class ConditionResolver {
+class ConditionRunner {
+    private static final String QUERY_GENERATED_MESSAGE = "Query generated from conditions: {}";
+
     private final EntityManager entityManager;
 
-    public boolean resolve(Conditions conditions, Class<? extends EcmObject> objectClass) {
-        if(conditions.isEmpty()) {
-            return true;
+    public <T extends EcmObject> List<T> fetch(Conditions conditions, Class<T> objectClass) {
+        if (conditions.isEmpty()) {
+            return List.of();
         }
 
-        TypedQuery<Long> query = getQuery(conditions, objectClass);
+        TypedQuery<T> query = getQuery(conditions, objectClass);
 
-        return hasResult(query);
-    }
-
-    public boolean resolve(Conditions conditions, EcmObject object) {
-        if(conditions.isEmpty()) {
-            return true;
+        // add limit
+        if (null != conditions.getLimit()) {
+            query = query.setMaxResults(conditions.getLimit());
         }
 
-        TypedQuery<Long> query = getQuery(conditions, object);
+        if (log.isDebugEnabled()) {
+            log.debug(QUERY_GENERATED_MESSAGE, getQueryString(query));
+        }
 
-        return hasResult(query);
+        return query.getResultList();
     }
 
-    private boolean hasResult(TypedQuery<Long> query) {
+    public long count(Conditions conditions, Class<? extends EcmObject> objectClass) {
+        if(conditions.isEmpty()) {
+            return 0;
+        }
+
+        TypedQuery<Long> query = getCountQuery(conditions, objectClass);
+
+        if (log.isDebugEnabled()) {
+            log.debug(QUERY_GENERATED_MESSAGE, getQueryString(query));
+        }
+
+        return executeCount(query);
+    }
+
+    private long executeCount(TypedQuery<Long> query) {
         long result = query.getSingleResult();
 
         log.debug("Found: {}", result);
 
-        return result > 0;
+        return result;
     }
 
-    private TypedQuery<Long> getQuery(Conditions conditions, Class<? extends EcmObject> objectClass) {
+    private <T extends EcmObject> TypedQuery<T> getQuery(Conditions conditions, Class<T> objectClass) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(objectClass);
+        Root<T> queryRoot = criteriaQuery.from(objectClass);
+
+        criteriaQuery.select(queryRoot);
+
+        // where
+        List<Predicate> predicates = getPredicates(conditions, criteriaBuilder, queryRoot);
+        criteriaQuery.where(criteriaBuilder.and(predicates.toArray(Predicate[]::new)));
+
+        return entityManager.createQuery(criteriaQuery);
+    }
+
+    private TypedQuery<Long> getCountQuery(Conditions conditions, Class<? extends EcmObject> objectClass) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<? extends EcmObject> queryRoot = criteriaQuery.from(objectClass);
 
-        List<Predicate> predicates = getPredicates(conditions, criteriaBuilder, criteriaQuery, queryRoot);
-
-        criteriaQuery.where(criteriaBuilder.and(predicates.toArray(Predicate[]::new)));
-
-        return entityManager.createQuery(criteriaQuery);
-    }
-
-    private TypedQuery<Long> getQuery(Conditions conditions, EcmObject object) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<? extends EcmObject> queryRoot = criteriaQuery.from(object.getClass());
-
-        List<Predicate> predicates = getPredicates(conditions, criteriaBuilder, criteriaQuery, queryRoot);
-        predicates.add(criteriaBuilder.equal(queryRoot.get("id"), object.getId()));
-
-        criteriaQuery.where(criteriaBuilder.and(predicates.toArray(Predicate[]::new)));
-
-        return entityManager.createQuery(criteriaQuery);
-    }
-
-    private List<Predicate> getPredicates(Conditions conditions, CriteriaBuilder criteriaBuilder, CriteriaQuery<Long> criteriaQuery, Root<? extends EcmObject> queryRoot) {
         criteriaQuery.select(criteriaBuilder.count(queryRoot));
 
+        // where
+        List<Predicate> predicates = getPredicates(conditions, criteriaBuilder, queryRoot);
+        criteriaQuery.where(criteriaBuilder.and(predicates.toArray(Predicate[]::new)));
+
+        return entityManager.createQuery(criteriaQuery);
+    }
+
+    private List<Predicate> getPredicates(Conditions conditions, CriteriaBuilder criteriaBuilder, Root<? extends EcmObject> queryRoot) {
         ConditionGroup group = conditions.getConditionGroup();
 
         return resolveGroup(criteriaBuilder, queryRoot, group);
@@ -145,6 +162,8 @@ class ConditionResolver {
             case GTE -> criteriaBuilder.ge(getPath(key, queryRoot), (Number) value.getValue());
             case LT -> criteriaBuilder.lt(getPath(key, queryRoot), (Number) value.getValue());
             case LTE -> criteriaBuilder.le(getPath(key, queryRoot), (Number) value.getValue());
+            case LIKE -> criteriaBuilder.like(getPath(key, queryRoot), (String) value.getValue(), '\\');
+            case NOT_LIKE -> criteriaBuilder.notLike(getPath(key, queryRoot), (String) value.getValue(), '\\');
         };
     }
 
@@ -159,9 +178,7 @@ class ConditionResolver {
         return path;
     }
 
-    public String getQueryString(Conditions conditions, Class<? extends EcmObject> objectClass) {
-        TypedQuery<Long> query = getQuery(conditions, objectClass);
-
-        return query.unwrap(org.hibernate.query.Query.class).getQueryString();
+    public String getQueryString(TypedQuery<?> query) {
+        return query.unwrap(QuerySqmImpl.class).getSqmStatement().toHqlString();
     }
 }

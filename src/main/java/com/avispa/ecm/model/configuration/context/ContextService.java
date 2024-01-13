@@ -181,7 +181,7 @@ public class ContextService {
             return false;
         }
 
-        boolean matches = conditionService.hasObjectMatching(context.getMatchRule(), object);
+        boolean matches = conditionService.hasContextMatch(context.getMatchRule(), object);
 
         log.debug("Object with id '{}' matches rule '{}': {}", object.getId(), context.getMatchRule(), matches);
 

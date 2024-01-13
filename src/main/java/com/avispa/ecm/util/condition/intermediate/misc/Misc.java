@@ -1,6 +1,6 @@
 /*
  * Avispa ECM - a small framework for implementing basic ECM solution
- * Copyright (C) 2023 Rafał Hiszpański
+ * Copyright (C) 2024 Rafał Hiszpański
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,29 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.avispa.ecm.util.condition.intermediate;
+package com.avispa.ecm.util.condition.intermediate.misc;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 /**
  * @author Rafał Hiszpański
  */
 @Getter
-@EqualsAndHashCode
-@ToString
-public class Conditions {
-    private final ConditionGroup conditionGroup = ConditionGroup.and();
-    @Setter
-    private Integer limit;
+public enum Misc {
+    LIMIT("$limit");
 
-    public void addElement(IConditionElement conditionElement) {
-        conditionGroup.addElement(conditionElement);
-    }
+    private final String symbol;
 
-    public boolean isEmpty() {
-        return conditionGroup.getConditions().isEmpty();
+    Misc(String symbol) {
+        this.symbol = symbol;
     }
 }

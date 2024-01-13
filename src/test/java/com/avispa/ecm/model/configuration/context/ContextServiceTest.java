@@ -31,7 +31,7 @@ import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeService;
 import com.avispa.ecm.util.TestDocument;
 import com.avispa.ecm.util.condition.ConditionParser;
-import com.avispa.ecm.util.condition.ConditionResolver;
+import com.avispa.ecm.util.condition.ConditionRunner;
 import com.avispa.ecm.util.condition.ConditionService;
 import com.avispa.ecm.util.expression.ExpressionResolver;
 import com.avispa.ecm.util.json.JsonValidator;
@@ -62,7 +62,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         AutonameService.class,
         ExpressionResolver.class,
         ConditionService.class,
-        ConditionResolver.class,
+        ConditionRunner.class,
         ConditionParser.class,
         JsonValidator.class,
         TypeService.class})
