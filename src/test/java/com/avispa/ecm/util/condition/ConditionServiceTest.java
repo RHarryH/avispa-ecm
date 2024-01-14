@@ -68,38 +68,44 @@ class ConditionServiceTest {
 
     @Test
     void givenEmptyMatchRule_whenContextMatch_thenReturnTrue() {
-        assertTrue(conditionService.hasContextMatch("{}", TestDocument.class));
+        assertTrue(conditionService.hasContextMatch(TestDocument.class, "{}"));
     }
 
     @Test
     void givenEmptyMatchRuleAndSpecificObject_whenContextMatch_thenReturnTrue() {
-        assertTrue(conditionService.hasContextMatch("{}", testDocument));
+        assertTrue(conditionService.hasContextMatch(testDocument, "{}"));
     }
 
     @Test
     void givenMatchRule_whenContextMatch_thenReturnTrue() {
-        assertTrue(conditionService.hasContextMatch("{\"testString\": \"TEST\"}", TestDocument.class));
+        assertTrue(conditionService.hasContextMatch(TestDocument.class, "{\"testString\": \"TEST\"}"));
     }
 
     @Test
     void givenMatchRuleAndSpecificObject_whenContextMatch_thenReturnFalse() {
-        assertFalse(conditionService.hasContextMatch("{\"testString\": \"TEST 2\"}", testDocument));
+        assertFalse(conditionService.hasContextMatch(testDocument, "{\"testString\": \"TEST 2\"}"));
     }
 
     @Test
     void givenMatchRuleMatchingMoreThanOneObject_whenContextMatch_thenReturnTrue() {
-        assertTrue(conditionService.hasContextMatch("{\"testInt\": 12}", TestDocument.class));
+        assertTrue(conditionService.hasContextMatch(TestDocument.class, "{\"testInt\": 12}"));
     }
 
     @Test
     void givenCondition_whenCount_thenReturnOne() {
-        assertEquals(1, conditionService.count("{\"testString\": \"TEST\"}", TestDocument.class));
+        assertEquals(1, conditionService.count(TestDocument.class, "{\"testString\": \"TEST\"}"));
     }
 
     @Test
     void givenCondition_whenFetch_thenReturnTestDocument() {
-        var result = conditionService.fetch("{\"testString\": \"TEST\"}", TestDocument.class);
+        var result = conditionService.fetch(TestDocument.class, "{\"testString\": \"TEST\"}");
         assertEquals(1, result.size());
         assertEquals("TEST", result.get(0).getTestString());
+    }
+
+    @Test
+    void givenEmptyCondition_whenFetch_thenReturnAll() {
+        var result = conditionService.fetch(TestDocument.class, "{}");
+        assertEquals(2, result.size());
     }
 }

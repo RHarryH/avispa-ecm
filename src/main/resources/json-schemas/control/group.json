@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "description": "Grouping control allowing to group controls without any significant changes in the layout. Allows to hide whole group of controls with single visibility condition.",
+  "description": "Grouping control allowing to group controls without any significant changes in the layout. Allows to hide whole group of controls with single visibility constraint.",
   "additionalProperties": false,
   "properties": {
     "type": {

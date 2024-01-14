@@ -21,9 +21,7 @@ package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import com.avispa.ecm.model.configuration.dictionary.Dictionary;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryNotFoundException;
-import com.avispa.ecm.model.configuration.dictionary.DictionaryService;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryValue;
-import com.avispa.ecm.model.configuration.display.DisplayService;
 import com.avispa.ecm.model.configuration.propertypage.PropertyPage;
 import com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContent;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Columns;
@@ -48,15 +46,12 @@ import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeService;
 import com.avispa.ecm.util.NestedObject;
 import com.avispa.ecm.util.TestDocument;
-import com.avispa.ecm.util.expression.ExpressionResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
@@ -82,16 +77,7 @@ import static org.mockito.Mockito.when;
  * @author Rafał Hiszpański
  */
 @Slf4j
-@DataJpaTest
-@AutoConfigureJson
-@Import({
-        PropertyPageMapper.class,
-        ExpressionResolver.class,
-        DictionaryService.class,
-        DisplayService.class,
-        SimpleControlMapper.class,
-        TableMapper.class,
-        DictionaryControlLoader.class})
+@SpringBootTest
 class PropertyPageMapperIntegrationTest {
     private Document document;
 
@@ -221,7 +207,8 @@ class PropertyPageMapperIntegrationTest {
         ComboRadio combo = (ComboRadio) controls.get(0);
         assertEquals("Combo test", combo.getLabel());
         assertEquals("testString", combo.getProperty());
-        assertEquals("Test Document", combo.getTypeName());
+        assertEquals("Test Document", combo.getDynamic().getTypeName());
+        assertEquals("{\"$limit\":2}", combo.getDynamic().getQualification());
         assertTrue(combo.isRequired());
     }
 
@@ -537,12 +524,12 @@ class PropertyPageMapperIntegrationTest {
         Constraint visibility = constraints.getVisibility();
         assertNotNull(visibility);
         assertEquals(List.of(INSERT), visibility.getContexts());
-        assertEquals("{\"objectName\":\"TEST\"}", visibility.getCondition());
+        assertEquals("{\"objectName\":\"TEST\"}", visibility.getConditions());
 
         Constraint requirement = constraints.getRequirement();
         assertNotNull(requirement);
         assertEquals(List.of(INSERT, EDIT), requirement.getContexts());
-        assertEquals("{\"objectName\":\"TEST\"}", requirement.getCondition());
+        assertEquals("{\"objectName\":\"TEST\"}", requirement.getConditions());
     }
 
     private PropertyPage createPropertyPage(String contentPath) {

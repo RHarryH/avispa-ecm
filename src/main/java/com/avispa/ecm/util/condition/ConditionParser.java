@@ -105,6 +105,7 @@ class ConditionParser {
             Map.Entry<String, JsonNode> field = fields.next();
             if (field.getKey().equals(Misc.LIMIT.getSymbol())) {
                 conditions.setLimit(field.getValue().intValue());
+                continue;
             }
 
             processField(field, conditions.getConditionGroup(), true);

@@ -5,10 +5,6 @@
         "type": "combo",
         "label": "Combo test",
         "property": "testString",
-        "dynamic": {
-          "typeName": "Test Document"
-        },
-        "invalid": "test",
         "required": true
       }
     ]

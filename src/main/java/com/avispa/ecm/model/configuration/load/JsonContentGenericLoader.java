@@ -49,7 +49,7 @@ public abstract class JsonContentGenericLoader<C extends EcmConfig, D extends Ec
 
     @Override
     protected boolean isValidContent(Path contentPath) {
-        try (InputStream is = Files.newInputStream(contentPath)){
+        try (InputStream is = Files.newInputStream(contentPath)) {
             return jsonValidator.validate(is, jsonSchemaPath);
         } catch (IOException e) {
             throw new EcmConfigurationException("Can't validate content with '" + jsonSchemaPath + "' JSON Schema", e);

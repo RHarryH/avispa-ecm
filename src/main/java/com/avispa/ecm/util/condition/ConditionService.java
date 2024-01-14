@@ -25,6 +25,8 @@ import com.avispa.ecm.util.condition.intermediate.value.ConditionValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,11 +48,12 @@ public class ConditionService {
      * Verify if context match rule finds object matching that context. If context rule is empty then everything is
      * matched, otherwise match happens when the match rule returns exactly one result.
      *
-     * @param conditions context match rule
      * @param object     object, which is checked against the context match rule
+     * @param conditions context match rule
      * @return
      */
-    public boolean hasContextMatch(String conditions, EcmObject object) {
+    @Transactional
+    public boolean hasContextMatch(EcmObject object, String conditions) {
         Conditions parsedConditions = conditionParser.parse(conditions);
 
         if (parsedConditions.isEmpty()) {
@@ -59,45 +62,47 @@ public class ConditionService {
         // add test if match rule matches exactly provided object
         parsedConditions.addElement(Condition.equal("id", ConditionValue.text(object.getId().toString())));
 
-        return conditionRunner.count(parsedConditions, object.getClass()) == 1;
+        return conditionRunner.count(object.getClass(), parsedConditions) == 1;
     }
 
     /**
      * Verify if context match rule finds object matching that context. If context rule is empty then everything is
      * matched, otherwise match happens when the match rule returns at least one result.
      *
-     * @param conditions  context match rule
      * @param objectClass object type, which is checked against the context match rule
+     * @param conditions  context match rule
      * @return
      */
-    public boolean hasContextMatch(String conditions, Class<? extends EcmObject> objectClass) {
+    @Transactional
+    public boolean hasContextMatch(Class<? extends EcmObject> objectClass, @NonNull String conditions) {
         Conditions parsedConditions = conditionParser.parse(conditions);
         return parsedConditions.isEmpty() ||
-                conditionRunner.count(parsedConditions, objectClass) > 0;
+                conditionRunner.count(objectClass, parsedConditions) > 0;
     }
 
     /**
      * Return number of objects matching the provided conditions
      *
-     * @param conditions
      * @param objectClass
+     * @param conditions
      * @return
      */
-    public long count(String conditions, Class<? extends EcmObject> objectClass) {
-        return conditionRunner.count(conditionParser.parse(conditions), objectClass);
+    @Transactional
+    public long count(Class<? extends EcmObject> objectClass, @NonNull String conditions) {
+        return conditionRunner.count(objectClass, conditionParser.parse(conditions));
     }
 
     /**
      * Return objects matching the provided conditions
      *
-     * @param conditions
      * @param objectClass
+     * @param conditions
      * @return
      */
-    public <T extends EcmObject> List<T> fetch(String conditions, Class<T> objectClass) {
-        return conditionRunner.fetch(conditionParser.parse(conditions), objectClass);
+    @Transactional
+    public <T extends EcmObject> List<T> fetch(Class<T> objectClass, @NonNull String conditions) {
+        return conditionRunner.fetch(objectClass, conditionParser.parse(conditions));
     }
-
 
     public boolean isEmptyCondition(String condition) {
         try {
