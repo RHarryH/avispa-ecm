@@ -26,6 +26,11 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadi
 import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeService;
 import com.avispa.ecm.util.TestDocument;
+import com.avispa.ecm.util.condition.ConditionParser;
+import com.avispa.ecm.util.condition.ConditionRunner;
+import com.avispa.ecm.util.condition.ConditionService;
+import com.avispa.ecm.util.json.JsonValidator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +49,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Rafał Hiszpański
  */
 @DataJpaTest
-@Import({DictionaryControlLoader.class, DictionaryService.class, TypeService.class})
+@Import({DictionaryControlLoader.class, DictionaryService.class, TypeService.class,
+        ConditionService.class, ConditionParser.class, ConditionRunner.class, ObjectMapper.class, JsonValidator.class})
 class DictionaryControlLoaderTest {
     @Autowired
     private TestEntityManager entityManager;
@@ -66,7 +72,7 @@ class DictionaryControlLoaderTest {
     void givenControlWithTypeName_whenLoadDictionary_thenTypeObjectsAreLoaded() {
         ComboRadio comboRadio = new ComboRadio();
         comboRadio.setProperty("testDate");
-        comboRadio.setTypeName("Test document");
+        comboRadio.setDynamic(ComboRadio.Dynamic.ofTypeName("Test document"));
 
         UUID id = persistTestDocument("Test document");
         persistTestDocument(""); // should be ignored in test

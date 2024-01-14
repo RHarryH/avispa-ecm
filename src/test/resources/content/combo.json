@@ -5,7 +5,12 @@
         "type": "combo",
         "label": "Combo test",
         "property": "testString",
-        "typeName": "Test Document",
+        "dynamic": {
+          "typeName": "Test Document",
+          "qualification": {
+            "$limit": 2
+          }
+        },
         "required": true
       }
     ]

@@ -10,7 +10,7 @@
             "contexts": [
               "INSERT"
             ],
-            "condition": {
+            "conditions": {
               "objectName": "TEST"
             }
           },
@@ -19,7 +19,7 @@
               "INSERT",
               "EDIT"
             ],
-            "condition": {
+            "conditions": {
               "objectName": "TEST"
             }
           }

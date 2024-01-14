@@ -18,6 +18,8 @@
 
 package com.avispa.ecm.model.configuration.load.dto;
 
+import com.avispa.ecm.util.json.ConditionToStringDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 import java.util.List;
@@ -32,6 +34,7 @@ public class ContextDto implements EcmConfigDto {
 
     private String type;
 
+    @JsonDeserialize(using = ConditionToStringDeserializer.class)
     private String matchRule;
 
     private int importance;

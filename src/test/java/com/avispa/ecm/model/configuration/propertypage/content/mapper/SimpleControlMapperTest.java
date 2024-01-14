@@ -123,12 +123,15 @@ class SimpleControlMapperTest {
         ComboRadio comboRadio = new ComboRadio();
         comboRadio.setLabel("Label");
         comboRadio.setProperty("testString");
-        comboRadio.setTypeNameExpression("{\"testString\": \"Test\"}");
+
+        ComboRadio.Dynamic dynamic = new ComboRadio.Dynamic();
+        dynamic.setTypeNameExpression("$value('typeName')");
+        comboRadio.setDynamic(dynamic);
 
         TestDocument testDocument = new TestDocument();
         simpleControlMapper.processControl(comboRadio, List.of(), testDocument);
 
-        verify(expressionResolver).resolve(testDocument, "{\"testString\": \"Test\"}");
+        verify(expressionResolver).resolve(testDocument, "$value('typeName')");
     }
 
     @Test

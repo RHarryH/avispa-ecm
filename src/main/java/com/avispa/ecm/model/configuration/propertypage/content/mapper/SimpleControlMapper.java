@@ -65,12 +65,15 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
             }
 
             if (control instanceof ComboRadio comboRadio) {
-                try {
-                    if (StringUtils.isEmpty(comboRadio.getTypeName()) && StringUtils.isNotEmpty(comboRadio.getTypeNameExpression())) {
-                        comboRadio.setTypeName(expressionResolver.resolve(context, comboRadio.getTypeNameExpression()));
+                if (null != comboRadio.getDynamic()) {
+                    ComboRadio.Dynamic dynamic = comboRadio.getDynamic();
+                    try {
+                        if (StringUtils.isEmpty(dynamic.getTypeName()) && StringUtils.isNotEmpty(dynamic.getTypeNameExpression())) {
+                            dynamic.setTypeName(expressionResolver.resolve(context, dynamic.getTypeNameExpression()));
+                        }
+                    } catch (ExpressionResolverException e) {
+                        log.error("Type name expression couldn't be resolved", e);
                     }
-                } catch (ExpressionResolverException e) {
-                    log.error("Type name expression couldn't be resolved", e);
                 }
                 dictionaryControlLoader.loadDictionary(comboRadio, context.getClass());
             }

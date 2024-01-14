@@ -35,5 +35,5 @@ public class Constraint {
     private List<PropertyPageContext> contexts;
 
     @JsonDeserialize(using = ConditionToStringDeserializer.class)
-    private String condition;
+    private String conditions;
 }
