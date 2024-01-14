@@ -27,7 +27,7 @@
           },
           "minItems": 1
         },
-        "condition": {
+        "conditions": {
           "$ref": "#/$defs/condition"
         }
       }

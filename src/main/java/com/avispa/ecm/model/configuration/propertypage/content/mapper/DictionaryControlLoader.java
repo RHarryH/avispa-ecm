@@ -27,12 +27,7 @@ import com.avispa.ecm.model.configuration.dictionary.DictionaryValue;
 import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadio;
 import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import com.avispa.ecm.util.condition.ConditionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -54,8 +49,7 @@ class DictionaryControlLoader {
     private final DictionaryService dictionaryService;
     private final TypeService typeService;
 
-    @PersistenceContext
-    private final EntityManager entityManager;
+    private final ConditionService conditionService;
 
     /**
      * Loads dictionary used by combo boxes and radio buttons
@@ -63,18 +57,20 @@ class DictionaryControlLoader {
      * @param contextClass
      */
     public void loadDictionary(ComboRadio comboRadio, Class<?> contextClass) {
-        if(StringUtils.isNotEmpty(comboRadio.getTypeName())) {
-            loadValuesFromObject(comboRadio);
+        if (null != comboRadio.getDynamic()) {
+            loadDynamicValues(comboRadio);
         } else {
             Dictionary dictionary = getDictionary(comboRadio, contextClass);
             loadValuesFromDictionary(comboRadio, dictionary);
         }
     }
 
-    private void loadValuesFromObject(ComboRadio comboRadio) {
-        Type type = typeService.getType(comboRadio.getTypeName());
+    private void loadDynamicValues(ComboRadio comboRadio) {
+        ComboRadio.Dynamic dynamic = comboRadio.getDynamic();
+        Type type = typeService.getType(dynamic.getTypeName());
         if (null != type) {
-            List<? extends EcmObject> ecmObjects = getEcmObjects(type);
+            String qualification = dynamic.getQualification();
+            List<? extends EcmObject> ecmObjects = conditionService.fetch(type.getEntityClass(), null != qualification ? qualification : "{}");
 
             Map<String, String> values = ecmObjects.stream()
                     .filter(ecmObject -> StringUtils.isNotEmpty(ecmObject.getObjectName())) // filter out incorrect values with empty object name
@@ -83,18 +79,8 @@ class DictionaryControlLoader {
 
             comboRadio.setOptions(values);
         } else {
-            log.error("Type '{}' was not found", comboRadio.getTypeName());
+            log.error("Type '{}' was not found", dynamic.getTypeName());
         }
-    }
-
-    private List<? extends EcmObject> getEcmObjects(Type type) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<EcmObject> cr = cb.createQuery(EcmObject.class);
-        Root<? extends EcmObject> root = cr.from(type.getEntityClass());
-        cr.select(root);
-
-        TypedQuery<? extends EcmObject> query = entityManager.createQuery(cr);
-        return query.getResultList();
     }
 
     private Dictionary getDictionary(ComboRadio comboRadio, Class<?> contextClass) {

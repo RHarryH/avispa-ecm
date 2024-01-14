@@ -24,9 +24,7 @@
           "minLength": 1
         },
         "matchRule": {
-          "type": "string",
-          "default": "{}",
-          "minLength": 1
+          "$ref": "../property/constraints.json#/$defs/condition"
         },
         "importance": {
           "type": "integer",

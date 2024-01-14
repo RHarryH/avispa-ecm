@@ -52,6 +52,7 @@ class JsonValidatorTest {
     @ValueSource(strings = {
             "content/columns.json",
             "content/combo.json",
+            "content/comboNoDictionaryAndDynamic.json",
             "content/constraints.json",
             "content/date.json",
             "content/group.json",

@@ -75,7 +75,7 @@ class ConditionRunnerTest {
         Conditions conditions = new Conditions();
         conditions.addElement(Condition.equal("testString", ConditionValue.text("TEST")));
 
-        assertEquals(1, conditionRunner.count(conditions, TestDocument.class));
+        assertEquals(1, conditionRunner.count(TestDocument.class, conditions));
     }
 
     @Test
@@ -83,7 +83,7 @@ class ConditionRunnerTest {
         Conditions conditions = new Conditions();
         conditions.addElement(Condition.equal("testString", ConditionValue.text("TEST")));
 
-        assertEquals(Collections.singletonList(testDocument), conditionRunner.fetch(conditions, TestDocument.class));
+        assertEquals(Collections.singletonList(testDocument), conditionRunner.fetch(TestDocument.class, conditions));
     }
 
     @ParameterizedTest
@@ -92,7 +92,7 @@ class ConditionRunnerTest {
         Conditions conditions = new Conditions();
         conditions.addElement(Condition.like("testString", ConditionValue.text(testedValue)));
 
-        assertEquals(expectedCount, conditionRunner.count(conditions, TestDocument.class));
+        assertEquals(expectedCount, conditionRunner.count(TestDocument.class, conditions));
     }
 
     @Test
@@ -100,7 +100,7 @@ class ConditionRunnerTest {
         Conditions conditions = new Conditions();
         conditions.addElement(Condition.notLike("testString", ConditionValue.text("TEST__")));
 
-        var results = conditionRunner.fetch(conditions, TestDocument.class);
+        var results = conditionRunner.fetch(TestDocument.class, conditions);
         assertEquals(1, results.size());
         assertEquals("TEST", results.get(0).getTestString());
     }
@@ -111,7 +111,7 @@ class ConditionRunnerTest {
         conditions.setLimit(1);
         conditions.addElement(Condition.equal("testInt", ConditionValue.number(12)));
 
-        assertEquals(1, conditionRunner.fetch(conditions, TestDocument.class).size());
+        assertEquals(1, conditionRunner.fetch(TestDocument.class, conditions).size());
     }
 
     @Test
@@ -120,7 +120,7 @@ class ConditionRunnerTest {
         conditions.addElement(Condition.equal("testString", ConditionValue.text("TEST")));
         conditions.addElement(Condition.equal("testInt", ConditionValue.number(12)));
 
-        assertEquals(1, conditionRunner.count(conditions, TestDocument.class));
+        assertEquals(1, conditionRunner.count(TestDocument.class, conditions));
     }
 
     @Test
@@ -128,7 +128,7 @@ class ConditionRunnerTest {
         Conditions conditions = new Conditions();
         conditions.addElement(Condition.greaterThan("testInt", ConditionValue.number(11)));
 
-        assertEquals(2, conditionRunner.count(conditions, TestDocument.class));
+        assertEquals(2, conditionRunner.count(TestDocument.class, conditions));
     }
 
     @Test
@@ -138,7 +138,7 @@ class ConditionRunnerTest {
                 .addElement(Condition.equal("testString", ConditionValue.text("TEST")))
                 .addElement(Condition.equal("testInt", ConditionValue.number(11))));
 
-        assertEquals(1, conditionRunner.count(conditions, TestDocument.class));
+        assertEquals(1, conditionRunner.count(TestDocument.class, conditions));
     }
 
     @Test
@@ -150,7 +150,7 @@ class ConditionRunnerTest {
         conditions.addElement(Condition.greaterThan("testInt", ConditionValue.number(11)));
         conditions.addElement(Condition.lessThan("testInt", ConditionValue.number(15)));
 
-        assertEquals(2, conditionRunner.count(conditions, TestDocument.class));
+        assertEquals(2, conditionRunner.count(TestDocument.class, conditions));
     }
 
     @Test
@@ -161,7 +161,7 @@ class ConditionRunnerTest {
                 .addElement(Condition.notEqual("testString", ConditionValue.text("TEST3"))));
         conditions.addElement(Condition.greaterThan("testInt", ConditionValue.number(11)));
 
-        assertEquals(2, conditionRunner.count(conditions, TestDocument.class));
+        assertEquals(2, conditionRunner.count(TestDocument.class, conditions));
     }
 
     @Test
@@ -173,7 +173,7 @@ class ConditionRunnerTest {
                         .addElement(Condition.greaterThan("testInt", ConditionValue.number(11)))
                         .addElement(Condition.lessThan("testInt", ConditionValue.number(15)))));
 
-        assertEquals(2, conditionRunner.count(conditions, TestDocument.class));
+        assertEquals(2, conditionRunner.count(TestDocument.class, conditions));
     }
 
     @Test
@@ -185,7 +185,7 @@ class ConditionRunnerTest {
                         .addElement(Condition.greaterThan("testInt", ConditionValue.number(11)))
                         .addElement(Condition.lessThan("testInt", ConditionValue.number(15)))));
 
-        assertEquals(0, conditionRunner.count(conditions, TestDocument.class));
+        assertEquals(0, conditionRunner.count(TestDocument.class, conditions));
     }
 
     @Test
@@ -193,6 +193,6 @@ class ConditionRunnerTest {
         Conditions conditions = new Conditions();
         conditions.addElement(Condition.equal("nestedObject.nestedField", ConditionValue.text("TEST")));
 
-        assertEquals(1, conditionRunner.count(conditions, TestDocument.class));
+        assertEquals(1, conditionRunner.count(TestDocument.class, conditions));
     }
 }

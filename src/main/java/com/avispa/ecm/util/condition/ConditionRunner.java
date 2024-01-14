@@ -52,12 +52,8 @@ class ConditionRunner {
 
     private final EntityManager entityManager;
 
-    public <T extends EcmObject> List<T> fetch(Conditions conditions, Class<T> objectClass) {
-        if (conditions.isEmpty()) {
-            return List.of();
-        }
-
-        TypedQuery<T> query = getQuery(conditions, objectClass);
+    public <T extends EcmObject> List<T> fetch(Class<T> objectClass, Conditions conditions) {
+        TypedQuery<T> query = getQuery(objectClass, conditions);
 
         // add limit
         if (null != conditions.getLimit()) {
@@ -71,12 +67,13 @@ class ConditionRunner {
         return query.getResultList();
     }
 
-    public long count(Conditions conditions, Class<? extends EcmObject> objectClass) {
-        if(conditions.isEmpty()) {
-            return 0;
-        }
+    public long count(Class<? extends EcmObject> objectClass, Conditions conditions) {
+        TypedQuery<Long> query = getCountQuery(objectClass, conditions);
 
-        TypedQuery<Long> query = getCountQuery(conditions, objectClass);
+        // add limit
+        if (null != conditions.getLimit()) {
+            query = query.setMaxResults(conditions.getLimit());
+        }
 
         if (log.isDebugEnabled()) {
             log.debug(QUERY_GENERATED_MESSAGE, getQueryString(query));
@@ -93,30 +90,34 @@ class ConditionRunner {
         return result;
     }
 
-    private <T extends EcmObject> TypedQuery<T> getQuery(Conditions conditions, Class<T> objectClass) {
+    private <T extends EcmObject> TypedQuery<T> getQuery(Class<T> objectClass, Conditions conditions) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(objectClass);
         Root<T> queryRoot = criteriaQuery.from(objectClass);
 
-        criteriaQuery.select(queryRoot);
+        criteriaQuery = criteriaQuery.select(queryRoot);
 
         // where
         List<Predicate> predicates = getPredicates(conditions, criteriaBuilder, queryRoot);
-        criteriaQuery.where(criteriaBuilder.and(predicates.toArray(Predicate[]::new)));
+        if (!predicates.isEmpty()) {
+            criteriaQuery.where(criteriaBuilder.and(predicates.toArray(Predicate[]::new)));
+        }
 
         return entityManager.createQuery(criteriaQuery);
     }
 
-    private TypedQuery<Long> getCountQuery(Conditions conditions, Class<? extends EcmObject> objectClass) {
+    private TypedQuery<Long> getCountQuery(Class<? extends EcmObject> objectClass, Conditions conditions) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<? extends EcmObject> queryRoot = criteriaQuery.from(objectClass);
 
-        criteriaQuery.select(criteriaBuilder.count(queryRoot));
+        criteriaQuery = criteriaQuery.select(criteriaBuilder.count(queryRoot));
 
         // where
         List<Predicate> predicates = getPredicates(conditions, criteriaBuilder, queryRoot);
-        criteriaQuery.where(criteriaBuilder.and(predicates.toArray(Predicate[]::new)));
+        if (!predicates.isEmpty()) {
+            criteriaQuery.where(criteriaBuilder.and(predicates.toArray(Predicate[]::new)));
+        }
 
         return entityManager.createQuery(criteriaQuery);
     }

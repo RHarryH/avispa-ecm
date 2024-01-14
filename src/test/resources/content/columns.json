@@ -8,7 +8,9 @@
             "type": "combo",
             "label": "Combo test",
             "property": "objectName",
-            "typeName": "Test Document",
+            "dynamic": {
+              "typeName": "Test Document"
+            },
             "required": true
           },
           {

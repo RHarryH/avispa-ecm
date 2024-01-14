@@ -28,7 +28,6 @@ import com.avispa.ecm.util.reflect.PropertyUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
@@ -57,8 +56,11 @@ class TableMapper extends BaseControlsMapper<Table> {
                 .filter(ComboRadio.class::isInstance)
                 .map(ComboRadio.class::cast)
                 .forEach(comboRadio -> {
-                    if(log.isDebugEnabled() && StringUtils.isNotEmpty(comboRadio.getTypeName())) {
-                        log.debug("Type name for tables is ignored. Dictionary will be used if exists.");
+                    if (null != comboRadio.getDynamic()) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Dynamic combo boxes for tables are ignored. Dictionary will be used if exists.");
+                        }
+                        comboRadio.setDynamic(null);
                     }
                     dictionaryControlLoader.loadDictionary(comboRadio, tableRowClass);
                 });

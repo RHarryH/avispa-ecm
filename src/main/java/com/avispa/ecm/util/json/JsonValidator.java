@@ -57,6 +57,8 @@ public class JsonValidator {
             // make your JSON to JsonNode
             JsonNode jsonToValidate = objectMapper.readTree(jsonContentInputStream);
 
+            log.debug("Json to validate: {}", jsonToValidate);
+
             return validate(jsonSchemaPath, jsonToValidate);
         } catch (IOException e) {
             log.error("Cannot verify input json", e);
@@ -69,6 +71,8 @@ public class JsonValidator {
         try {
             // make your JSON to JsonNode
             JsonNode jsonToValidate = objectMapper.readTree(jsonContent);
+
+            log.debug("Json to validate: {}", jsonToValidate);
 
             return validate(jsonSchemaPath, jsonToValidate);
         } catch (IOException e) {
