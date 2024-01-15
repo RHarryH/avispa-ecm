@@ -21,6 +21,7 @@ package com.avispa.ecm.model.configuration.propertypage.content.control;
 import com.avispa.ecm.util.json.ConditionToStringDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Map;
@@ -32,10 +33,26 @@ import java.util.Map;
 @Setter
 public class ComboRadio extends PropertyControl {
     private Dynamic dynamic;
-    private String dictionary;
-    private boolean sortByLabel;
+    private Dictionary dictionary;
 
     private Map<String, String> options;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class Dictionary {
+        private String name;
+        private boolean sortByLabel;
+
+        public Dictionary(String name, boolean sortByLabel) {
+            this(name);
+            this.sortByLabel = sortByLabel;
+        }
+
+        public Dictionary(String name) {
+            this.name = name;
+        }
+    }
 
     @Getter
     @Setter

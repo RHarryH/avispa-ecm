@@ -86,13 +86,26 @@ class DictionaryControlLoaderTest {
     void givenControlWithDictionary_whenLoadDictionary_thenDictionaryIsLoaded() {
         ComboRadio comboRadio = new ComboRadio();
         comboRadio.setProperty("testInt");
-        comboRadio.setDictionary("Test Dictionary");
+        comboRadio.setDictionary(new ComboRadio.Dictionary("Test Dictionary"));
 
         persistTestDictionary();
 
         controlLoader.loadDictionary(comboRadio, TestDocument.class);
 
-        assertEquals(Map.of("Key 1", "Label 1"), comboRadio.getOptions());
+        assertEquals(Map.of("Key 1", "Label 1", "Key 3", "Alpha"), comboRadio.getOptions());
+    }
+
+    @Test
+    void givenControlWithDictionarySortedByLabel_whenLoadDictionary_thenDictionaryIsLoaded() {
+        ComboRadio comboRadio = new ComboRadio();
+        comboRadio.setProperty("testInt");
+        comboRadio.setDictionary(new ComboRadio.Dictionary("Test Dictionary", true));
+
+        persistTestDictionary();
+
+        controlLoader.loadDictionary(comboRadio, TestDocument.class);
+
+        assertEquals(Map.of("Key 3", "Alpha", "Key 1", "Label 1"), comboRadio.getOptions());
     }
 
     @Test
@@ -104,7 +117,20 @@ class DictionaryControlLoaderTest {
 
         controlLoader.loadDictionary(comboRadio, TestDocument.class);
 
-        assertEquals(Map.of("Key 1", "Label 1"), comboRadio.getOptions());
+        assertEquals(Map.of("Key 1", "Label 1", "Key 3", "Alpha"), comboRadio.getOptions());
+    }
+
+    @Test
+    void givenControlWithEmptyDictionaryName_whenLoadDictionary_thenDictionaryIsLoadedFromAnnotation() {
+        ComboRadio comboRadio = new ComboRadio();
+        comboRadio.setProperty("testString");
+        comboRadio.setDictionary(new ComboRadio.Dictionary());
+
+        persistTestDictionary();
+
+        controlLoader.loadDictionary(comboRadio, TestDocument.class);
+
+        assertEquals(Map.of("Key 1", "Label 1", "Key 3", "Alpha"), comboRadio.getOptions());
     }
 
     @Test
@@ -149,8 +175,13 @@ class DictionaryControlLoaderTest {
         dv2.setKey("Key 2");
         dv2.setLabel("");
 
+        DictionaryValue dv3 = new DictionaryValue(); // should be first when sorting by label
+        dv3.setKey("Key 3");
+        dv3.setLabel("Alpha");
+
         dictionary.addValue(dv1);
         dictionary.addValue(dv2);
+        dictionary.addValue(dv3);
 
         entityManager.persist(dictionary);
     }

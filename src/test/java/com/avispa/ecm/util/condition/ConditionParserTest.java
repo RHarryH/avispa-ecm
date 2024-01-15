@@ -18,6 +18,7 @@
 
 package com.avispa.ecm.util.condition;
 
+import com.avispa.ecm.EcmConfiguration;
 import com.avispa.ecm.util.condition.intermediate.Condition;
 import com.avispa.ecm.util.condition.intermediate.ConditionGroup;
 import com.avispa.ecm.util.condition.intermediate.Conditions;
@@ -31,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -38,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Rafał Hiszpański
  */
 @JsonTest
-@ContextConfiguration(classes = {ConditionParser.class, JsonValidator.class})
+@ContextConfiguration(classes = {ConditionParser.class, JsonValidator.class, EcmConfiguration.class})
 @Slf4j
 class ConditionParserTest {
 
@@ -193,5 +196,17 @@ class ConditionParserTest {
 
         assertEquals(conditions,
                 conditionParser.parse("{\"$or\": [{\"testString\": { \"$ne\": \"TEST2\"}}, {\"$and\": [{\"testInt\": { \"$gt\": 11}}, {\"testInt\": { \"$lt\": 15}}]}]}"));
+    }
+
+    @Test
+    void givenLimit_whenConversion_thenEqualsIntermediateResult() {
+        Conditions conditions = conditionParser.parse("{\"$limit\": 2}");
+        assertEquals(2, conditions.getLimit());
+    }
+
+    @Test
+    void givenOrderBy_whenConversion_thenEqualsIntermediateResult() {
+        Conditions conditions = conditionParser.parse("{\"$orderBy\": { \"testString\": \"asc\", \"testInt\": \"desc\"}}");
+        assertEquals(Map.of("testString", Conditions.OrderDirection.ASC, "testInt", Conditions.OrderDirection.DESC), conditions.getOrderBy());
     }
 }

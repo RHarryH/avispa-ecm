@@ -35,6 +35,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import java.util.Collections;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -194,5 +195,27 @@ class ConditionRunnerTest {
         conditions.addElement(Condition.equal("nestedObject.nestedField", ConditionValue.text("TEST")));
 
         assertEquals(1, conditionRunner.count(TestDocument.class, conditions));
+    }
+
+    @Test
+    void givenOrderByAsc_whenFetch_thenRecordsInOrder() {
+        Conditions conditions = new Conditions();
+        conditions.setOrderBy(Map.of("objectName", Conditions.OrderDirection.ASC));
+
+        var results = conditionRunner.fetch(TestDocument.class, conditions);
+        assertEquals(2, results.size());
+        assertEquals("Object Name", results.get(0).getObjectName());
+        assertEquals("Object Name 2", results.get(1).getObjectName());
+    }
+
+    @Test
+    void givenOrderByDesc_whenFetch_thenRecordsInOrder() {
+        Conditions conditions = new Conditions();
+        conditions.setOrderBy(Map.of("objectName", Conditions.OrderDirection.DESC));
+
+        var results = conditionRunner.fetch(TestDocument.class, conditions);
+        assertEquals(2, results.size());
+        assertEquals("Object Name 2", results.get(0).getObjectName());
+        assertEquals("Object Name", results.get(1).getObjectName());
     }
 }
