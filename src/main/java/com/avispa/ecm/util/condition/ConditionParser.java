@@ -22,9 +22,10 @@ import com.avispa.ecm.util.condition.intermediate.Condition;
 import com.avispa.ecm.util.condition.intermediate.ConditionGroup;
 import com.avispa.ecm.util.condition.intermediate.Conditions;
 import com.avispa.ecm.util.condition.intermediate.GroupType;
-import com.avispa.ecm.util.condition.intermediate.misc.Misc;
+import com.avispa.ecm.util.condition.intermediate.modifiers.Modifiers;
 import com.avispa.ecm.util.condition.intermediate.value.ConditionValue;
 import com.avispa.ecm.util.json.JsonValidator;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -44,8 +46,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public
-class ConditionParser {
+public class ConditionParser {
     private final JsonValidator jsonValidator;
     private final ObjectMapper objectMapper;
 
@@ -103,8 +104,7 @@ class ConditionParser {
         Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> field = fields.next();
-            if (field.getKey().equals(Misc.LIMIT.getSymbol())) {
-                conditions.setLimit(field.getValue().intValue());
+            if (processModifiers(field, conditions)) {
                 continue;
             }
 
@@ -112,6 +112,27 @@ class ConditionParser {
         }
 
         return conditions;
+    }
+
+    /**
+     * Process conditions modifiers
+     *
+     * @param field      field
+     * @param conditions root conditions object
+     * @return true if query modifier was found and processed
+     */
+    private boolean processModifiers(Map.Entry<String, JsonNode> field, Conditions conditions) {
+        if (field.getKey().equals(Modifiers.LIMIT.getSymbol())) {
+            conditions.setLimit(field.getValue().intValue());
+            return true;
+        } else if (field.getKey().equals(Modifiers.ORDER_BY.getSymbol())) {
+            TypeReference<HashMap<String, Conditions.OrderDirection>> typeRef = new TypeReference<>() {
+            };
+            conditions.setOrderBy(objectMapper.convertValue(field.getValue(), typeRef));
+            return true;
+        }
+
+        return false;
     }
 
     private void processField(Map.Entry<String, JsonNode> jsonField, ConditionGroup conditionGroup, boolean isRoot) {

@@ -18,7 +18,6 @@
 
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
-import com.avispa.ecm.model.EcmEntity;
 import com.avispa.ecm.model.EcmObject;
 import com.avispa.ecm.model.configuration.dictionary.Dictionary;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryNotFoundException;
@@ -84,12 +83,12 @@ class DictionaryControlLoader {
     }
 
     private Dictionary getDictionary(ComboRadio comboRadio, Class<?> contextClass) {
-        String dictionaryName = comboRadio.getDictionary();
+        ComboRadio.Dictionary dictionary = comboRadio.getDictionary();
 
-        // if dictionary was not retrieved from property page, try with annotation
-        if(StringUtils.isEmpty(dictionaryName)) {
-            dictionaryName = dictionaryService.getDictionaryNameFromAnnotation(contextClass, comboRadio.getProperty());
-        }
+        // if dictionary was not provided in configuration, try with annotation
+        String dictionaryName = null == dictionary || StringUtils.isEmpty(dictionary.getName()) ?
+                dictionaryService.getDictionaryNameFromAnnotation(contextClass, comboRadio.getProperty()) :
+                dictionary.getName();
 
         // if dictionary name is still not resolved throw an exception
         if(StringUtils.isEmpty(dictionaryName)) {
@@ -104,9 +103,11 @@ class DictionaryControlLoader {
     private void loadValuesFromDictionary(ComboRadio comboRadio, Dictionary dictionary) {
         log.debug("Loading values from {} dictionary", dictionary.getObjectName());
 
+        boolean sortByLabel = null != comboRadio.getDictionary() && comboRadio.getDictionary().isSortByLabel();
+
         Map<String, String> values = dictionary.getValues().stream()
                 .filter(value -> StringUtils.isNotEmpty(value.getLabel())) // filter out incorrect values with empty object name
-                .sorted(Comparator.comparing(EcmEntity::getObjectName))
+                .sorted(Comparator.comparing(sortByLabel ? DictionaryValue::getLabel : DictionaryValue::getKey))
                 .collect(Collectors.toMap(DictionaryValue::getKey, DictionaryValue::getLabel, (x, y) -> x, LinkedHashMap::new));
 
         comboRadio.setOptions(values);

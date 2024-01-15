@@ -55,7 +55,7 @@ class ConditionRunner {
     public <T extends EcmObject> List<T> fetch(Class<T> objectClass, Conditions conditions) {
         TypedQuery<T> query = getQuery(objectClass, conditions);
 
-        // add limit
+        // limit
         if (null != conditions.getLimit()) {
             query = query.setMaxResults(conditions.getLimit());
         }
@@ -70,7 +70,7 @@ class ConditionRunner {
     public long count(Class<? extends EcmObject> objectClass, Conditions conditions) {
         TypedQuery<Long> query = getCountQuery(objectClass, conditions);
 
-        // add limit
+        // limit
         if (null != conditions.getLimit()) {
             query = query.setMaxResults(conditions.getLimit());
         }
@@ -98,9 +98,17 @@ class ConditionRunner {
         criteriaQuery = criteriaQuery.select(queryRoot);
 
         // where
-        List<Predicate> predicates = getPredicates(conditions, criteriaBuilder, queryRoot);
+        var predicates = getPredicates(conditions, criteriaBuilder, queryRoot);
         if (!predicates.isEmpty()) {
             criteriaQuery.where(criteriaBuilder.and(predicates.toArray(Predicate[]::new)));
+        }
+
+        // order by
+        var orders = conditions.getOrderBy().entrySet().stream()
+                .map(order -> order.getValue() == Conditions.OrderDirection.ASC ? criteriaBuilder.asc(queryRoot.get(order.getKey())) : criteriaBuilder.desc(queryRoot.get(order.getKey())))
+                .toList();
+        if (!orders.isEmpty()) {
+            criteriaQuery.orderBy(orders);
         }
 
         return entityManager.createQuery(criteriaQuery);

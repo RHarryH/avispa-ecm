@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.avispa.ecm.util.condition.intermediate.misc;
+package com.avispa.ecm.util.condition.intermediate.modifiers;
 
 import lombok.Getter;
 
@@ -24,12 +24,13 @@ import lombok.Getter;
  * @author Rafał Hiszpański
  */
 @Getter
-public enum Misc {
-    LIMIT("$limit");
+public enum Modifiers {
+    LIMIT("$limit"),
+    ORDER_BY("$orderBy");
 
     private final String symbol;
 
-    Misc(String symbol) {
+    Modifiers(String symbol) {
         this.symbol = symbol;
     }
 }

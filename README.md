@@ -316,15 +316,36 @@ is equal to: `propertyName < 12 or propertyName2 = 'string'`
 
 Groups can be nested within other groups.
 
-#### Limiting
+#### Modifiers
 
-To limit number of rows returned use `$limit` operator at the root levels. Limiting number must be
+Modifiers allows to modify conditions result. Currently, two modifiers are implemented: limiting the number of the
+result and ordering the result.
+
+##### Limiting
+
+To limit number of rows returned use `$limit` modifier at the root level. Limiting number must be
 greater than zero.
 
 ```json
 {
   "propertyName": "value",
   "$limit": 10
+}
+```
+
+##### Ordering
+
+To order the result based on certain properties use `$orderBy` modifier. It is an object accepting an arbitrary number
+of properties. Use property name as a key and a constant describing direction of ordering as a value. The available
+constants are `asc` for ascending order and `desc` for descending order.
+
+```json
+{
+  "propertyName": "value",
+  "$orderBy": {
+    "propertyName": "asc",
+    "propertyName2": "desc"
+  }
 }
 ```
 
