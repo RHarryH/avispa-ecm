@@ -50,6 +50,19 @@
         "$limit": {
           "type": "integer",
           "minimum": 1
+        },
+        "$orderBy": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-zA-Z](?:[a-zA-Z\\d.]*[a-zA-Z\\d])?+$": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
         }
       }
     },

@@ -5,7 +5,9 @@
         "type": "radio",
         "label": "Radio test",
         "property": "testString",
-        "dictionary": "Test Dictionary",
+        "dictionary": {
+          "name": "Test Dictionary"
+        },
         "required": true
       }
     ]

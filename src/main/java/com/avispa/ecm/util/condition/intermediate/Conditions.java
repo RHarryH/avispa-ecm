@@ -23,6 +23,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Rafał Hiszpański
  */
@@ -33,6 +36,13 @@ public class Conditions {
     private final ConditionGroup conditionGroup = ConditionGroup.and();
     @Setter
     private Integer limit;
+    @Setter
+    private Map<String, OrderDirection> orderBy = new HashMap<>();
+
+    public enum OrderDirection {
+        ASC,
+        DESC
+    }
 
     public void addElement(IConditionElement conditionElement) {
         conditionGroup.addElement(conditionElement);
