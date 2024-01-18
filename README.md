@@ -356,15 +356,28 @@ example, it is used to define name of the documents using autonaming or folder n
 
 ### Syntax
 
+Expressions work in two context. The outer context contains any symbols that are not a function or are not withing the
+function. Whenever the parser enters the function, it enters into inner, function context where all the rules below
+apply. In the outer context you can type any characters you want, and they will remain unchanged after the parsing.
+
+The only exception is a dollar sign followed by a letter, because this is interpreted as function name. To use dollar
+sign before the letter use backslash before the dollar sign: `This is \$notAFunction`.
+
+Examples:
+
+- `Regular text $value('Function context.' + 'concatenation is required') regular text`
+- `Dollar $ is allowed except this: \$case`
+
 #### Constants
 
-Text in single quotes represents a constant string: `'This is string'`
+Text in single quotes represents a constant string: `'This is string'`. To use apostrophe inside the text use backslash
+as escape character: `'I\'m the string'`.
 
 #### Operators
 
 Currently, only concatenation operator is supported, and it is represented by plus symbol `+`. It is used
 to concatenate constants and functions results into single string. Example:
-`'Concatenation' + 'Test'` will result in `Concatenation Test` string.
+`'Concatenation ' + 'Test'` will result in `Concatenation Test` string.
 
 #### Functions
 
