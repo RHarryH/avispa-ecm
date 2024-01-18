@@ -365,7 +365,7 @@ class ContextServiceTest {
     private Autoname createAutoname(String objectName) {
         Autoname autoname = new Autoname();
         autoname.setObjectName(objectName);
-        autoname.setRule("'F/' + $default($value('testString'), 'Test string does not exist')");
+        autoname.setRule("F/$default($value('testString'), 'Test string does not exist')");
         autoname.setPropertyName("objectName");
         ecmConfigRepository.save(autoname);
         return autoname;

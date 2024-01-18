@@ -60,9 +60,9 @@ class AutolinkServiceTest {
     void simpleTest() {
         // given
         Autolink autolink = new Autolink();
-        autolink.addRule("'ABC'");
-        autolink.addRule("'DEF'");
-        autolink.addRule("'GHI'");
+        autolink.addRule("ABC");
+        autolink.addRule("DEF");
+        autolink.addRule("GHI");
 
         // when
         autolinkService.apply(autolink, document);
@@ -77,7 +77,7 @@ class AutolinkServiceTest {
     void unresolvableExpressionButNotEmptyFolderName() {
         // given
         Autolink autolink = new Autolink();
-        autolink.addRule("'ABC_' + $value('nonExistingValue')");
+        autolink.addRule("ABC_$value('nonExistingValue')");
         autolink.setDefaultValue("Unknown");
 
         // when
@@ -109,8 +109,8 @@ class AutolinkServiceTest {
     void folderSharing() { // if documents lie in the same folder, existing folders should be used
         // given
         Autolink autolink = new Autolink();
-        autolink.addRule("'ABC'");
-        autolink.addRule("'DEF'");
+        autolink.addRule("ABC");
+        autolink.addRule("DEF");
 
         // when
         autolinkService.apply(autolink, document);

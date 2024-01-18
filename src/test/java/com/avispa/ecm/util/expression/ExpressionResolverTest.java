@@ -53,17 +53,17 @@ class ExpressionResolverTest {
 
     @Test
     void applyFieldFromTestDocument() throws ExpressionResolverException {
-        assertEquals("ABC_XY_ABC", expressionResolver.resolve(document, "'ABC_' + $value('testString') + '_ABC'"));
+        assertEquals("ABC_XY_ABC", expressionResolver.resolve(document, "ABC_$value('testString')_ABC"));
     }
 
     @Test
     void applyNonExistingField() throws ExpressionResolverException {
-        assertEquals("ABC__ABC", expressionResolver.resolve(document, "'ABC_' + $value('nonExistingField') + '_ABC'"));
+        assertEquals("ABC__ABC", expressionResolver.resolve(document, "ABC_$value('nonExistingField')_ABC"));
     }
 
     @Test
     void replaceInteger() throws ExpressionResolverException {
-        assertEquals("ABC_5_ABC", expressionResolver.resolve(document, "'ABC_' + $value('testInt') + '_ABC'"));
+        assertEquals("ABC_5_ABC", expressionResolver.resolve(document, "ABC_$value('testInt')_ABC"));
     }
 
     @Test
@@ -72,28 +72,33 @@ class ExpressionResolverTest {
     }
 
     @Test
+    void functionWithStringConcatenation() throws ExpressionResolverException {
+        assertEquals("XY", expressionResolver.resolve(document, "$value('test' + 'String')"));
+    }
+
+    @Test
     void insufficientNumberOfArguments() {
-        assertThrows(IllegalArgumentException.class, () -> expressionResolver.resolve(document, "'ABC_' + $default('nonExistingField') + '_ABC'"));
+        assertThrows(IllegalArgumentException.class, () -> expressionResolver.resolve(document, "ABC_$default('nonExistingField')_ABC"));
     }
 
     @Test
     void unknownFunction() throws ExpressionResolverException {
-        assertEquals("ABC_$unknownFunction('nonExistingField')_ABC", expressionResolver.resolve(document, "'ABC_' + $unknownFunction('nonExistingField') + '_ABC'"));
+        assertEquals("ABC_$unknownFunction('nonExistingField')_ABC", expressionResolver.resolve(document, "ABC_$unknownFunction('nonExistingField')_ABC"));
     }
 
     @Test
     void dateValueFunction() throws ExpressionResolverException {
-        assertEquals("ABC_10_ABC", expressionResolver.resolve(document, "'ABC_' + $datevalue('testDateTime', 'MM') + '_ABC'"));
+        assertEquals("ABC_10_ABC", expressionResolver.resolve(document, "ABC_$datevalue('testDateTime', 'MM')_ABC"));
     }
 
     @Test
     void dateValueFunctionInvalidFormat() {
-        assertThrows(IllegalArgumentException.class, () -> expressionResolver.resolve(document, "'ABC_' + $datevalue('testDateTime', 'invalid_format') + '_ABC'"));
+        assertThrows(IllegalArgumentException.class, () -> expressionResolver.resolve(document, "ABC_$datevalue('testDateTime', 'invalid_format')_ABC"));
     }
 
     @Test
     void nestedFunction() throws ExpressionResolverException {
-        assertEquals("ABC_XY_ABC", expressionResolver.resolve(document, "'ABC_' + $default($value('testString'), 'This is default value') + '_ABC'"));
+        assertEquals("ABC_XY_ABC", expressionResolver.resolve(document, "ABC_$default($value('testString'), 'This is default value')_ABC"));
     }
 
     @Test
@@ -107,8 +112,13 @@ class ExpressionResolverTest {
     }
 
     @Test
+    void nestedFunctionWithConcatenationSurroundedByWhitespaces() throws ExpressionResolverException {
+        assertEquals("ABC_XY", expressionResolver.resolve(document, "$default('ABC_'\t+ $value('testString'), 'This is default value')"));
+    }
+
+    @Test
     void twoFunctions() throws ExpressionResolverException {
-        assertEquals("ABC_XY", expressionResolver.resolve(document, "$value('objectName') + '_' + $default($value('testString'), 'This is default value')"));
+        assertEquals("ABC_XY", expressionResolver.resolve(document, "$value('objectName')_$default($value('testString'), 'This is default value')"));
     }
 
     @Test
@@ -122,8 +132,13 @@ class ExpressionResolverTest {
     }
 
     @Test
+    void plainText() throws ExpressionResolverException {
+        assertEquals("invalid", expressionResolver.resolve(document, "invalid"));
+    }
+
+    @Test
     void syntaxError() {
-        assertThrows(ExpressionResolverException.class, () -> expressionResolver.resolve(document, "invalid"));
+        assertThrows(ExpressionResolverException.class, () -> expressionResolver.resolve(document, "inva$lid"));
     }
 
     @Test
@@ -139,6 +154,63 @@ class ExpressionResolverTest {
     @Test
     void padFunctionWithShorterLenghtThanProvidedValue() throws ExpressionResolverException {
         assertEquals("aaaa", expressionResolver.resolve(document, "$pad('aaaa', '2')"));
+    }
+
+    @Test
+    void dollarSymbolEscape() throws ExpressionResolverException {
+        assertEquals("Dollar $ symbol", expressionResolver.resolve(document, "Dollar \\$ symbol"));
+    }
+
+    @Test
+    void dollarSymbolEscapeSurroundedByFunctions() throws ExpressionResolverException {
+        assertEquals("ABC $ ABC", expressionResolver.resolve(document, "$value('objectName') \\$ $value('objectName')"));
+    }
+
+    @Test
+    void dollarSymbolSurroundedByFunctionsAndCharactersNotBeingAPartOfFunctionDef() throws ExpressionResolverException {
+        assertEquals("ABC $ ABC", expressionResolver.resolve(document, "$value('objectName') $ $value('objectName')"));
+    }
+
+    @Test
+    void syntaxErrorWhenDollarSymbolPrecededByLetter() {
+        assertThrows(ExpressionResolverException.class, () -> expressionResolver.resolve(document, "$value('objectName') $value $value('objectName')"));
+    }
+
+    @Test
+    void dollarSymbolEscapeWhenPrecededByLetter() throws ExpressionResolverException {
+        assertEquals("ABC $value ABC", expressionResolver.resolve(document, "$value('objectName') \\$value $value('objectName')"));
+    }
+
+    @Test
+    void backslashAndDollarSymbolEscapeWhenPrecededByLetter() throws ExpressionResolverException {
+        assertEquals("ABC \\$value ABC", expressionResolver.resolve(document, "$value('objectName') \\\\$value $value('objectName')"));
+    }
+
+    @Test
+    void apostropheOutsideFunction() throws ExpressionResolverException {
+        assertEquals("Text ' ABC", expressionResolver.resolve(document, "Text ' $value('objectName')"));
+    }
+
+    @Test
+    void apostrophesOutsideFunction() throws ExpressionResolverException {
+        assertEquals("Text ' ABC ' Text", expressionResolver.resolve(document, "Text ' $value('objectName') ' Text"));
+    }
+
+    @Test
+    void commaOutsideFunction() throws ExpressionResolverException {
+        assertEquals("Text , XY ,", expressionResolver.resolve(document, "Text , $default($value('testString'), 'This is default value') ,"));
+    }
+
+    @Test
+    void apostropheEscapeInFunctionParam() throws ExpressionResolverException {
+        assertEquals("This is default 'value'", expressionResolver.resolve(document, "$default($value('nonExisting'), 'This is default \\'value\\'')"));
+    }
+
+    @Test
+    void mixedTest() throws ExpressionResolverException {
+        assertEquals("F\\G_$dollar$'Test \\$' + ABC I'm test, no? ABC end",
+                expressionResolver.resolve(document,
+                        "F\\G_\\$dollar$$default($value('nonExisting'), '\\'Test $\\'') + $value('object' + 'Name') I'm test, no? $value('objectName') end"));
     }
 
     public static String printSyntaxTree(Parser parser, ParseTree root) {

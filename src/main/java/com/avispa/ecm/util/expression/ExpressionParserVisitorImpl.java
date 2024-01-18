@@ -16,25 +16,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.avispa.ecm.util.expression.parser;
+package com.avispa.ecm.util.expression;
 
-import com.avispa.ecm.util.expression.FunctionFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class ExpressionVisitorImpl extends ExpressionBaseVisitor<String> {
+public class ExpressionParserVisitorImpl extends ExpressionParserBaseVisitor<String> {
 
     private final Object object;
 
-    public ExpressionVisitorImpl(Object object) {
+    public ExpressionParserVisitorImpl(Object object) {
         this.object = object;
     }
 
     @Override
-    public String visitFunction(ExpressionParser.FunctionContext ctx) {
+    public String visitSubString(ExpressionParser.SubStringContext ctx) {
+        if (!ctx.PLAIN_TEXT().isEmpty()) {
+            return ctx.getText();
+        } else if (null != ctx.ESCAPE()) {
+            return ctx.getText().substring(1);
+        }
+
+        return super.visitSubString(ctx);
+    }
+
+    @Override
+    protected String aggregateResult(String aggregate, String nextResult) {
+        return aggregate != null ? aggregate + nextResult : nextResult;
+    }
+
+    @Override
+    public String visitFunction(com.avispa.ecm.util.expression.ExpressionParser.FunctionContext ctx) {
         String functionSignature = ctx.getText();
         String functionName = ctx.FUNCTION_NAME().getText();
 
@@ -55,9 +70,9 @@ public class ExpressionVisitorImpl extends ExpressionBaseVisitor<String> {
         }
     }
 
-    private void processParams(ExpressionParser.FunctionContext ctx, List<String> params) {
+    private void processParams(com.avispa.ecm.util.expression.ExpressionParser.FunctionContext ctx, List<String> params) {
         if(null != ctx.params()) {
-            for (ExpressionParser.ExpressionContext child : ctx.params().expression()) {
+            for (com.avispa.ecm.util.expression.ExpressionParser.ExpressionContext child : ctx.params().expression()) {
                 String param = this.visit(child);
 
                 log.debug("Param: {}", param);
@@ -68,7 +83,7 @@ public class ExpressionVisitorImpl extends ExpressionBaseVisitor<String> {
     }
 
     @Override
-    public String visitConcatExpr(ExpressionParser.ConcatExprContext ctx) {
+    public String visitConcatExpr(com.avispa.ecm.util.expression.ExpressionParser.ConcatExprContext ctx) {
         String left = this.visit(ctx.left);
         String right = this.visit(ctx.right);
         String result = left + right;
@@ -79,10 +94,12 @@ public class ExpressionVisitorImpl extends ExpressionBaseVisitor<String> {
     }
 
     @Override
-    public String visitTextExpr(ExpressionParser.TextExprContext ctx) {
+    public String visitTextExpr(com.avispa.ecm.util.expression.ExpressionParser.TextExprContext ctx) {
         String string = ctx.getText();
 
         log.debug("String: {}", string);
+
+        string = string.replace("\\'", "'");
 
         return string.substring(1, string.length() - 1);
     }

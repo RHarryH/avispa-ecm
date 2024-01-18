@@ -65,7 +65,7 @@ class AutonameServiceTest {
     @Test
     void simpleTest() {
         Autoname autoname = new Autoname();
-        autoname.setRule("'NewName'");
+        autoname.setRule("NewName");
         autoname.setPropertyName("objectName");
         autonameService.apply(autoname, document);
 
