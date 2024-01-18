@@ -125,7 +125,7 @@ class SimpleControlMapperTest {
         comboRadio.setProperty("testString");
 
         ComboRadio.Dynamic dynamic = new ComboRadio.Dynamic();
-        dynamic.setTypeNameExpression("$value('typeName')");
+        dynamic.setTypeName("$value('typeName')");
         comboRadio.setDynamic(dynamic);
 
         TestDocument testDocument = new TestDocument();
