@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 
@@ -68,9 +67,7 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
                 if (null != comboRadio.getDynamic()) {
                     ComboRadio.Dynamic dynamic = comboRadio.getDynamic();
                     try {
-                        if (StringUtils.isEmpty(dynamic.getTypeName()) && StringUtils.isNotEmpty(dynamic.getTypeNameExpression())) {
-                            dynamic.setTypeName(expressionResolver.resolve(context, dynamic.getTypeNameExpression()));
-                        }
+                        dynamic.setTypeName(expressionResolver.resolve(context, dynamic.getTypeName()));
                     } catch (ExpressionResolverException e) {
                         log.error("Type name expression couldn't be resolved", e);
                     }
