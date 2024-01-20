@@ -14,7 +14,7 @@ subString
     | ESCAPE;
 
 function
-    : FUNCTION_NAME LEFT_PARENTHESIS params? RIGHT_PARENTHESIS
+    : FUNCTION_HEADER params? RIGHT_PARENTHESIS
     ;
 
 params

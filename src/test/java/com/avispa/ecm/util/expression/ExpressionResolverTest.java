@@ -25,6 +25,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.Trees;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -131,14 +133,10 @@ class ExpressionResolverTest {
         assertEquals("XY", expressionResolver.resolve(document, "$value('testString', 'redundantParameter')"));
     }
 
-    @Test
-    void plainText() throws ExpressionResolverException {
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid", "inva$lid"})
+    void plainText(String expression) throws ExpressionResolverException {
         assertEquals("invalid", expressionResolver.resolve(document, "invalid"));
-    }
-
-    @Test
-    void syntaxError() {
-        assertThrows(ExpressionResolverException.class, () -> expressionResolver.resolve(document, "inva$lid"));
     }
 
     @Test
@@ -172,18 +170,18 @@ class ExpressionResolverTest {
     }
 
     @Test
-    void syntaxErrorWhenDollarSymbolPrecededByLetter() {
-        assertThrows(ExpressionResolverException.class, () -> expressionResolver.resolve(document, "$value('objectName') $value $value('objectName')"));
+    void syntaxErrorWhenDollarSymbolPrecededByFunctionHeader() {
+        assertThrows(ExpressionResolverException.class, () -> expressionResolver.resolve(document, "$value('objectName') $value( $value('objectName')"));
     }
 
     @Test
-    void dollarSymbolEscapeWhenPrecededByLetter() throws ExpressionResolverException {
-        assertEquals("ABC $value ABC", expressionResolver.resolve(document, "$value('objectName') \\$value $value('objectName')"));
+    void dollarSymbolEscapeWhenPrecededByFunctionHeader() throws ExpressionResolverException {
+        assertEquals("ABC $value( ABC", expressionResolver.resolve(document, "$value('objectName') \\$value( $value('objectName')"));
     }
 
     @Test
-    void backslashAndDollarSymbolEscapeWhenPrecededByLetter() throws ExpressionResolverException {
-        assertEquals("ABC \\$value ABC", expressionResolver.resolve(document, "$value('objectName') \\\\$value $value('objectName')"));
+    void backslashAndDollarSymbolEscapeWhenPrecededByFunctionHeader() throws ExpressionResolverException {
+        assertEquals("ABC \\$value( ABC", expressionResolver.resolve(document, "$value('objectName') \\\\$value( $value('objectName')"));
     }
 
     @Test

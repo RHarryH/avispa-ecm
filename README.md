@@ -360,8 +360,9 @@ Expressions work in two context. The outer context contains any symbols that are
 function. Whenever the parser enters the function, it enters into inner, function context where all the rules below
 apply. In the outer context you can type any characters you want, and they will remain unchanged after the parsing.
 
-The only exception is a dollar sign followed by a letter, because this is interpreted as function name. To use dollar
-sign before the letter use backslash before the dollar sign: `This is \$notAFunction`.
+The only exception is a dollar sign followed by an alphanumeric set of characters and left parenthesis, because this is
+interpreted as the header of the function. To use dollar sign before function-header-like string use backslash
+before the dollar sign: `This is \$notAFunction(`.
 
 Examples:
 

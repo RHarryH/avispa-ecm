@@ -72,7 +72,7 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
                         log.error("Type name expression couldn't be resolved", e);
                     }
                 }
-                dictionaryControlLoader.loadDictionary(comboRadio, context.getClass());
+                dictionaryControlLoader.loadDictionary(comboRadio, context);
             }
 
             fillPropertyValue(propertyControl, fillBlacklist, context);
