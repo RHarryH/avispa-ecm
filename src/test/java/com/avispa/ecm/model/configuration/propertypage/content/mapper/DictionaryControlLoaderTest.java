@@ -18,26 +18,20 @@
 
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
+import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import com.avispa.ecm.model.configuration.dictionary.Dictionary;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryNotFoundException;
-import com.avispa.ecm.model.configuration.dictionary.DictionaryService;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryValue;
 import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadio;
+import com.avispa.ecm.model.document.DocumentRepository;
 import com.avispa.ecm.model.type.Type;
-import com.avispa.ecm.model.type.TypeService;
+import com.avispa.ecm.model.type.TypeRepository;
 import com.avispa.ecm.util.TestDocument;
-import com.avispa.ecm.util.condition.ConditionParser;
-import com.avispa.ecm.util.condition.ConditionRunner;
-import com.avispa.ecm.util.condition.ConditionService;
-import com.avispa.ecm.util.json.JsonValidator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Map;
 import java.util.UUID;
@@ -48,38 +42,74 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * @author Rafał Hiszpański
  */
-@DataJpaTest
-@Import({DictionaryControlLoader.class, DictionaryService.class, TypeService.class,
-        ConditionService.class, ConditionParser.class, ConditionRunner.class, ObjectMapper.class, JsonValidator.class})
+@SpringBootTest
 class DictionaryControlLoaderTest {
     @Autowired
-    private TestEntityManager entityManager;
+    private DocumentRepository documentRepository;
+
+    @Autowired
+    private TypeRepository typeRepository;
+
+    @Autowired
+    private EcmConfigRepository<Dictionary> ecmConfigRepository;
 
     @Autowired
     private DictionaryControlLoader controlLoader;
 
     @BeforeEach
     void init() {
-        entityManager.persist(getType());
+        typeRepository.save(getType());
     }
 
     @AfterEach
     void cleanup() {
-        entityManager.clear();
+        typeRepository.deleteAll();
+        documentRepository.deleteAll();
+        ecmConfigRepository.deleteAll();
     }
 
     @Test
     void givenControlWithTypeName_whenLoadDictionary_thenTypeObjectsAreLoaded() {
         ComboRadio comboRadio = new ComboRadio();
         comboRadio.setProperty("testDate");
-        comboRadio.setDynamic(ComboRadio.Dynamic.ofTypeName("Test document"));
+        comboRadio.setDynamic(new ComboRadio.Dynamic("Test document"));
 
         UUID id = persistTestDocument("Test document");
         persistTestDocument(""); // should be ignored in test
 
-        controlLoader.loadDictionary(comboRadio, TestDocument.class);
+        controlLoader.loadDictionary(comboRadio, new TestDocument());
 
         assertEquals(Map.of(id.toString(), "Test document"), comboRadio.getOptions());
+    }
+
+    @Test
+    void givenControlWithTypeNameAndQualification_whenLoadDictionary_thenTypeObjectsAreLoaded() {
+        ComboRadio comboRadio = new ComboRadio();
+        comboRadio.setProperty("testDate");
+        comboRadio.setDynamic(new ComboRadio.Dynamic("Test document", "{\"objectName\": \"Test document\"}"));
+
+        UUID id = persistTestDocument("Test document");
+        persistTestDocument("Test document 2");
+
+        controlLoader.loadDictionary(comboRadio, new TestDocument());
+
+        assertEquals(Map.of(id.toString(), "Test document"), comboRadio.getOptions());
+    }
+
+    @Test
+    void givenControlWithTypeNameAndQualificationWithExpressions_whenLoadDictionary_thenTypeObjectsAreLoaded() {
+        ComboRadio comboRadio = new ComboRadio();
+        comboRadio.setProperty("testDate");
+        comboRadio.setDynamic(new ComboRadio.Dynamic("Test document", "{\"objectName\": { \"$like\": \"$value('objectName')%\"}}"));
+
+        UUID id = persistTestDocument("Test document");
+        UUID id2 = persistTestDocument("Test document 2");
+
+        TestDocument testDocument = new TestDocument();
+        testDocument.setObjectName("Test");
+        controlLoader.loadDictionary(comboRadio, testDocument);
+
+        assertEquals(Map.of(id.toString(), "Test document", id2.toString(), "Test document 2"), comboRadio.getOptions());
     }
 
     @Test
@@ -90,7 +120,7 @@ class DictionaryControlLoaderTest {
 
         persistTestDictionary();
 
-        controlLoader.loadDictionary(comboRadio, TestDocument.class);
+        controlLoader.loadDictionary(comboRadio, new TestDocument());
 
         assertEquals(Map.of("Key 1", "Label 1", "Key 3", "Alpha"), comboRadio.getOptions());
     }
@@ -103,7 +133,7 @@ class DictionaryControlLoaderTest {
 
         persistTestDictionary();
 
-        controlLoader.loadDictionary(comboRadio, TestDocument.class);
+        controlLoader.loadDictionary(comboRadio, new TestDocument());
 
         assertEquals(Map.of("Key 3", "Alpha", "Key 1", "Label 1"), comboRadio.getOptions());
     }
@@ -115,7 +145,7 @@ class DictionaryControlLoaderTest {
 
         persistTestDictionary();
 
-        controlLoader.loadDictionary(comboRadio, TestDocument.class);
+        controlLoader.loadDictionary(comboRadio, new TestDocument());
 
         assertEquals(Map.of("Key 1", "Label 1", "Key 3", "Alpha"), comboRadio.getOptions());
     }
@@ -128,7 +158,7 @@ class DictionaryControlLoaderTest {
 
         persistTestDictionary();
 
-        controlLoader.loadDictionary(comboRadio, TestDocument.class);
+        controlLoader.loadDictionary(comboRadio, new TestDocument());
 
         assertEquals(Map.of("Key 1", "Label 1", "Key 3", "Alpha"), comboRadio.getOptions());
     }
@@ -138,7 +168,8 @@ class DictionaryControlLoaderTest {
         ComboRadio comboRadio = new ComboRadio();
         comboRadio.setProperty("testString");
 
-        assertThrows(DictionaryNotFoundException.class, () -> controlLoader.loadDictionary(comboRadio, TestDocument.class));
+        var context = new TestDocument();
+        assertThrows(DictionaryNotFoundException.class, () -> controlLoader.loadDictionary(comboRadio, context));
     }
 
     @Test
@@ -146,7 +177,8 @@ class DictionaryControlLoaderTest {
         ComboRadio comboRadio = new ComboRadio();
         comboRadio.setProperty("testInt");
 
-        assertThrows(DictionaryNotFoundException.class, () -> controlLoader.loadDictionary(comboRadio, TestDocument.class));
+        var context = new TestDocument();
+        assertThrows(DictionaryNotFoundException.class, () -> controlLoader.loadDictionary(comboRadio, context));
     }
 
     private Type getType() {
@@ -160,7 +192,7 @@ class DictionaryControlLoaderTest {
     private UUID persistTestDocument(String documentName) {
         TestDocument testDocument = new TestDocument();
         testDocument.setObjectName(documentName);
-        return entityManager.persist(testDocument).getId();
+        return documentRepository.save(testDocument).getId();
     }
 
     private void persistTestDictionary() {
@@ -183,6 +215,6 @@ class DictionaryControlLoaderTest {
         dictionary.addValue(dv2);
         dictionary.addValue(dv3);
 
-        entityManager.persist(dictionary);
+        ecmConfigRepository.save(dictionary);
     }
 }

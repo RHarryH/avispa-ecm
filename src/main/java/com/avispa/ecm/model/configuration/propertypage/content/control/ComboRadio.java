@@ -56,15 +56,19 @@ public class ComboRadio extends PropertyControl {
 
     @Getter
     @Setter
+    @NoArgsConstructor
     public static class Dynamic {
         private String typeName;
         @JsonDeserialize(using = ConditionToStringDeserializer.class)
         private String qualification;
 
-        public static Dynamic ofTypeName(String typeName) {
-            Dynamic dynamic = new Dynamic();
-            dynamic.setTypeName(typeName);
-            return dynamic;
+        public Dynamic(String typeName, String qualification) {
+            this(typeName);
+            this.qualification = qualification;
+        }
+
+        public Dynamic(String typeName) {
+            this.typeName = typeName;
         }
     }
 }

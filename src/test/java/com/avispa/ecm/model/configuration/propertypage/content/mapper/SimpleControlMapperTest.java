@@ -112,9 +112,10 @@ class SimpleControlMapperTest {
         comboRadio.setLabel("Label");
         comboRadio.setProperty("testString");
 
-        simpleControlMapper.processControl(comboRadio, List.of(), new TestDocument());
+        var context = new TestDocument();
+        simpleControlMapper.processControl(comboRadio, List.of(), context);
 
-        verify(dictionaryControlLoader).loadDictionary(comboRadio, TestDocument.class);
+        verify(dictionaryControlLoader).loadDictionary(comboRadio, context);
     }
 
     @Test
@@ -124,9 +125,7 @@ class SimpleControlMapperTest {
         comboRadio.setLabel("Label");
         comboRadio.setProperty("testString");
 
-        ComboRadio.Dynamic dynamic = new ComboRadio.Dynamic();
-        dynamic.setTypeName("$value('typeName')");
-        comboRadio.setDynamic(dynamic);
+        comboRadio.setDynamic(new ComboRadio.Dynamic("$value('typeName')"));
 
         TestDocument testDocument = new TestDocument();
         simpleControlMapper.processControl(comboRadio, List.of(), testDocument);
