@@ -51,7 +51,8 @@ public class ExpressionParserVisitorImpl extends ExpressionParserBaseVisitor<Str
     @Override
     public String visitFunction(com.avispa.ecm.util.expression.ExpressionParser.FunctionContext ctx) {
         String functionSignature = ctx.getText();
-        String functionName = ctx.FUNCTION_NAME().getText();
+        String functionHeader = ctx.FUNCTION_HEADER().getText();
+        String functionName = functionHeader.substring(0, functionHeader.length() - 1);
 
         log.debug("Function name: {}", functionName);
 

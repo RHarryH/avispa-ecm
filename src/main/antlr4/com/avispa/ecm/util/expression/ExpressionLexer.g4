@@ -1,6 +1,6 @@
 lexer grammar ExpressionLexer;
 
-FUNCTION_NAME : '$' LETTER (LETTER | DIGIT)* -> pushMode(FUNCTION_CONTEXT);
+FUNCTION_HEADER : '$' LETTER (LETTER | DIGIT)* '(' -> pushMode(FUNCTION_CONTEXT);
 
 ESCAPE: '\\' [$];
 PLAIN_TEXT : .;
@@ -11,10 +11,9 @@ TEXT : '\'' PARAM_VALUE* '\'';
 
 COMMA : ',';
 CONCAT : '+';
-LEFT_PARENTHESIS  : '(';
 RIGHT_PARENTHESIS : ')' -> popMode;
 
-INNER_FUNCTION_NAME : '$' LETTER (LETTER | DIGIT)* -> type(FUNCTION_NAME), pushMode(FUNCTION_CONTEXT);
+INNER_FUNCTION_HEADER : '$' LETTER (LETTER | DIGIT)* '(' -> type(FUNCTION_HEADER), pushMode(FUNCTION_CONTEXT);
 INNER_PLAIN_TEXT : . -> skip;
 
 fragment DIGIT : [0-9];
