@@ -5,7 +5,9 @@
         "type": "combo",
         "label": "Combo test",
         "property": "testString",
-        "dictionary": "Test Dictionary",
+        "loadSettings": {
+          "dictionary": "Test Dictionary"
+        },
         "required": true
       }
     ]

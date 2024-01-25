@@ -39,6 +39,7 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.Text;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Textarea;
 import com.avispa.ecm.model.configuration.propertypage.content.control.constraints.Constraint;
 import com.avispa.ecm.model.configuration.propertypage.content.control.constraints.Constraints;
+import com.avispa.ecm.model.configuration.propertypage.content.control.dictionary.DynamicLoad;
 import com.avispa.ecm.model.content.Content;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.model.format.Format;
@@ -68,6 +69,7 @@ import static com.avispa.ecm.model.configuration.propertypage.content.PropertyPa
 import static com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContext.INSERT;
 import static com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContext.READONLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -207,8 +209,11 @@ class PropertyPageMapperIntegrationTest {
         ComboRadio combo = (ComboRadio) controls.get(0);
         assertEquals("Combo test", combo.getLabel());
         assertEquals("testString", combo.getProperty());
-        assertEquals("Test Document", combo.getDynamic().getTypeName());
-        assertEquals("{\"$limit\":2}", combo.getDynamic().getQualification());
+        assertInstanceOf(DynamicLoad.class, combo.getLoadSettings());
+
+        var dynamicLoad = (DynamicLoad) combo.getLoadSettings();
+        assertEquals("Test Document", dynamicLoad.getType());
+        assertEquals("{\"$limit\":2}", dynamicLoad.getQualification());
         assertTrue(combo.isRequired());
     }
 

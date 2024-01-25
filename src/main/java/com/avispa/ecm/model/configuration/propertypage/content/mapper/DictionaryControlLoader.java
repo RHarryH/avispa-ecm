@@ -24,6 +24,8 @@ import com.avispa.ecm.model.configuration.dictionary.DictionaryNotFoundException
 import com.avispa.ecm.model.configuration.dictionary.DictionaryService;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryValue;
 import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadio;
+import com.avispa.ecm.model.configuration.propertypage.content.control.dictionary.DictionaryLoad;
+import com.avispa.ecm.model.configuration.propertypage.content.control.dictionary.DynamicLoad;
 import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeService;
 import com.avispa.ecm.util.condition.ConditionService;
@@ -47,7 +49,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-class DictionaryControlLoader {
+public class DictionaryControlLoader {
     private final DictionaryService dictionaryService;
     private final TypeService typeService;
 
@@ -56,37 +58,48 @@ class DictionaryControlLoader {
 
     /**
      * Loads dictionary used by combo boxes and radio buttons
-     * @param comboRadio
-     * @param context
+     * @param comboRadio combo or radio button configuration
+     * @param context context used to resolve expressions
      */
     @Transactional
-    public void loadDictionary(ComboRadio comboRadio, Object context) {
-        if (null != comboRadio.getDynamic()) {
-            loadDynamicValues(comboRadio, context);
+    public Map<String, String> loadDictionary(ComboRadio comboRadio, Object context) {
+        var settings = comboRadio.getLoadSettings();
+
+        if (comboRadio.getLoadSettings() instanceof DynamicLoad dynamic) {
+            return loadDynamicDictionary(dynamic, context);
+        } else if (settings == null || settings instanceof DictionaryLoad) {
+            var dictionaryLoad = (DictionaryLoad) settings;
+            Dictionary dictionary = getDictionary(dictionaryLoad, comboRadio.getProperty(), context instanceof Class ? (Class<?>) context : context.getClass());
+            return loadStaticDictionary(dictionaryLoad, dictionary);
         } else {
-            Dictionary dictionary = getDictionary(comboRadio, context instanceof Class ? (Class<?>) context : context.getClass());
-            loadValuesFromDictionary(comboRadio, dictionary);
+            throw new IllegalStateException("Dictionary configuration is unknown");
         }
     }
 
-    private void loadDynamicValues(ComboRadio comboRadio, Object context) {
-        ComboRadio.Dynamic dynamic = comboRadio.getDynamic();
-        Type type = typeService.getType(dynamic.getTypeName());
+    /**
+     * Load dynamic dictionary by providing configuration and a context object used to resolve expressions withing the
+     * qualification
+     *
+     * @param dynamic configuration of dynamic load
+     * @param context context used to resolve expressions
+     * @return
+     */
+    public Map<String, String> loadDynamicDictionary(DynamicLoad dynamic, Object context) {
+        Type type = typeService.getType(dynamic.getType());
         if (null != type) {
             List<? extends EcmObject> ecmObjects = conditionService.fetch(type.getEntityClass(), getQualification(dynamic, context));
 
-            Map<String, String> values = ecmObjects.stream()
+            return ecmObjects.stream()
                     .filter(ecmObject -> StringUtils.isNotEmpty(ecmObject.getObjectName())) // filter out incorrect values with empty object name
                     .sorted(Comparator.comparing(EcmObject::getObjectName))
                     .collect(Collectors.toMap(ecmObject -> ecmObject.getId().toString(), EcmObject::getObjectName, (x, y) -> x, LinkedHashMap::new));
-
-            comboRadio.setOptions(values);
-        } else {
-            log.error("Type '{}' was not found", dynamic.getTypeName());
         }
+
+        log.error("Type '{}' was not found", dynamic.getType());
+        return Map.of();
     }
 
-    private String getQualification(ComboRadio.Dynamic dynamic, Object context) {
+    private String getQualification(DynamicLoad dynamic, Object context) {
         String qualification = dynamic.getQualification();
 
         if (StringUtils.isEmpty(qualification)) {
@@ -101,34 +114,30 @@ class DictionaryControlLoader {
         }
     }
 
-    private Dictionary getDictionary(ComboRadio comboRadio, Class<?> contextClass) {
-        ComboRadio.Dictionary dictionary = comboRadio.getDictionary();
-
+    private Dictionary getDictionary(DictionaryLoad dictionaryLoad, String propertyName, Class<?> contextClass) {
         // if dictionary was not provided in configuration, try with annotation
-        String dictionaryName = null == dictionary || StringUtils.isEmpty(dictionary.getName()) ?
-                dictionaryService.getDictionaryNameFromAnnotation(contextClass, comboRadio.getProperty()) :
-                dictionary.getName();
+        String dictionaryName = null == dictionaryLoad || StringUtils.isEmpty(dictionaryLoad.getDictionary()) ?
+                dictionaryService.getDictionaryNameFromAnnotation(contextClass, propertyName) :
+                dictionaryLoad.getDictionary();
 
         // if dictionary name is still not resolved throw an exception
         if(StringUtils.isEmpty(dictionaryName)) {
             throw new DictionaryNotFoundException(
-                    String.format("Dictionary is not specified in property page configuration or using annotation in entity definition. Related property: '%s'", comboRadio.getProperty())
+                    String.format("Dictionary is not specified in property page configuration or using annotation in entity definition. Related property: '%s'", propertyName)
             );
         }
 
         return dictionaryService.getDictionary(dictionaryName);
     }
 
-    private void loadValuesFromDictionary(ComboRadio comboRadio, Dictionary dictionary) {
+    private Map<String, String> loadStaticDictionary(DictionaryLoad dictionaryLoad, Dictionary dictionary) {
         log.debug("Loading values from {} dictionary", dictionary.getObjectName());
 
-        boolean sortByLabel = null != comboRadio.getDictionary() && comboRadio.getDictionary().isSortByLabel();
+        boolean sortByLabel = null != dictionaryLoad && dictionaryLoad.isSortByLabel();
 
-        Map<String, String> values = dictionary.getValues().stream()
+        return dictionary.getValues().stream()
                 .filter(value -> StringUtils.isNotEmpty(value.getLabel())) // filter out incorrect values with empty object name
                 .sorted(Comparator.comparing(sortByLabel ? DictionaryValue::getLabel : DictionaryValue::getKey))
                 .collect(Collectors.toMap(DictionaryValue::getKey, DictionaryValue::getLabel, (x, y) -> x, LinkedHashMap::new));
-
-        comboRadio.setOptions(values);
     }
 }

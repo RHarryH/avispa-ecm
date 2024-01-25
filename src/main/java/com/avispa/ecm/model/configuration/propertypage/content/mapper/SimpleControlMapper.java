@@ -23,6 +23,7 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadi
 import com.avispa.ecm.model.configuration.propertypage.content.control.Control;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Label;
 import com.avispa.ecm.model.configuration.propertypage.content.control.PropertyControl;
+import com.avispa.ecm.model.configuration.propertypage.content.control.dictionary.DynamicLoad;
 import com.avispa.ecm.util.expression.ExpressionResolver;
 import com.avispa.ecm.util.expression.ExpressionResolverException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -64,15 +65,14 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
             }
 
             if (control instanceof ComboRadio comboRadio) {
-                if (null != comboRadio.getDynamic()) {
-                    ComboRadio.Dynamic dynamic = comboRadio.getDynamic();
+                if (comboRadio.getLoadSettings() instanceof DynamicLoad dynamicLoad) {
                     try {
-                        dynamic.setTypeName(expressionResolver.resolve(context, dynamic.getTypeName()));
+                        dynamicLoad.setType(expressionResolver.resolve(context, dynamicLoad.getType()));
                     } catch (ExpressionResolverException e) {
                         log.error("Type name expression couldn't be resolved", e);
                     }
                 }
-                dictionaryControlLoader.loadDictionary(comboRadio, context);
+                comboRadio.setOptions(dictionaryControlLoader.loadDictionary(comboRadio, context));
             }
 
             fillPropertyValue(propertyControl, fillBlacklist, context);

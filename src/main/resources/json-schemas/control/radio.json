@@ -19,71 +19,44 @@
     "required": {
       "type": "boolean"
     },
-    "dictionary": {
+    "loadSettings": {
       "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string",
-          "minLength": 1
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "dictionary": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sortByLabel": {
+              "type": "boolean"
+            }
+          }
         },
-        "sortByLabel": {
-          "type": "boolean"
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "qualification": {
+              "$ref": "../property/constraints.json#/$defs/condition"
+            }
+          },
+          "required": [
+            "type"
+          ]
         }
-      }
-    },
-    "dynamic": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "typeName": {
-          "type": "string",
-          "minLength": 1
-        },
-        "qualification": {
-          "$ref": "../property/constraints.json#/$defs/condition"
-        }
-      },
-      "required": [
-        "typeName"
       ]
     },
     "constraints": {
       "$ref": "../property/constraints.json#"
     }
   },
-  "allOf": [
-    {
-      "required": [
-        "type",
-        "property"
-      ]
-    },
-    {
-      "oneOf": [
-        {
-          "required": ["dictionary"]
-        },
-        {
-          "required": [
-            "dynamic"
-          ]
-        },
-        {
-          "allOf": [
-            {
-              "not": {
-                "required": [
-                  "dynamic"
-                ]
-              }
-            },
-            {
-              "not": { "required": ["dictionary"] }
-            }
-          ]
-        }
-      ]
-    }
+  "required": [
+    "type",
+    "property"
   ]
 }
