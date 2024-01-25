@@ -19,7 +19,6 @@
 package com.avispa.ecm.util.expression.function.impl;
 
 import com.avispa.ecm.util.expression.function.ValueFunction;
-import com.avispa.ecm.util.reflect.PropertyUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
@@ -44,7 +43,7 @@ public class DateValue extends ValueFunction {
     }
 
     private String getValue(Object object, String propertyName, String format) {
-        Object value = PropertyUtils.getPropertyValue(object, propertyName);
+        Object value = extractValue(propertyName, object);
 
         if (value instanceof LocalDateTime localDateTime) {
             return localDateTime.format(DateTimeFormatter.ofPattern(format));
