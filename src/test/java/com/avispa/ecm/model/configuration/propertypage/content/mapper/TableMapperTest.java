@@ -18,7 +18,7 @@
 
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
-import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadio;
+import com.avispa.ecm.model.configuration.propertypage.content.control.Combo;
 import com.avispa.ecm.model.configuration.propertypage.content.control.PropertyControl;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Table;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Text;
@@ -73,9 +73,9 @@ class TableMapperTest {
         table.setProperty("table");
 
         List<PropertyControl> controls = new ArrayList<>();
-        ComboRadio comboRadio = new ComboRadio();
-        comboRadio.setProperty("objectName");
-        controls.add(comboRadio);
+        Combo combo = new Combo();
+        combo.setProperty("objectName");
+        controls.add(combo);
         table.setControls(controls);
 
         TestDocument testDocument = new TestDocument();
@@ -85,7 +85,7 @@ class TableMapperTest {
 
         tableMapper.processControl(table, List.of(), testDocument);
 
-        verify(dictionaryControlLoader).loadDictionary(any(ComboRadio.class), eq(Document.class));
+        verify(dictionaryControlLoader).loadDictionary(any(Combo.class), eq(Document.class));
     }
 
     @Test

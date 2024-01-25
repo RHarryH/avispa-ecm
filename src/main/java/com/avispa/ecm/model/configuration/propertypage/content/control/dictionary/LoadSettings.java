@@ -1,6 +1,6 @@
 /*
  * Avispa ECM - a small framework for implementing basic ECM solution
- * Copyright (C) 2023 Rafał Hiszpański
+ * Copyright (C) 2024 Rafał Hiszpański
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,21 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.avispa.ecm.model.configuration.propertypage.content.control;
+package com.avispa.ecm.model.configuration.propertypage.content.control.dictionary;
 
-import com.avispa.ecm.model.configuration.propertypage.content.control.dictionary.LoadSettings;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import java.util.Map;
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.DEDUCTION;
 
-/**
- * @author Rafał Hiszpański
- */
-@Getter
-@Setter
-public abstract class ComboRadio extends PropertyControl {
-    private LoadSettings loadSettings;
-
-    private Map<String, String> options;
+@JsonTypeInfo(use = DEDUCTION)
+@JsonSubTypes({@JsonSubTypes.Type(DictionaryLoad.class), @JsonSubTypes.Type(DynamicLoad.class)})
+public interface LoadSettings {
 }
