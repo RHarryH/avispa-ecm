@@ -24,7 +24,9 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -34,31 +36,48 @@ class DateValueTest {
     private final DateValue dateValue = new DateValue();
 
     private static TestDocument document;
+    private static Map<String, Object> documentMap;
 
     @BeforeAll
     static void init() {
+        var date = LocalDate.of(2020, 9, 5);
+        var dateTime = LocalDateTime.of(2021, 10, 11, 10, 54, 18);
         document = new TestDocument();
-        document.setTestDate(LocalDate.of(2020, 9, 5));
-        document.setTestDateTime(LocalDateTime.of(2021, 10, 11, 10, 54, 18));
+        document.setTestDate(date);
+        document.setTestDateTime(dateTime);
+
+        documentMap = Map.of("testDate", date, "testDateTime", dateTime);
     }
 
     @Test
     void noPattern() {
-        assertEquals("", dateValue.resolve(document, new String[]{"testDateTime", ""}));
+        assertAll(() -> {
+            assertEquals("", dateValue.resolve(document, new String[]{"testDateTime", ""}));
+            assertEquals("", dateValue.resolve(documentMap, new String[]{"testDateTime", ""}));
+        });
     }
 
     @Test
     void simplePattern() {
-        assertEquals("10", dateValue.resolve(document, new String[]{"testDateTime", "MM"}));
+        assertAll(() -> {
+            assertEquals("10", dateValue.resolve(document, new String[]{"testDateTime", "MM"}));
+            assertEquals("10", dateValue.resolve(documentMap, new String[]{"testDateTime", "MM"}));
+        });
     }
 
     @Test
     void complexPattern() {
-        assertEquals("2021-10-11 10:54:18", dateValue.resolve(document, new String[]{"testDateTime", "yyyy-MM-dd HH:mm:ss"}));
+        assertAll(() -> {
+            assertEquals("2021-10-11 10:54:18", dateValue.resolve(document, new String[]{"testDateTime", "yyyy-MM-dd HH:mm:ss"}));
+            assertEquals("2021-10-11 10:54:18", dateValue.resolve(documentMap, new String[]{"testDateTime", "yyyy-MM-dd HH:mm:ss"}));
+        });
     }
 
     @Test
     void localDateOnly() {
-        assertEquals("2020/09", dateValue.resolve(document, new String[]{"testDate", "yyyy/MM"}));
+        assertAll(() -> {
+            assertEquals("2020/09", dateValue.resolve(document, new String[]{"testDate", "yyyy/MM"}));
+            assertEquals("2020/09", dateValue.resolve(documentMap, new String[]{"testDate", "yyyy/MM"}));
+        });
     }
 }

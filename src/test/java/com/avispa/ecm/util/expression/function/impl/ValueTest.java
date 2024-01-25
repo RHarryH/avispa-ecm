@@ -23,7 +23,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -31,33 +33,49 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class ValueTest {
     private static TestDocument document;
+    private static Map<String, Object> documentMap;
     private final Value value = new Value();
 
     @BeforeAll
     static void init() {
+        var dateTime = LocalDateTime.of(2021, 10, 11, 10, 54, 18);
         document = new TestDocument();
         document.setObjectName("ABC");
-        document.setTestDateTime(LocalDateTime.of(2021, 10, 11, 10, 54, 18));
+        document.setTestDateTime(dateTime);
         document.setTestInt(5);
+
+        documentMap = Map.of("objectName", "ABC", "testDateTime", dateTime, "testInt", 5);
     }
 
     @Test
     void getStringValue() {
-        assertEquals("ABC", value.resolve(document, new String[] {"objectName"}));
+        assertAll(() -> {
+            assertEquals("ABC", value.resolve(document, new String[]{"objectName"}));
+            assertEquals("ABC", value.resolve(documentMap, new String[]{"objectName"}));
+        });
     }
 
     @Test
     void getIntValue() {
-        assertEquals("5", value.resolve(document, new String[] {"testInt"}));
+        assertAll(() -> {
+            assertEquals("5", value.resolve(document, new String[]{"testInt"}));
+            assertEquals("5", value.resolve(documentMap, new String[]{"testInt"}));
+        });
     }
 
     @Test
     void getDateValue() {
-        assertEquals("2021-10-11T10:54:18", value.resolve(document, new String[] {"testDateTime"}));
+        assertAll(() -> {
+            assertEquals("2021-10-11T10:54:18", value.resolve(document, new String[]{"testDateTime"}));
+            assertEquals("2021-10-11T10:54:18", value.resolve(documentMap, new String[]{"testDateTime"}));
+        });
     }
 
     @Test
     void nonExistingValue() {
-        assertEquals("", value.resolve(document, new String[] {"doesNotExist"}));
+        assertAll(() -> {
+            assertEquals("", value.resolve(document, new String[]{"doesNotExist"}));
+            assertEquals("", value.resolve(documentMap, new String[]{"doesNotExist"}));
+        });
     }
 }

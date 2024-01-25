@@ -18,7 +18,10 @@
 
 package com.avispa.ecm.util.expression.function;
 
+import com.avispa.ecm.util.reflect.PropertyUtils;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
 
 /**
  * Type of functions that extracts value from property name
@@ -27,6 +30,14 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public abstract class ValueFunction implements Function {
+
+    protected final Object extractValue(String propertyName, Object object) {
+        if (object instanceof Map<?, ?> map) {
+            return map.get(propertyName);
+        } else {
+            return PropertyUtils.getPropertyValue(object, propertyName);
+        }
+    }
 
     protected final String returnValue(String propertyName, Object value) {
         if(null == value) {
