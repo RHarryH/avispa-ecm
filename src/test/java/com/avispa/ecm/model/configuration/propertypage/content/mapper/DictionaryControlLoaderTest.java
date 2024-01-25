@@ -22,7 +22,9 @@ import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import com.avispa.ecm.model.configuration.dictionary.Dictionary;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryNotFoundException;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryValue;
-import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadio;
+import com.avispa.ecm.model.configuration.propertypage.content.control.Combo;
+import com.avispa.ecm.model.configuration.propertypage.content.control.dictionary.DictionaryLoad;
+import com.avispa.ecm.model.configuration.propertypage.content.control.dictionary.DynamicLoad;
 import com.avispa.ecm.model.document.DocumentRepository;
 import com.avispa.ecm.model.type.Type;
 import com.avispa.ecm.model.type.TypeRepository;
@@ -70,115 +72,128 @@ class DictionaryControlLoaderTest {
 
     @Test
     void givenControlWithTypeName_whenLoadDictionary_thenTypeObjectsAreLoaded() {
-        ComboRadio comboRadio = new ComboRadio();
-        comboRadio.setProperty("testDate");
-        comboRadio.setDynamic(new ComboRadio.Dynamic("Test document"));
+        Combo combo = new Combo();
+        combo.setProperty("testDate");
+        combo.setLoadSettings(new DynamicLoad("Test document"));
 
         UUID id = persistTestDocument("Test document");
         persistTestDocument(""); // should be ignored in test
 
-        controlLoader.loadDictionary(comboRadio, new TestDocument());
+        var result = controlLoader.loadDictionary(combo, new TestDocument());
 
-        assertEquals(Map.of(id.toString(), "Test document"), comboRadio.getOptions());
+        assertEquals(Map.of(id.toString(), "Test document"), result);
     }
 
     @Test
     void givenControlWithTypeNameAndQualification_whenLoadDictionary_thenTypeObjectsAreLoaded() {
-        ComboRadio comboRadio = new ComboRadio();
-        comboRadio.setProperty("testDate");
-        comboRadio.setDynamic(new ComboRadio.Dynamic("Test document", "{\"objectName\": \"Test document\"}"));
+        Combo combo = new Combo();
+        combo.setProperty("testDate");
+        combo.setLoadSettings(new DynamicLoad("Test document", "{\"objectName\": \"Test document\"}"));
 
         UUID id = persistTestDocument("Test document");
         persistTestDocument("Test document 2");
 
-        controlLoader.loadDictionary(comboRadio, new TestDocument());
+        var result = controlLoader.loadDictionary(combo, new TestDocument());
+        assertEquals(Map.of(id.toString(), "Test document"), result);
 
-        assertEquals(Map.of(id.toString(), "Test document"), comboRadio.getOptions());
+        result = controlLoader.loadDynamicDictionary((DynamicLoad) combo.getLoadSettings(), new TestDocument());
+        assertEquals(Map.of(id.toString(), "Test document"), result);
     }
 
     @Test
     void givenControlWithTypeNameAndQualificationWithExpressions_whenLoadDictionary_thenTypeObjectsAreLoaded() {
-        ComboRadio comboRadio = new ComboRadio();
-        comboRadio.setProperty("testDate");
-        comboRadio.setDynamic(new ComboRadio.Dynamic("Test document", "{\"objectName\": { \"$like\": \"$value('objectName')%\"}}"));
+        Combo combo = new Combo();
+        combo.setProperty("testDate");
+        combo.setLoadSettings(new DynamicLoad("Test document", "{\"objectName\": { \"$like\": \"$value('objectName')%\"}}"));
 
         UUID id = persistTestDocument("Test document");
         UUID id2 = persistTestDocument("Test document 2");
 
         TestDocument testDocument = new TestDocument();
         testDocument.setObjectName("Test");
-        controlLoader.loadDictionary(comboRadio, testDocument);
+        var result = controlLoader.loadDictionary(combo, testDocument);
 
-        assertEquals(Map.of(id.toString(), "Test document", id2.toString(), "Test document 2"), comboRadio.getOptions());
+        assertEquals(Map.of(id.toString(), "Test document", id2.toString(), "Test document 2"), result);
+    }
+
+    @Test
+    void givenControlWithTypeNameAndQualification_whenLoadDynamicDictionary_thenTypeObjectsAreLoaded() {
+        DynamicLoad dynamicLoad = new DynamicLoad("Test document", "{\"objectName\": \"Test document\"}");
+
+        UUID id = persistTestDocument("Test document");
+        persistTestDocument("Test document 2");
+
+        var result = controlLoader.loadDynamicDictionary(dynamicLoad, new TestDocument());
+        assertEquals(Map.of(id.toString(), "Test document"), result);
     }
 
     @Test
     void givenControlWithDictionary_whenLoadDictionary_thenDictionaryIsLoaded() {
-        ComboRadio comboRadio = new ComboRadio();
-        comboRadio.setProperty("testInt");
-        comboRadio.setDictionary(new ComboRadio.Dictionary("Test Dictionary"));
+        Combo combo = new Combo();
+        combo.setProperty("testInt");
+        combo.setLoadSettings(new DictionaryLoad("Test Dictionary"));
 
         persistTestDictionary();
 
-        controlLoader.loadDictionary(comboRadio, new TestDocument());
+        var result = controlLoader.loadDictionary(combo, new TestDocument());
 
-        assertEquals(Map.of("Key 1", "Label 1", "Key 3", "Alpha"), comboRadio.getOptions());
+        assertEquals(Map.of("Key 1", "Label 1", "Key 3", "Alpha"), result);
     }
 
     @Test
     void givenControlWithDictionarySortedByLabel_whenLoadDictionary_thenDictionaryIsLoaded() {
-        ComboRadio comboRadio = new ComboRadio();
-        comboRadio.setProperty("testInt");
-        comboRadio.setDictionary(new ComboRadio.Dictionary("Test Dictionary", true));
+        Combo combo = new Combo();
+        combo.setProperty("testInt");
+        combo.setLoadSettings(new DictionaryLoad("Test Dictionary", true));
 
         persistTestDictionary();
 
-        controlLoader.loadDictionary(comboRadio, new TestDocument());
+        var result = controlLoader.loadDictionary(combo, new TestDocument());
 
-        assertEquals(Map.of("Key 3", "Alpha", "Key 1", "Label 1"), comboRadio.getOptions());
+        assertEquals(Map.of("Key 3", "Alpha", "Key 1", "Label 1"), result);
     }
 
     @Test
     void givenControl_whenLoadDictionary_thenDictionaryIsLoadedFromAnnotation() {
-        ComboRadio comboRadio = new ComboRadio();
-        comboRadio.setProperty("testString");
+        Combo combo = new Combo();
+        combo.setProperty("testString");
 
         persistTestDictionary();
 
-        controlLoader.loadDictionary(comboRadio, new TestDocument());
+        var result = controlLoader.loadDictionary(combo, new TestDocument());
 
-        assertEquals(Map.of("Key 1", "Label 1", "Key 3", "Alpha"), comboRadio.getOptions());
+        assertEquals(Map.of("Key 1", "Label 1", "Key 3", "Alpha"), result);
     }
 
     @Test
     void givenControlWithEmptyDictionaryName_whenLoadDictionary_thenDictionaryIsLoadedFromAnnotation() {
-        ComboRadio comboRadio = new ComboRadio();
-        comboRadio.setProperty("testString");
-        comboRadio.setDictionary(new ComboRadio.Dictionary());
+        Combo combo = new Combo();
+        combo.setProperty("testString");
+        combo.setLoadSettings(new DictionaryLoad());
 
         persistTestDictionary();
 
-        controlLoader.loadDictionary(comboRadio, new TestDocument());
+        var result = controlLoader.loadDictionary(combo, new TestDocument());
 
-        assertEquals(Map.of("Key 1", "Label 1", "Key 3", "Alpha"), comboRadio.getOptions());
+        assertEquals(Map.of("Key 1", "Label 1", "Key 3", "Alpha"), result);
     }
 
     @Test
     void givenControl_whenLoadUnknownDictionary_thenThrowException() {
-        ComboRadio comboRadio = new ComboRadio();
-        comboRadio.setProperty("testString");
+        Combo combo = new Combo();
+        combo.setProperty("testString");
 
         var context = new TestDocument();
-        assertThrows(DictionaryNotFoundException.class, () -> controlLoader.loadDictionary(comboRadio, context));
+        assertThrows(DictionaryNotFoundException.class, () -> controlLoader.loadDictionary(combo, context));
     }
 
     @Test
     void givenControlWithoutAnyDictionaryDate_whenLoadDictionary_thenThrowException() {
-        ComboRadio comboRadio = new ComboRadio();
-        comboRadio.setProperty("testInt");
+        Combo combo = new Combo();
+        combo.setProperty("testInt");
 
         var context = new TestDocument();
-        assertThrows(DictionaryNotFoundException.class, () -> controlLoader.loadDictionary(comboRadio, context));
+        assertThrows(DictionaryNotFoundException.class, () -> controlLoader.loadDictionary(combo, context));
     }
 
     private Type getType() {

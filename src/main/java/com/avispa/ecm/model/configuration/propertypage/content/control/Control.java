@@ -39,7 +39,7 @@ import java.util.UUID;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Checkbox.class, name = "checkbox"),
         @JsonSubTypes.Type(value = Columns.class, name = "columns"),
-        @JsonSubTypes.Type(value = ComboRadio.class, name = "combo"),
+        @JsonSubTypes.Type(value = Combo.class, name = "combo"),
         @JsonSubTypes.Type(value = Date.class, name = "date"),
         @JsonSubTypes.Type(value = DateTime.class, name = "datetime"),
         @JsonSubTypes.Type(value = Email.class, name = "email"),
@@ -48,7 +48,7 @@ import java.util.UUID;
         @JsonSubTypes.Type(value = Money.class, name = "money"),
         @JsonSubTypes.Type(value = Number.class, name = "number"),
         @JsonSubTypes.Type(value = Password.class, name = "password"),
-        @JsonSubTypes.Type(value = ComboRadio.class, name = "radio"),
+        @JsonSubTypes.Type(value = Radio.class, name = "radio"),
         @JsonSubTypes.Type(value = Separator.class, name = "separator"),
         @JsonSubTypes.Type(value = Table.class, name = "table"),
         @JsonSubTypes.Type(value = Tabs.class, name = "tabs"),

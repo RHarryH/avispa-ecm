@@ -19,9 +19,10 @@
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
 import com.avispa.ecm.model.configuration.display.DisplayService;
-import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadio;
+import com.avispa.ecm.model.configuration.propertypage.content.control.Combo;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Label;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Text;
+import com.avispa.ecm.model.configuration.propertypage.content.control.dictionary.DynamicLoad;
 import com.avispa.ecm.util.NestedObject;
 import com.avispa.ecm.util.TestDocument;
 import com.avispa.ecm.util.expression.ExpressionResolver;
@@ -108,27 +109,27 @@ class SimpleControlMapperTest {
 
     @Test
     void givenComboWithoutType_whenProcess_thenDictionaryLoadAttempt() {
-        ComboRadio comboRadio = new ComboRadio();
-        comboRadio.setLabel("Label");
-        comboRadio.setProperty("testString");
+        Combo combo = new Combo();
+        combo.setLabel("Label");
+        combo.setProperty("testString");
 
         var context = new TestDocument();
-        simpleControlMapper.processControl(comboRadio, List.of(), context);
+        simpleControlMapper.processControl(combo, List.of(), context);
 
-        verify(dictionaryControlLoader).loadDictionary(comboRadio, context);
+        verify(dictionaryControlLoader).loadDictionary(combo, context);
     }
 
     @Test
     @SneakyThrows
     void givenComboWithTypeExpression_whenProcess_thenTypeDeductionAttempt() {
-        ComboRadio comboRadio = new ComboRadio();
-        comboRadio.setLabel("Label");
-        comboRadio.setProperty("testString");
+        Combo combo = new Combo();
+        combo.setLabel("Label");
+        combo.setProperty("testString");
 
-        comboRadio.setDynamic(new ComboRadio.Dynamic("$value('typeName')"));
+        combo.setLoadSettings(new DynamicLoad("$value('typeName')"));
 
         TestDocument testDocument = new TestDocument();
-        simpleControlMapper.processControl(comboRadio, List.of(), testDocument);
+        simpleControlMapper.processControl(combo, List.of(), testDocument);
 
         verify(expressionResolver).resolve(testDocument, "$value('typeName')");
     }

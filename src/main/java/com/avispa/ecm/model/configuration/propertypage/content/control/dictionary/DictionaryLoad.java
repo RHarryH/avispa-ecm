@@ -1,6 +1,6 @@
 /*
  * Avispa ECM - a small framework for implementing basic ECM solution
- * Copyright (C) 2023 Rafał Hiszpański
+ * Copyright (C) 2024 Rafał Hiszpański
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,21 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.avispa.ecm.model.configuration.propertypage.content.control;
+package com.avispa.ecm.model.configuration.propertypage.content.control.dictionary;
 
-import com.avispa.ecm.model.configuration.propertypage.content.control.dictionary.LoadSettings;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Map;
-
-/**
- * @author Rafał Hiszpański
- */
 @Getter
 @Setter
-public abstract class ComboRadio extends PropertyControl {
-    private LoadSettings loadSettings;
+@NoArgsConstructor
+@EqualsAndHashCode
+public class DictionaryLoad implements LoadSettings {
+    private String dictionary;
+    private boolean sortByLabel;
 
-    private Map<String, String> options;
+    public DictionaryLoad(String dictionary, boolean sortByLabel) {
+        this(dictionary);
+        this.sortByLabel = sortByLabel;
+    }
+
+    public DictionaryLoad(String dictionary) {
+        this.dictionary = dictionary;
+    }
 }

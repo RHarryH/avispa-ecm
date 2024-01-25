@@ -23,6 +23,7 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.ComboRadi
 import com.avispa.ecm.model.configuration.propertypage.content.control.Hidden;
 import com.avispa.ecm.model.configuration.propertypage.content.control.PropertyControl;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Table;
+import com.avispa.ecm.model.configuration.propertypage.content.control.dictionary.DynamicLoad;
 import com.avispa.ecm.util.exception.EcmException;
 import com.avispa.ecm.util.reflect.PropertyUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -56,13 +57,13 @@ class TableMapper extends BaseControlsMapper<Table> {
                 .filter(ComboRadio.class::isInstance)
                 .map(ComboRadio.class::cast)
                 .forEach(comboRadio -> {
-                    if (null != comboRadio.getDynamic()) {
+                    if (comboRadio.getLoadSettings() instanceof DynamicLoad) {
                         if (log.isDebugEnabled()) {
                             log.debug("Dynamic combo boxes for tables are ignored. Dictionary will be used if exists.");
                         }
-                        comboRadio.setDynamic(null);
+                        comboRadio.setLoadSettings(null);
                     }
-                    dictionaryControlLoader.loadDictionary(comboRadio, tableRowClass);
+                    comboRadio.setOptions(dictionaryControlLoader.loadDictionary(comboRadio, tableRowClass));
                 });
 
         // table controls except for checkboxes are always required

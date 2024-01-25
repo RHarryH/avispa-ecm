@@ -18,19 +18,13 @@
 
 package com.avispa.ecm.model.configuration.propertypage.content.control;
 
-import com.avispa.ecm.model.configuration.propertypage.content.control.dictionary.LoadSettings;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Map;
 
 /**
  * @author Rafał Hiszpański
  */
 @Getter
 @Setter
-public abstract class ComboRadio extends PropertyControl {
-    private LoadSettings loadSettings;
-
-    private Map<String, String> options;
+public class Radio extends ComboRadio {
 }
