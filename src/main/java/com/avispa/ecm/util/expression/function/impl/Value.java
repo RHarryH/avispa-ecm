@@ -19,7 +19,6 @@
 package com.avispa.ecm.util.expression.function.impl;
 
 import com.avispa.ecm.util.expression.function.ValueFunction;
-import com.avispa.ecm.util.reflect.PropertyUtils;
 
 /**
  * Extracts the value of provided property
@@ -37,7 +36,7 @@ public class Value extends ValueFunction {
     }
 
     private String getValue(Object object, String propertyName) {
-        Object value = PropertyUtils.getPropertyValue(object, propertyName);
+        Object value = extractValue(propertyName, object);
 
         return returnValue(propertyName, value);
     }
