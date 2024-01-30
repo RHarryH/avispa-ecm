@@ -26,7 +26,6 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.dictionar
 import com.avispa.ecm.util.NestedObject;
 import com.avispa.ecm.util.TestDocument;
 import com.avispa.ecm.util.expression.ExpressionResolver;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -52,7 +51,7 @@ class SimpleControlMapperTest {
     static void init() {
         expressionResolver = mock(ExpressionResolver.class);
         dictionaryControlLoader = mock(DictionaryControlLoader.class);
-        simpleControlMapper = new SimpleControlMapper(dictionaryControlLoader, new ObjectMapper(), expressionResolver, new DisplayService());
+        simpleControlMapper = new SimpleControlMapper(dictionaryControlLoader, expressionResolver, new DisplayService());
     }
 
     @Test

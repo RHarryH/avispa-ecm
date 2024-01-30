@@ -18,7 +18,7 @@
 
 package com.avispa.ecm.util.expression.function;
 
-import com.avispa.ecm.util.reflect.PropertyUtils;
+import com.avispa.ecm.util.reflect.EcmPropertyUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -35,7 +35,7 @@ public abstract class ValueFunction implements Function {
         if (object instanceof Map<?, ?> map) {
             return map.get(propertyName);
         } else {
-            return PropertyUtils.getPropertyValue(object, propertyName);
+            return EcmPropertyUtils.getProperty(object, propertyName);
         }
     }
 
