@@ -59,7 +59,7 @@ public abstract class ContextMapper implements EcmConfigMapper<Context, ContextD
     protected abstract List<EcmConfig> configNameToConfigObject(List<String> configNames);
 
     protected EcmConfig configNameToConfigObject(String configName) {
-        return ecmConfigRepository.findByObjectName(configName).orElseThrow(RepositoryCorruptionError::new);
+        return ecmConfigRepository.findByObjectName(configName).orElseThrow(() -> new RepositoryCorruptionError("Can't load configuration with following name: " + configName));
     }
 
     protected Type typeNameToType(String typeName) {
