@@ -26,16 +26,12 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.PropertyC
 import com.avispa.ecm.model.configuration.propertypage.content.control.dictionary.DynamicLoad;
 import com.avispa.ecm.util.expression.ExpressionResolver;
 import com.avispa.ecm.util.expression.ExpressionResolverException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.NullNode;
+import com.avispa.ecm.util.reflect.EcmPropertyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Rafał Hiszpański
@@ -46,8 +42,8 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
     private final ExpressionResolver expressionResolver;
     private final DisplayService displayService;
 
-    SimpleControlMapper(DictionaryControlLoader dictionaryControlLoader, ObjectMapper objectMapper, ExpressionResolver expressionResolver, DisplayService displayService) {
-        super(dictionaryControlLoader, objectMapper);
+    SimpleControlMapper(DictionaryControlLoader dictionaryControlLoader, ExpressionResolver expressionResolver, DisplayService displayService) {
+        super(dictionaryControlLoader);
         this.expressionResolver = expressionResolver;
         this.displayService = displayService;
     }
@@ -87,21 +83,7 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
             return;
         }
 
-        // convert context object to tree representation and navigate to the node
-        JsonNode root = objectMapper.valueToTree(context);
-        JsonNode node = root.at("/" + propertyName.replace(".", "/"));
-
-        if(node instanceof NullNode || node.isMissingNode()) {
-            log.warn("Value for {} property has bee not found", propertyName);
-            propertyControl.setValue(""); // empty
-        } else if(node.isObject()) {
-            Map<String, Object> map = new HashMap<>();
-            map.put(OBJECT_NAME, node.get(OBJECT_NAME).asText());
-            map.put("id", node.get("id").asText());
-            propertyControl.setValue(map);
-        } else {
-            propertyControl.setValue(node.asText());
-        }
+        propertyControl.setValue(getPropertyValueFromContext(context, propertyName));
     }
 
     /**
@@ -112,8 +94,8 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
      * @return
      */
     private static boolean isOnBlacklist(String propertyName, List<String> fillBlacklist) {
-        String[] dismantledPropertyName = propertyName.split("\\.");
-        String actualPropertyName = dismantledPropertyName[dismantledPropertyName.length - 1];
+        String[] nestedProperties = EcmPropertyUtils.splitProperty(propertyName);
+        String actualPropertyName = nestedProperties[nestedProperties.length - 1];
         if (fillBlacklist.contains(actualPropertyName)) {
             log.warn("Property {} is ignored and won't be filled with value", fillBlacklist);
             return true;

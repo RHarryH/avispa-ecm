@@ -18,10 +18,14 @@
 
 package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
+import com.avispa.ecm.model.EcmEntity;
 import com.avispa.ecm.model.configuration.propertypage.content.control.Control;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.avispa.ecm.util.reflect.EcmPropertyUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ClassUtils;
+
+import java.util.Map;
 
 /**
  * @author Rafał Hiszpański
@@ -32,5 +36,20 @@ abstract class BaseControlsMapper<C extends Control> implements ControlMapper<C>
     protected static final String OBJECT_NAME = "objectName";
 
     protected final DictionaryControlLoader dictionaryControlLoader;
-    protected final ObjectMapper objectMapper;
+
+    protected Object getPropertyValueFromContext(Object context, String propertyName) {
+        Object object = EcmPropertyUtils.getProperty(context, propertyName);
+        if (null == object) {
+            return "";
+        } else if (!ClassUtils.isPrimitiveOrWrapper(object.getClass())) {
+            if (object instanceof EcmEntity ecmEntity) {
+                return Map.of(OBJECT_NAME, ecmEntity.getObjectName(), "id", ecmEntity.getId().toString());
+            } else {
+                log.warn("Object is not an ECM Entity");
+                return object.toString();
+            }
+        } else {
+            return object.toString();
+        }
+    }
 }

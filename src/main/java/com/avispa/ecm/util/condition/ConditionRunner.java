@@ -25,6 +25,7 @@ import com.avispa.ecm.util.condition.intermediate.Conditions;
 import com.avispa.ecm.util.condition.intermediate.GroupType;
 import com.avispa.ecm.util.condition.intermediate.IConditionElement;
 import com.avispa.ecm.util.condition.intermediate.value.ConditionValue;
+import com.avispa.ecm.util.reflect.EcmPropertyUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -177,11 +178,11 @@ class ConditionRunner {
     }
 
     private <Y> Path<Y> getPath(String key, Root<? extends EcmObject> queryRoot) {
-        String[] properties = key.split("\\.");
+        String[] nestedProperties = EcmPropertyUtils.splitProperty(key);
 
-        Path<Y> path = queryRoot.get(properties[0]);
-        for(int i = 1; i < properties.length; i++) {
-            path = path.get(properties[i]);
+        Path<Y> path = queryRoot.get(nestedProperties[0]);
+        for (int i = 1; i < nestedProperties.length; i++) {
+            path = path.get(nestedProperties[i]);
         }
 
         return path;
