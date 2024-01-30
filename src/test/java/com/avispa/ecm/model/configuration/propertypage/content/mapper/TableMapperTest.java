@@ -25,7 +25,6 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.Text;
 import com.avispa.ecm.model.document.Document;
 import com.avispa.ecm.util.TestDocument;
 import com.avispa.ecm.util.exception.EcmException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -53,7 +52,7 @@ class TableMapperTest {
     @BeforeAll
     static void init() {
         dictionaryControlLoader = mock(DictionaryControlLoader.class);
-        tableMapper = new TableMapper(dictionaryControlLoader, new ObjectMapper());
+        tableMapper = new TableMapper(dictionaryControlLoader);
     }
 
     @ParameterizedTest

@@ -25,19 +25,14 @@ import com.avispa.ecm.model.configuration.propertypage.content.control.PropertyC
 import com.avispa.ecm.model.configuration.propertypage.content.control.Table;
 import com.avispa.ecm.model.configuration.propertypage.content.control.dictionary.DynamicLoad;
 import com.avispa.ecm.util.exception.EcmException;
-import com.avispa.ecm.util.reflect.PropertyUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.avispa.ecm.util.reflect.EcmPropertyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Rafał Hiszpański
@@ -46,8 +41,8 @@ import java.util.Map;
 @Slf4j
 class TableMapper extends BaseControlsMapper<Table> {
 
-    TableMapper(DictionaryControlLoader dictionaryControlLoader, ObjectMapper objectMapper) {
-        super(dictionaryControlLoader, objectMapper);
+    TableMapper(DictionaryControlLoader dictionaryControlLoader) {
+        super(dictionaryControlLoader);
     }
 
     public void processControl(Table table, List<String> fillBlacklist, Object context) {
@@ -89,7 +84,7 @@ class TableMapper extends BaseControlsMapper<Table> {
      * @return
      */
     private Class<?> getTableRowClass(Table table, Class<?> contextClass) {
-        Field field = ReflectionUtils.findField(contextClass, table.getProperty());
+        Field field = EcmPropertyUtils.getField(contextClass, table.getProperty());
         if(field != null && field.getType().isAssignableFrom(List.class)) {
             java.lang.reflect.Type genericFieldType = field.getGenericType();
 
@@ -116,9 +111,6 @@ class TableMapper extends BaseControlsMapper<Table> {
     private void fillPropertyValue(Table table, List<String> fillBlacklist, Object context) {
         String propertyName = table.getProperty(); // get property path
 
-        // convert context object to tree representation and navigate to the node
-        JsonNode root = objectMapper.valueToTree(context);
-
         int size = getTableSize(table, context);
         table.setSize(size);
 
@@ -132,20 +124,8 @@ class TableMapper extends BaseControlsMapper<Table> {
                     continue;
                 }
 
-                String jsonPtrExpression = "/" + propertyName.replace(".", "/") + "/" + i + "/" + controlProperty;
-                JsonNode node = root.at(jsonPtrExpression);
-
-                if (node.isMissingNode()) {
-                    log.warn("Value for {} property has bee not found", propertyName);
-                    row.add(""); // empty
-                } else if (node.isObject()) {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put(OBJECT_NAME, node.get(OBJECT_NAME).asText());
-                    map.put("id", node.get("id").asText());
-                    row.add(map);
-                } else {
-                    row.add(node.asText());
-                }
+                String effectivePropertyName = propertyName + "[" + i + "]" + controlProperty;
+                row.add(getPropertyValueFromContext(context, effectivePropertyName));
             }
             control.setValue(row);
         }
@@ -153,7 +133,8 @@ class TableMapper extends BaseControlsMapper<Table> {
 
     private static int getTableSize(Table table, Object context) {
         int rows = 0;
-        var value = PropertyUtils.getPropertyValue(context, table.getProperty());
+        Object value = EcmPropertyUtils.getProperty(context, table.getProperty());
+
         if(value == null) {
             log.warn("Property '{}' is null. The size will be assumed to 0.", table.getProperty());
         } else if(value instanceof List) {

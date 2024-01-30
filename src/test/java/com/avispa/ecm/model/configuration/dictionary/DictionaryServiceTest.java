@@ -29,6 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -94,7 +95,10 @@ class DictionaryServiceTest {
 
     @Test
     void givenEntityClassAndPropertyName_whenGetDictionaryName_thenReturnDictionary() {
-        assertEquals("Test Dictionary", dictionaryService.getDictionaryNameFromAnnotation(TestDocument.class, "testString"));
+        assertAll(() -> {
+            assertEquals("Test Dictionary", dictionaryService.getDictionaryNameFromAnnotation(TestDocument.class, "testString"));
+            assertEquals("Test Dictionary", dictionaryService.getDictionaryNameFromAnnotation(TestDocument.class, "nestedObject.nestedField"));
+        });
     }
 
     @Test
