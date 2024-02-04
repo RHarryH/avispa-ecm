@@ -33,4 +33,5 @@ public abstract class PropertyControl extends Control {
     private Object value;
     private CustomValidation customValidation;
     private boolean required;
+    private boolean readonly;
 }

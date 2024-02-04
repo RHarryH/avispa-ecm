@@ -30,11 +30,11 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -62,7 +62,7 @@ class SimpleControlMapperTest {
 
         TestDocument testDocument = new TestDocument();
 
-        simpleControlMapper.processControl(label, List.of(), testDocument);
+        simpleControlMapper.processControl(label, PropertyPageMapperConfigurer.edit(), testDocument);
 
         verify(expressionResolver).resolve(testDocument, "$value('testString')");
     }
@@ -76,7 +76,7 @@ class SimpleControlMapperTest {
         testDocument.setObjectName("Test document");
         testDocument.setTestInt(12);
 
-        simpleControlMapper.processControl(text, List.of(), testDocument);
+        simpleControlMapper.processControl(text, PropertyPageMapperConfigurer.edit(), testDocument);
 
         assertEquals("Some test integer", text.getLabel());
         assertEquals("12", text.getValue());
@@ -85,12 +85,13 @@ class SimpleControlMapperTest {
     @Test
     void givenPropertyFromBlacklist_whenProcess_thenValueNotFilled() {
         Text text = new Text();
-        text.setProperty("testInt");
+        text.setProperty("id");
 
         TestDocument testDocument = new TestDocument();
-        testDocument.setTestInt(12);
+        testDocument.setId(UUID.randomUUID());
 
-        simpleControlMapper.processControl(text, List.of("testInt"), testDocument);
+        // insert configuration excludes "id" property
+        simpleControlMapper.processControl(text, PropertyPageMapperConfigurer.insert(), testDocument);
 
         assertEquals("", text.getValue());
     }
@@ -101,7 +102,7 @@ class SimpleControlMapperTest {
         text.setLabel("Label");
         text.setProperty("nonExisting");
 
-        simpleControlMapper.processControl(text, List.of(), new TestDocument());
+        simpleControlMapper.processControl(text, PropertyPageMapperConfigurer.edit(), new TestDocument());
 
         assertEquals("", text.getValue());
     }
@@ -113,7 +114,7 @@ class SimpleControlMapperTest {
         combo.setProperty("testString");
 
         var context = new TestDocument();
-        simpleControlMapper.processControl(combo, List.of(), context);
+        simpleControlMapper.processControl(combo, PropertyPageMapperConfigurer.edit(), context);
 
         verify(dictionaryControlLoader).loadDictionary(combo, context);
     }
@@ -128,7 +129,7 @@ class SimpleControlMapperTest {
         combo.setLoadSettings(new DynamicLoad("$value('typeName')"));
 
         TestDocument testDocument = new TestDocument();
-        simpleControlMapper.processControl(combo, List.of(), testDocument);
+        simpleControlMapper.processControl(combo, PropertyPageMapperConfigurer.edit(), testDocument);
 
         verify(expressionResolver).resolve(testDocument, "$value('typeName')");
     }
@@ -147,7 +148,7 @@ class SimpleControlMapperTest {
 
         testDocument.setNestedObject(nestedObject);
 
-        simpleControlMapper.processControl(text, List.of(), testDocument);
+        simpleControlMapper.processControl(text, PropertyPageMapperConfigurer.edit(), testDocument);
 
         assertEquals(Map.of("objectName", "Nested", "id", id.toString()), text.getValue());
     }
@@ -157,7 +158,7 @@ class SimpleControlMapperTest {
         Text text = new Text();
         text.setProperty("nestedObject");
 
-        simpleControlMapper.processControl(text, List.of(), new TestDocument());
+        simpleControlMapper.processControl(text, PropertyPageMapperConfigurer.edit(), new TestDocument());
 
         assertEquals("", text.getValue());
     }
@@ -165,18 +166,30 @@ class SimpleControlMapperTest {
     @Test
     void givenNestedPropertyOnBlacklist_whenProcess_thenValueNotFilled() {
         Text text = new Text();
-        text.setProperty("nestedObject.objectName");
+        text.setProperty("nestedObject.id");
 
         TestDocument testDocument = new TestDocument();
-        testDocument.setObjectName("Test document");
+        testDocument.setId(UUID.randomUUID());
 
         NestedObject nestedObject = new NestedObject();
-        nestedObject.setObjectName("Nested");
+        nestedObject.setId(UUID.randomUUID());
 
         testDocument.setNestedObject(nestedObject);
 
-        simpleControlMapper.processControl(text, List.of("objectName"), testDocument);
+        // insert configuration excludes "id" property
+        simpleControlMapper.processControl(text, PropertyPageMapperConfigurer.insert(), testDocument);
 
         assertEquals("", text.getValue());
+    }
+
+    @Test
+    void givenReadonlyMode_whenProcess_thenReadonlyIsPropagatedToControl() {
+        Text text = new Text();
+        text.setProperty("id");
+        text.setReadonly(false);
+
+        simpleControlMapper.processControl(text, PropertyPageMapperConfigurer.readonly(), new TestDocument());
+
+        assertTrue(text.isReadonly());
     }
 }

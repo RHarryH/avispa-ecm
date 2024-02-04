@@ -51,4 +51,8 @@ public class PropertyPageMapperConfigurer {
     private static PropertyPageMapperConfigurer writable(PropertyPageContext context, List<String> ignoredFields) {
         return new PropertyPageMapperConfigurer(context, ignoredFields);
     }
+
+    public boolean isReadonly() {
+        return context == PropertyPageContext.READONLY;
+    }
 }

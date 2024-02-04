@@ -45,7 +45,7 @@ class TableMapper extends BaseControlsMapper<Table> {
         super(dictionaryControlLoader);
     }
 
-    public void processControl(Table table, List<String> fillBlacklist, Object context) {
+    public void processControl(Table table, PropertyPageMapperConfigurer configurer, Object context) {
         Class<?> tableRowClass = getTableRowClass(table, context.getClass());
 
         table.getControls().stream()
@@ -61,16 +61,28 @@ class TableMapper extends BaseControlsMapper<Table> {
                     comboRadio.setOptions(dictionaryControlLoader.loadDictionary(comboRadio, tableRowClass));
                 });
 
-        // table controls except for checkboxes are always required
+        // mark table as readonly if property page is in readonly mode
+        if (configurer.isReadonly()) {
+            table.setReadonly(true);
+        }
+
         table.getControls()
-                .forEach(control -> control.setRequired(!(control instanceof Checkbox)));
+                .forEach(control -> {
+                    // table controls except for checkboxes are always required
+                    control.setRequired(!(control instanceof Checkbox));
 
-        // always add row id
-        Hidden hidden = new Hidden();
-        hidden.setProperty("id");
-        table.getControls().add(hidden);
+                    // rewrite readonly value to the whole table
+                    control.setReadonly(table.isReadonly());
+                });
 
-        fillPropertyValue(table, fillBlacklist, context);
+        // add row id when table is not readonly
+        if (!table.isReadonly()) {
+            Hidden hidden = new Hidden();
+            hidden.setProperty("id");
+            table.getControls().add(hidden);
+        }
+
+        fillPropertyValue(table, configurer.getFillBlacklist(), context);
     }
 
     /**
