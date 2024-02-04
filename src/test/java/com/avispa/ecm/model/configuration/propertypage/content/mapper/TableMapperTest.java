@@ -36,6 +36,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -188,6 +189,7 @@ class TableMapperTest {
     void givenReadonlyMode_whenProcess_thenReadonlyIsPropagatedToTableAndSubControls() {
         Table table = new Table();
         table.setProperty("table");
+        table.setRequired(true);
         table.setReadonly(false);
 
         List<PropertyControl> controls = new ArrayList<>();
@@ -202,6 +204,10 @@ class TableMapperTest {
         tableMapper.processControl(table, PropertyPageMapperConfigurer.readonly(), testDocument);
 
         assertTrue(table.isReadonly());
-        table.getControls().forEach(control -> assertTrue(control.isReadonly()));
+        assertFalse(table.isRequired());
+        table.getControls().forEach(control -> {
+            assertTrue(control.isReadonly());
+            assertFalse(control.isRequired());
+        });
     }
 }

@@ -61,19 +61,7 @@ class TableMapper extends BaseControlsMapper<Table> {
                     comboRadio.setOptions(dictionaryControlLoader.loadDictionary(comboRadio, tableRowClass));
                 });
 
-        // mark table as readonly if property page is in readonly mode
-        if (configurer.isReadonly()) {
-            table.setReadonly(true);
-        }
-
-        table.getControls()
-                .forEach(control -> {
-                    // table controls except for checkboxes are always required
-                    control.setRequired(!(control instanceof Checkbox));
-
-                    // rewrite readonly value to the whole table
-                    control.setReadonly(table.isReadonly());
-                });
+        processModifiers(table, configurer);
 
         // add row id when table is not readonly
         if (!table.isReadonly()) {
@@ -83,6 +71,33 @@ class TableMapper extends BaseControlsMapper<Table> {
         }
 
         fillPropertyValue(table, configurer.getFillBlacklist(), context);
+    }
+
+    /**
+     * Process readonly and required properties
+     *
+     * @param table
+     * @param configurer
+     */
+    private static void processModifiers(Table table, PropertyPageMapperConfigurer configurer) {
+        // mark table as readonly if property page is in readonly mode
+        if (configurer.isReadonly()) {
+            table.setReadonly(true);
+        }
+
+        // readonly properties cannot be required
+        if (table.isReadonly()) {
+            table.setRequired(false);
+        }
+
+        table.getControls()
+                .forEach(control -> {
+                    // rewrite readonly value to the whole table
+                    control.setReadonly(table.isReadonly());
+
+                    // table controls except for checkboxes are always required unless they're readonly
+                    control.setRequired(!table.isReadonly() && !(control instanceof Checkbox));
+                });
     }
 
     /**
