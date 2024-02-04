@@ -20,11 +20,9 @@ package com.avispa.ecm.model.configuration.propertypage.content.mapper;
 
 import com.avispa.ecm.model.configuration.propertypage.content.control.Control;
 
-import java.util.List;
-
 /**
  * @author Rafał Hiszpański
  */
 interface ControlMapper<C extends Control> {
-    void processControl(C control, List<String> fillBlacklist, Object context);
+    void processControl(C control, PropertyPageMapperConfigurer configurer, Object context);
 }

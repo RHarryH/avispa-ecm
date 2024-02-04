@@ -19,6 +19,9 @@
     "required": {
       "type": "boolean"
     },
+    "readonly": {
+      "type": "boolean"
+    },
     "loadSettings": {
       "type": "object",
       "oneOf": [

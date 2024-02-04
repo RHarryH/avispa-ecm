@@ -8,6 +8,9 @@
     },
     "requirement": {
       "$ref": "#/$defs/constraint"
+    },
+    "modifiable": {
+      "$ref": "#/$defs/constraint"
     }
   },
   "$defs": {

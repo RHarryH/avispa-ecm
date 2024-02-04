@@ -19,6 +19,9 @@
     "required": {
       "type": "boolean"
     },
+    "readonly": {
+      "type": "boolean"
+    },
     "rows": {
       "type": "integer",
       "minimum": 0

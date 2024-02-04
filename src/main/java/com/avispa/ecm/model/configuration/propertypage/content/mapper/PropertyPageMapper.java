@@ -56,7 +56,7 @@ public class PropertyPageMapper {
         propertyPageContent.setContext(configurer.getContext());
         propertyPageContent.setId(propertyPage.getId());
 
-        processControls(propertyPageContent.getControls(), configurer.getFillBlacklist(), context);
+        processControls(propertyPageContent.getControls(), configurer, context);
 
         return propertyPageContent;
     }
@@ -81,20 +81,20 @@ public class PropertyPageMapper {
         return Optional.empty();
     }
 
-    private void processControls(List<Control> controls, List<String> fillBlacklist, Object context) {
+    private void processControls(List<Control> controls, PropertyPageMapperConfigurer configurer, Object context) {
         for(Control control : controls) {
             if (control instanceof Columns columns) {
-                processControls(columns.getControls(), fillBlacklist, context);
+                processControls(columns.getControls(), configurer, context);
             } else if (control instanceof Group group) {
-                processControls(group.getControls(), fillBlacklist, context);
+                processControls(group.getControls(), configurer, context);
             } else if (control instanceof Tabs tabs) {
                 for(Tab tab : tabs.getTabs()) {
-                    processControls(tab.getControls(), fillBlacklist, context);
+                    processControls(tab.getControls(), configurer, context);
                 }
             } else if (control instanceof Table table) {
-                tableMapper.processControl(table, fillBlacklist, context);
+                tableMapper.processControl(table, configurer, context);
             } else {
-                simpleControlMapper.processControl(control, fillBlacklist, context);
+                simpleControlMapper.processControl(control, configurer, context);
             }
         }
     }
