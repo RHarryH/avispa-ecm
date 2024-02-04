@@ -60,10 +60,7 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
                 propertyControl.setLabel(displayService.getDisplayValueFromAnnotation(context.getClass(), propertyControl.getProperty()));
             }
 
-            // mark all controls as readonly if property page is in readonly mode
-            if (configurer.isReadonly()) {
-                propertyControl.setReadonly(true);
-            }
+            processModifiers(propertyControl, configurer);
 
             if (control instanceof ComboRadio comboRadio) {
                 if (comboRadio.getLoadSettings() instanceof DynamicLoad dynamicLoad) {
@@ -77,6 +74,24 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
             }
 
             fillPropertyValue(propertyControl, configurer.getFillBlacklist(), context);
+        }
+    }
+
+    /**
+     * Process readonly and required properties
+     *
+     * @param propertyControl
+     * @param configurer
+     */
+    private static void processModifiers(PropertyControl propertyControl, PropertyPageMapperConfigurer configurer) {
+        // mark all controls as readonly if property page is in readonly mode
+        if (configurer.isReadonly()) {
+            propertyControl.setReadonly(true);
+        }
+
+        // readonly properties cannot be required
+        if (propertyControl.isReadonly()) {
+            propertyControl.setRequired(false);
         }
     }
 

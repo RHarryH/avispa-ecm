@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -186,10 +187,12 @@ class SimpleControlMapperTest {
     void givenReadonlyMode_whenProcess_thenReadonlyIsPropagatedToControl() {
         Text text = new Text();
         text.setProperty("id");
+        text.setRequired(true);
         text.setReadonly(false);
 
         simpleControlMapper.processControl(text, PropertyPageMapperConfigurer.readonly(), new TestDocument());
 
         assertTrue(text.isReadonly());
+        assertFalse(text.isRequired());
     }
 }
