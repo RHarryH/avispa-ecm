@@ -185,12 +185,12 @@ class PropertyPageMapperIntegrationTest {
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(1, controls.size());
 
-        assertTrue(controls.get(0) instanceof Columns);
+        assertInstanceOf(Columns.class, controls.get(0));
         Columns columns = (Columns) controls.get(0);
         assertEquals(2, columns.getControls().size());
 
-        assertTrue(columns.getControls().get(0) instanceof ComboRadio);
-        assertTrue(columns.getControls().get(1) instanceof Money);
+        assertInstanceOf(ComboRadio.class, columns.getControls().get(0));
+        assertInstanceOf(Money.class, columns.getControls().get(1));
     }
 
     @Test
@@ -205,7 +205,7 @@ class PropertyPageMapperIntegrationTest {
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(1, controls.size());
 
-        assertTrue(controls.get(0) instanceof ComboRadio);
+        assertInstanceOf(ComboRadio.class, controls.get(0));
         ComboRadio combo = (ComboRadio) controls.get(0);
         assertEquals("Combo test", combo.getLabel());
         assertEquals("testString", combo.getProperty());
@@ -229,7 +229,7 @@ class PropertyPageMapperIntegrationTest {
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(1, controls.size());
 
-        assertTrue(controls.get(0) instanceof PropertyControl);
+        assertInstanceOf(PropertyControl.class, controls.get(0));
         PropertyControl date = (PropertyControl) controls.get(0);
         assertEquals("Date test", date.getLabel());
         assertEquals("testDate", date.getProperty());
@@ -248,7 +248,7 @@ class PropertyPageMapperIntegrationTest {
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(1, controls.size());
 
-        assertTrue(controls.get(0) instanceof Money);
+        assertInstanceOf(Money.class, controls.get(0));
         Money money = (Money) controls.get(0);
         assertEquals("Money test", money.getLabel());
         assertEquals("objectName", money.getProperty());
@@ -268,7 +268,7 @@ class PropertyPageMapperIntegrationTest {
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(1, controls.size());
 
-        assertTrue(controls.get(0) instanceof Number);
+        assertInstanceOf(Number.class, controls.get(0));
         Number number = (Number) controls.get(0);
         assertEquals("Number test", number.getLabel());
         assertEquals("testInt", number.getProperty());
@@ -289,7 +289,7 @@ class PropertyPageMapperIntegrationTest {
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(1, controls.size());
 
-        assertTrue(controls.get(0) instanceof ComboRadio);
+        assertInstanceOf(ComboRadio.class, controls.get(0));
         ComboRadio radio = (ComboRadio) controls.get(0);
         assertEquals("Radio test", radio.getLabel());
         assertEquals("testString", radio.getProperty());
@@ -304,27 +304,27 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/table.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.insert(), propertyPage, document);
 
         // then
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(1, controls.size());
 
-        assertTrue(controls.get(0) instanceof Table);
+        assertInstanceOf(Table.class, controls.get(0));
         Table table = (Table) controls.get(0);
         assertEquals("table", table.getProperty());
         assertEquals(3, table.getControls().size());
 
         PropertyControl control1 = table.getControls().get(0);
-        assertTrue(control1 instanceof Text);
+        assertInstanceOf(Text.class, control1);
         assertTrue(control1.isRequired());
 
         PropertyControl control2 = table.getControls().get(1);
-        assertTrue(control2 instanceof Number);
+        assertInstanceOf(Number.class, control2);
         assertTrue(control2.isRequired());
 
         PropertyControl control3 = table.getControls().get(2);
-        assertTrue(control3 instanceof Hidden);
+        assertInstanceOf(Hidden.class, control3);
         assertEquals("id", control3.getProperty());
     }
 
@@ -340,18 +340,18 @@ class PropertyPageMapperIntegrationTest {
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(1, controls.size());
 
-        assertTrue(controls.get(0) instanceof Tabs);
+        assertInstanceOf(Tabs.class, controls.get(0));
         Tabs tabs = (Tabs) controls.get(0);
         assertEquals("Tabs test", tabs.getLabel());
         assertEquals(2, tabs.getTabs().size());
 
         Tab tab1 = tabs.getTabs().get(0);
         assertEquals("Tab 1", tab1.getName());
-        assertTrue(tab1.getControls().get(0) instanceof Number);
+        assertInstanceOf(Number.class, tab1.getControls().get(0));
 
         Tab tab2 = tabs.getTabs().get(1);
         assertEquals("Tab 2", tab2.getName());
-        assertTrue(tab2.getControls().get(0) instanceof PropertyControl);
+        assertInstanceOf(PropertyControl.class, tab2.getControls().get(0));
     }
 
     @Test
@@ -366,7 +366,7 @@ class PropertyPageMapperIntegrationTest {
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(1, controls.size());
 
-        assertTrue(controls.get(0) instanceof Textarea);
+        assertInstanceOf(Textarea.class, controls.get(0));
         Textarea textarea = (Textarea) controls.get(0);
         assertEquals("Textarea test", textarea.getLabel());
         assertEquals("testString", textarea.getProperty());
@@ -385,8 +385,8 @@ class PropertyPageMapperIntegrationTest {
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(2, controls.size());
 
-        assertTrue(controls.get(0) instanceof Label);
-        assertTrue(controls.get(1) instanceof Text);
+        assertInstanceOf(Label.class, controls.get(0));
+        assertInstanceOf(Text.class, controls.get(1));
     }
 
     @Test
@@ -481,7 +481,7 @@ class PropertyPageMapperIntegrationTest {
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(1, controls.size());
 
-        assertTrue(controls.get(0) instanceof Text);
+        assertInstanceOf(Text.class, controls.get(0));
         Text text = (Text) controls.get(0);
         assertEquals("Nested field", text.getValue());
     }
@@ -498,7 +498,7 @@ class PropertyPageMapperIntegrationTest {
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(1, controls.size());
 
-        assertTrue(controls.get(0) instanceof Table);
+        assertInstanceOf(Table.class, controls.get(0));
         Table table = (Table) controls.get(0);
 
         PropertyControl control1 = table.getControls().get(0);
@@ -520,7 +520,7 @@ class PropertyPageMapperIntegrationTest {
         List<Control> controls = propertyPageContent.getControls();
         assertEquals(1, controls.size());
 
-        assertTrue(controls.get(0) instanceof Number);
+        assertInstanceOf(Number.class, controls.get(0));
         Number number = (Number) controls.get(0);
 
         Constraints constraints = number.getConstraints();

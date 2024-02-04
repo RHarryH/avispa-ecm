@@ -29,4 +29,5 @@ import lombok.Setter;
 public class Constraints {
     private Constraint visibility;
     private Constraint requirement;
+    private Constraint modifiable;
 }

@@ -11,6 +11,9 @@
     "required": {
       "type": "boolean"
     },
+    "readonly": {
+      "type": "boolean"
+    },
     "constraints": {
       "$ref": "../property/constraints.json#"
     }

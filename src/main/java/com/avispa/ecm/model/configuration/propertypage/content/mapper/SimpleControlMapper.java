@@ -48,7 +48,7 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
         this.displayService = displayService;
     }
 
-    public void processControl(Control control, List<String> fillBlacklist, Object context) {
+    public void processControl(Control control, PropertyPageMapperConfigurer configurer, Object context) {
         if (control instanceof Label label) {
             try {
                 label.setExpression(expressionResolver.resolve(context, label.getExpression()));
@@ -58,6 +58,11 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
         } else if (control instanceof PropertyControl propertyControl) {
             if(Strings.isEmpty(propertyControl.getLabel())) {
                 propertyControl.setLabel(displayService.getDisplayValueFromAnnotation(context.getClass(), propertyControl.getProperty()));
+            }
+
+            // mark all controls as readonly if property page is in readonly mode
+            if (configurer.isReadonly()) {
+                propertyControl.setReadonly(true);
             }
 
             if (control instanceof ComboRadio comboRadio) {
@@ -71,7 +76,7 @@ class SimpleControlMapper extends BaseControlsMapper<Control> {
                 comboRadio.setOptions(dictionaryControlLoader.loadDictionary(comboRadio, context));
             }
 
-            fillPropertyValue(propertyControl, fillBlacklist, context);
+            fillPropertyValue(propertyControl, configurer.getFillBlacklist(), context);
         }
     }
 

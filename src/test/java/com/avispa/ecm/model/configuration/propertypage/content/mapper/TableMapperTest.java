@@ -32,6 +32,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,8 +63,8 @@ class TableMapperTest {
         table.setProperty(propertyName);
 
         TestDocument testDocument = new TestDocument();
-        List<String> emptyList = List.of();
-        assertThrows(EcmException.class, () -> tableMapper.processControl(table, emptyList, testDocument));
+        var config = PropertyPageMapperConfigurer.edit();
+        assertThrows(EcmException.class, () -> tableMapper.processControl(table, config, testDocument));
     }
 
     @Test
@@ -82,7 +83,7 @@ class TableMapperTest {
         document.setObjectName("Table document");
         testDocument.setTable(List.of(document));
 
-        tableMapper.processControl(table, List.of(), testDocument);
+        tableMapper.processControl(table, PropertyPageMapperConfigurer.edit(), testDocument);
 
         verify(dictionaryControlLoader).loadDictionary(any(Combo.class), eq(Document.class));
     }
@@ -98,7 +99,7 @@ class TableMapperTest {
         controls.add(text);
         table.setControls(controls);
 
-        tableMapper.processControl(table, List.of(), new TestDocument());
+        tableMapper.processControl(table, PropertyPageMapperConfigurer.edit(), new TestDocument());
 
         assertEquals(0, table.getSize());
     }
@@ -119,7 +120,7 @@ class TableMapperTest {
         document.setObjectName("Table document");
         testDocument.setTable(List.of(document));
 
-        tableMapper.processControl(table, List.of(), testDocument);
+        tableMapper.processControl(table, PropertyPageMapperConfigurer.edit(), testDocument);
 
         assertAll(() -> {
             assertEquals(1, table.getSize());
@@ -145,7 +146,7 @@ class TableMapperTest {
         TestDocument testDocument = new TestDocument();
         testDocument.setTable(List.of(new Document()));
 
-        tableMapper.processControl(table, List.of(), testDocument);
+        tableMapper.processControl(table, PropertyPageMapperConfigurer.edit(), testDocument);
 
         PropertyControl control = table.getControls().get(0);
         assertEquals(List.of(""), control.getValue());
@@ -164,13 +165,14 @@ class TableMapperTest {
 
         TestDocument testDocument = new TestDocument();
         Document document = new Document();
-        document.setObjectName("Table document");
+        document.setId(UUID.randomUUID());
 
         Document document2 = new Document();
-        document2.setObjectName("Table document 2");
+        document2.setId(UUID.randomUUID());
         testDocument.setTable(List.of(document, document2));
 
-        tableMapper.processControl(table, List.of("objectName"), testDocument);
+        // insert configuration excludes "id" property
+        tableMapper.processControl(table, PropertyPageMapperConfigurer.insert(), testDocument);
 
         assertAll(() -> {
             assertEquals(2, table.getSize());
@@ -180,5 +182,26 @@ class TableMapperTest {
             assertTrue(control.isRequired());
             assertEquals(List.of("", ""), control.getValue());
         });
+    }
+
+    @Test
+    void givenReadonlyMode_whenProcess_thenReadonlyIsPropagatedToTableAndSubControls() {
+        Table table = new Table();
+        table.setProperty("table");
+        table.setReadonly(false);
+
+        List<PropertyControl> controls = new ArrayList<>();
+        Text text = new Text();
+        text.setProperty("objectName");
+        controls.add(text);
+        table.setControls(controls);
+
+        TestDocument testDocument = new TestDocument();
+        testDocument.setTable(List.of(new Document()));
+
+        tableMapper.processControl(table, PropertyPageMapperConfigurer.readonly(), testDocument);
+
+        assertTrue(table.isReadonly());
+        table.getControls().forEach(control -> assertTrue(control.isReadonly()));
     }
 }
