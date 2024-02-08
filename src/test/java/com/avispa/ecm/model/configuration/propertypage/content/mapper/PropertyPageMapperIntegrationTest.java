@@ -69,6 +69,7 @@ import static com.avispa.ecm.model.configuration.propertypage.content.PropertyPa
 import static com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContext.INSERT;
 import static com.avispa.ecm.model.configuration.propertypage.content.PropertyPageContext.READONLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -214,7 +215,7 @@ class PropertyPageMapperIntegrationTest {
         var dynamicLoad = (DynamicLoad) combo.getLoadSettings();
         assertEquals("Test Document", dynamicLoad.getType());
         assertEquals("{\"$limit\":2}", dynamicLoad.getQualification());
-        assertTrue(combo.isRequired());
+        assertFalse(combo.isRequired());
     }
 
     @Test
@@ -223,7 +224,7 @@ class PropertyPageMapperIntegrationTest {
         PropertyPage propertyPage = createPropertyPage("content/date.json");
 
         // when
-        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.readonly(), propertyPage, document);
+        PropertyPageContent propertyPageContent = propertyPageMapper.convertToContent(PropertyPageMapperConfigurer.insert(), propertyPage, document);
 
         // then
         List<Control> controls = propertyPageContent.getControls();
@@ -253,7 +254,7 @@ class PropertyPageMapperIntegrationTest {
         assertEquals("Money test", money.getLabel());
         assertEquals("objectName", money.getProperty());
         assertEquals("PLN", money.getCurrency());
-        assertTrue(money.isRequired());
+        assertFalse(money.isRequired());
     }
 
     @Test
