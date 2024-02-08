@@ -19,6 +19,7 @@
 package com.avispa.ecm.model.configuration.propertypage.content;
 
 import com.avispa.ecm.model.configuration.propertypage.content.control.Control;
+import com.avispa.ecm.model.configuration.propertypage.content.control.Hidden;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,4 +38,23 @@ public class PropertyPageContent {
     private PropertyPageContext context;
     private String size = "normal";
     private List<Control> controls;
+
+    /**
+     * Adds hidden control on the root level of control hierarchy (can't be nested in lists, tables or even columns).
+     * It can be called only after successful mapping of property page configuration.
+     *
+     * @param property property name
+     * @param value    value
+     */
+    public void addHiddenControl(String property, Object value) {
+        if (controls == null) {
+            throw new IllegalStateException("Map property page configuration to this object first");
+        }
+
+        Hidden hidden = new Hidden();
+        hidden.setProperty(property);
+        hidden.setValue(value);
+
+        controls.add(hidden);
+    }
 }

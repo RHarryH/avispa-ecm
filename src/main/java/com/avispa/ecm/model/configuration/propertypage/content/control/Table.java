@@ -31,6 +31,7 @@ import java.util.List;
 public class Table extends PropertyControl {
     private List<PropertyControl> controls;
 
+    private boolean fixed;
     private int size;
 
     public Table() {
