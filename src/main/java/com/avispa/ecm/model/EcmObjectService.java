@@ -45,7 +45,7 @@ public class EcmObjectService {
     public EcmObject getEcmObjectFrom(UUID id, String typeName) {
         EcmObject entity = ecmObjectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format("The object '%s' does not exist", id)));
         String foundTypeName = typeService.getTypeName(entity.getClass());
-        if(!foundTypeName.equals(typeName)) {
+        if (!foundTypeName.equalsIgnoreCase(typeName)) {
             throw new EcmException(String.format("The object '%s' is not an object of '%s' type", id, typeName));
         }
 
