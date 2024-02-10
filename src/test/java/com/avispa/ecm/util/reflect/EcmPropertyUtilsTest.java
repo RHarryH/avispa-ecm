@@ -125,6 +125,7 @@ class EcmPropertyUtilsTest {
             assertNotNull(EcmPropertyUtils.getField(TestDocument.class, "testInt"));
             assertNull(EcmPropertyUtils.getField(TestDocument.class, "nonExisting"));
             assertNull(EcmPropertyUtils.getField(TestDocument.class, "table[0].objectName"));
+            assertNotNull(EcmPropertyUtils.getField(TestDocument.class, "creationDate"));
         });
     }
 }
