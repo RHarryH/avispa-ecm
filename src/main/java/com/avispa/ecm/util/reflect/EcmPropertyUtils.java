@@ -21,6 +21,7 @@ package com.avispa.ecm.util.reflect;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -49,6 +50,8 @@ public class EcmPropertyUtils {
             return PropertyUtils.getProperty(object, propertyName);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             log.error("Resolving '{}' property from object of '{}' class has failed", propertyName, object.getClass().getSimpleName(), e);
+        } catch (NestedNullException e) {
+            log.warn("There was a null object detected in the part of property name");
         }
 
         return null;
@@ -68,6 +71,8 @@ public class EcmPropertyUtils {
             PropertyUtils.setProperty(object, propertyName, propertyValue);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             log.error("Resolving '{}' property from object of '{}' class has failed", propertyName, object.getClass().getSimpleName(), e);
+        } catch (NestedNullException e) {
+            log.warn("There was a null object detected in the part of property name");
         }
     }
 
