@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -50,6 +51,14 @@ class EcmPropertyUtilsTest {
         TestDocument testDocument = new TestDocument();
 
         assertNull(EcmPropertyUtils.getProperty(testDocument, "nonExisting"));
+    }
+
+    @Test
+    void nestedNonExistingFieldTest() {
+        TestDocument testDocument = new TestDocument();
+
+        assertNull(EcmPropertyUtils.getProperty(testDocument, "nestedObject.nonExisting"));
+        assertDoesNotThrow(() -> EcmPropertyUtils.setProperty(testDocument, "nestedObject.nonExisting", "test"));
     }
 
     @Test
