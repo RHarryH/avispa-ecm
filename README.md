@@ -87,7 +87,7 @@ Avispa ECM is designed for easy customization for specific needs. It has 3 level
 
 1. SQL scripts. Used to initialize ECM database by creating schema and inserting configurations entries for basic
    functionality.
-2. `ecm-applicatin.properties` used for configuration of peripherals like file store or LibreOffice location.
+2. `ecm.properties` used for configuration of peripherals like file store or LibreOffice location.
 3. Zip file containing JSON-based specific configuration telling how specific objects should behave at certain
    conditions or how they should be managed.
 

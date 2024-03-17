@@ -175,7 +175,7 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>**/ecm-application.properties</include>
+                    <include>**/ecm.properties</include>
                 </includes>
             </resource>
         </resources>
