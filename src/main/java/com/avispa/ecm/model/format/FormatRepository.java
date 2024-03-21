@@ -28,10 +28,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FormatRepository extends EcmObjectRepository<Format> {
     default Format findByExtension(String extension) throws RepositoryCorruptionError {
-        return findByObjectName(extension).orElseGet(() -> findByObjectName("Default format").orElseThrow(RepositoryCorruptionError::new));
+        return findByObjectName(extension).orElseGet(() -> findByObjectName("Default format").orElseThrow(() -> new RepositoryCorruptionError("Can't find '" + extension + "' format nor the 'Default format'")));
     }
 
     default Format findByExtensionOrThrowException(String extension) throws FormatNotFoundException {
-        return findByObjectName(extension).orElseThrow(() -> new FormatNotFoundException("Can't find format: " + extension));
+        return findByObjectName(extension).orElseThrow(() -> new FormatNotFoundException("Can't find '" + extension + "' format"));
     }
 }
