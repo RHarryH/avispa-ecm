@@ -30,7 +30,7 @@ import java.util.Optional;
 @Repository
 public interface TypeRepository extends EcmObjectRepository<Type> {
     default Type findByTypeName(String typeName) throws RepositoryCorruptionError {
-        return findByObjectNameIgnoreCase(typeName).orElseThrow(RepositoryCorruptionError::new);
+        return findByObjectNameIgnoreCase(typeName).orElseThrow(() -> new RepositoryCorruptionError("Can't find '" + typeName + "' type"));
     }
 
     Optional<Type> findByObjectNameIgnoreCase(String objectName);
@@ -38,6 +38,6 @@ public interface TypeRepository extends EcmObjectRepository<Type> {
     Optional<Type> findByEntityClass(Class<?> clazz);
 
     default Type findByClass(Class<?> clazz) throws RepositoryCorruptionError {
-        return findByEntityClass(clazz).orElseThrow(RepositoryCorruptionError::new);
+        return findByEntityClass(clazz).orElseThrow(() -> new RepositoryCorruptionError("Can't find type for '" + clazz.getSimpleName() + "' class"));
     }
 }
