@@ -64,7 +64,7 @@ public abstract class EcmEntity implements Serializable {
 
     private String objectName;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "relatedEntity", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "relatedEntity", orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<Content> contents;
 
     @Version

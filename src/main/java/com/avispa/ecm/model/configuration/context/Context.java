@@ -30,7 +30,9 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Contexts importance (for the time being) is based on the insertion order. The context algorithm will search for all
@@ -58,6 +60,6 @@ public class Context extends EcmConfig {
     private int importance; // higher = more important
 
     public void setEcmConfigs(List<EcmConfig> ecmConfigs) {
-        this.ecmConfigs = ecmConfigs.stream().filter(config -> !(config instanceof Context)).toList();
+        this.ecmConfigs = ecmConfigs.stream().filter(config -> !(config instanceof Context)).collect(Collectors.toCollection(ArrayList::new));
     }
 }
