@@ -23,6 +23,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PreRemove;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,7 +46,7 @@ public class Dictionary extends EcmConfig {
 
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dictionary")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dictionary", orphanRemoval = true)
     @Setter(AccessLevel.NONE)
     @Column(nullable = false)
     private List<DictionaryValue> values;
@@ -112,6 +113,13 @@ public class Dictionary extends EcmConfig {
     public void clearValues() {
         if(null != this.values) {
             this.values.clear();
+        }
+    }
+
+    @PreRemove
+    private void removeValuesAssociation() {
+        for (var value : this.values) {
+            value.setDictionary(null);
         }
     }
 }

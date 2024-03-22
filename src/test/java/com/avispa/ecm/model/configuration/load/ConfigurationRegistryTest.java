@@ -18,6 +18,7 @@
 
 package com.avispa.ecm.model.configuration.load;
 
+import com.avispa.ecm.model.configuration.dictionary.Dictionary;
 import com.avispa.ecm.model.configuration.load.dto.DictionaryDto;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Rafał Hiszpański
  */
 class ConfigurationRegistryTest {
-    private static final ConfigurationType TEST = ConfigurationType.of("ecm_test", DictionaryDto.class, false);
+    private static final ConfigurationType TEST = ConfigurationType.of("ecm_test", Dictionary.class, DictionaryDto.class, false);
 
     @Test
     void givenConfigType_whenAdd_thenAddedAsLast() {
@@ -75,10 +76,9 @@ class ConfigurationRegistryTest {
 
     private static int findIndex(ConfigurationRegistry configurationRegistry, String searchedConfig) {
         int index = 0;
-        var it = configurationRegistry.listIterator();
 
-        while (it.hasNext()) {
-            if (searchedConfig.equals(it.next().getName())) {
+        for (ConfigurationType configurationType : configurationRegistry) {
+            if (searchedConfig.equals(configurationType.getName())) {
                 return index;
             }
             index++;

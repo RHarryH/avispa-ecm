@@ -23,35 +23,35 @@ import com.avispa.ecm.model.EcmObjectRepository;
 import com.avispa.ecm.model.configuration.EcmConfig;
 import com.avispa.ecm.model.configuration.EcmConfigRepository;
 import com.avispa.ecm.model.configuration.callable.autolink.Autolink;
+import com.avispa.ecm.model.configuration.context.Context;
+import com.avispa.ecm.model.configuration.context.ContextRepository;
 import com.avispa.ecm.model.configuration.dictionary.Dictionary;
 import com.avispa.ecm.model.configuration.dictionary.DictionaryValue;
 import com.avispa.ecm.model.configuration.load.dto.AutolinkDto;
 import com.avispa.ecm.model.configuration.load.dto.AutonameDto;
+import com.avispa.ecm.model.configuration.load.dto.ContextDto;
 import com.avispa.ecm.model.configuration.load.dto.DictionaryDto;
 import com.avispa.ecm.model.configuration.load.dto.DictionaryValueDto;
-import com.avispa.ecm.model.configuration.load.mapper.AutolinkMapperImpl;
-import com.avispa.ecm.model.configuration.load.mapper.AutonameMapperImpl;
-import com.avispa.ecm.model.configuration.load.mapper.DictionaryMapperImpl;
-import com.avispa.ecm.model.configuration.load.mapper.DictionaryValueMapperImpl;
 import com.avispa.ecm.model.content.Content;
-import com.avispa.ecm.model.content.ContentService;
 import com.avispa.ecm.model.filestore.FileStore;
 import com.avispa.ecm.model.format.Format;
+import com.avispa.ecm.model.type.Type;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,15 +61,12 @@ import static org.mockito.Mockito.when;
 /**
  * @author Rafał Hiszpański
  */
-@DataJpaTest
-@Import({
-        AutolinkMapperImpl.class, AutolinkLoader.class,
-        AutonameMapperImpl.class, AutonameLoader.class,
-        DictionaryMapperImpl.class, DictionaryValueMapperImpl.class, DictionaryLoader.class,
-        ContentService.class})
+@SpringBootTest
+@Transactional
 @Slf4j
 class LoaderTest {
     private static final String AUTOLINK_NAME = "Autolink";
+    private static final String CONTEXT_NAME = "Context";
     private static final String DICTIONARY_NAME = "Dictionary";
     private static final String TEST_STORE_PATH = "src/test/resources/test-store";
 
@@ -80,6 +77,9 @@ class LoaderTest {
     private EcmConfigRepository<EcmConfig> ecmConfigRepository;
 
     @Autowired
+    private ContextRepository contextRepository;
+
+    @Autowired
     private AutolinkLoader autolinkLoader;
 
     @Autowired
@@ -87,6 +87,9 @@ class LoaderTest {
 
     @Autowired
     private DictionaryLoader dictionaryLoader;
+
+    @Autowired
+    private ContextLoader contextLoader;
 
     @MockBean
     private FileStore fileStore;
@@ -175,6 +178,44 @@ class LoaderTest {
                     var autolink = (Autolink)config;
                     assertEquals("DefaultDTO", autolink.getDefaultValue());
                 },
+                Assertions::fail
+        );
+    }
+
+    @Test
+    void contextUpdateExistingConfigWhenOverwriteIsAllowed() {
+        // given
+        Type type = ecmObjectRepository.findByObjectName("Document")
+                .map(Type.class::cast)
+                .orElseThrow();
+
+        var autolinkEntity = new Autolink();
+        autolinkEntity.setObjectName(AUTOLINK_NAME);
+        autolinkEntity.setDefaultValue("DefaultOriginal");
+        ecmConfigRepository.save(autolinkEntity);
+
+        List<EcmConfig> list = new ArrayList<>();
+        list.add(autolinkEntity);
+
+        var contextEntity = new Context();
+        contextEntity.setObjectName(CONTEXT_NAME);
+        contextEntity.setEcmConfigs(list);
+        contextEntity.setType(type);
+        contextEntity.setImportance(1);
+        ecmConfigRepository.save(contextEntity);
+
+        var contextDto = new ContextDto();
+        contextDto.setName(CONTEXT_NAME);
+        contextDto.setConfigNames(List.of(AUTOLINK_NAME));
+        contextDto.setType("Document");
+        contextDto.setImportance(10);
+
+        // when
+        contextLoader.load(contextDto, true);
+
+        // then
+        contextRepository.findByObjectName(CONTEXT_NAME).ifPresentOrElse(
+                config -> assertEquals(10, config.getImportance()),
                 Assertions::fail
         );
     }
