@@ -18,6 +18,10 @@
 
 package com.avispa.ecm.model.configuration.load;
 
+import com.avispa.ecm.model.configuration.callable.autolink.Autolink;
+import com.avispa.ecm.model.configuration.callable.autoname.Autoname;
+import com.avispa.ecm.model.configuration.context.Context;
+import com.avispa.ecm.model.configuration.dictionary.Dictionary;
 import com.avispa.ecm.model.configuration.load.dto.AutolinkDto;
 import com.avispa.ecm.model.configuration.load.dto.AutonameDto;
 import com.avispa.ecm.model.configuration.load.dto.ContextDto;
@@ -25,6 +29,9 @@ import com.avispa.ecm.model.configuration.load.dto.DictionaryDto;
 import com.avispa.ecm.model.configuration.load.dto.PropertyPageDto;
 import com.avispa.ecm.model.configuration.load.dto.TemplateDto;
 import com.avispa.ecm.model.configuration.load.dto.UpsertDto;
+import com.avispa.ecm.model.configuration.propertypage.PropertyPage;
+import com.avispa.ecm.model.configuration.template.Template;
+import com.avispa.ecm.model.configuration.upsert.Upsert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,13 +61,13 @@ public class ConfigurationRegistry implements Iterable<ConfigurationType> {
      * Register basic configuration
      */
     public ConfigurationRegistry() {
-        register(ConfigurationType.of(ECM_DICTIONARY, DictionaryDto.class, false));
-        register(ConfigurationType.of(ECM_PROPERTY_PAGE, PropertyPageDto.class, true));
-        register(ConfigurationType.of(ECM_AUTOLINK, AutolinkDto.class, false));
-        register(ConfigurationType.of(ECM_AUTONAME, AutonameDto.class, false));
-        register(ConfigurationType.of(ECM_UPSERT, UpsertDto.class, false));
-        register(ConfigurationType.of(ECM_TEMPLATE, TemplateDto.class, true));
-        register(ConfigurationType.of(ECM_CONTEXT, ContextDto.class, false));
+        register(ConfigurationType.of(ECM_DICTIONARY, Dictionary.class, DictionaryDto.class, false));
+        register(ConfigurationType.of(ECM_PROPERTY_PAGE, PropertyPage.class, PropertyPageDto.class, true));
+        register(ConfigurationType.of(ECM_AUTOLINK, Autolink.class, AutolinkDto.class, false));
+        register(ConfigurationType.of(ECM_AUTONAME, Autoname.class, AutonameDto.class, false));
+        register(ConfigurationType.of(ECM_UPSERT, Upsert.class, UpsertDto.class, false));
+        register(ConfigurationType.of(ECM_TEMPLATE, Template.class, TemplateDto.class, true));
+        register(ConfigurationType.of(ECM_CONTEXT, Context.class, ContextDto.class, false));
     }
 
     /**

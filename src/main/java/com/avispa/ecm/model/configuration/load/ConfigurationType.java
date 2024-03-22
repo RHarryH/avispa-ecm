@@ -18,6 +18,7 @@
 
 package com.avispa.ecm.model.configuration.load;
 
+import com.avispa.ecm.model.configuration.EcmConfig;
 import com.avispa.ecm.model.configuration.load.dto.EcmConfigDto;
 import lombok.Value;
 
@@ -27,6 +28,7 @@ import lombok.Value;
 @Value(staticConstructor="of")
 public class ConfigurationType {
     String name;
+    Class<? extends EcmConfig> configClass;
     Class<? extends EcmConfigDto> dto;
     boolean contentRequired;
 }
