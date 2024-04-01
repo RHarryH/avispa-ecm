@@ -49,6 +49,12 @@ registered in special `TYPE` database table. This type contains type name (reuse
 name which corresponds to the registered type. Class name has to be a unique value. The type can be persisted in the 
 database in form of an _objects_. Avispa ECM considers types name as case-insensitive.
 
+Types should be considered as of OOP classes counterparties. This means if custom type is implemented by extending other
+existing type (for example `Invoice` being extension of `Document` by declaring class
+as `class Invoice extends Document`),
+the type will implicitly reflect that hierarchy, which might impact for example contexts match rules.
+See more in [Context](#context) section.
+
 ### Objects hierarchy
 
 The root of all objects is `ECM_ENTITY` table. It later divides to `ECM_CONFIG` and `ECM_OBJECT`. Latter one is
@@ -101,15 +107,45 @@ The last level is designated for the end-users. It allows to configure following
   brochures or reports with fixed structure.
 - **Upsert** - configuration item telling, which property page should be used when inserting or updating document
 
+### Context
+
 All documents in ECM are of `Document` type. It is possible to extend it to create more specific types with additional
 properties. These types and their properties can be used to link with different properties. It is done using **Context**
 configuration item, which defines kind of a configuration matrix telling, for which kind of documents configuration 
 items should be triggered. This enables for example using different naming conventions or templates for different 
 documents types. Documents applicable for a context are defined as a _match rule_ using Conditions.
 
+It is important to think about types as hierarchical structures similar to classes in OOP. This means that any subtype
+of `Document` will also be a `Document`. This impacts how contexts are resolved allowing to specify generic
+configurations
+for all documents or specific subtypes group. However, it is not recommended it is possible to create contexts for base
+type and use subtypes properties in the match rule. The context might be then applied to all `Document` subtypes
+containing that property and matching the specified value. This allows fine-grained context preparation but in most use
+cases it might be too confusing causing seemingly unexpected behavior. To better understand this use case please see
+below example.
+
+**Types**: `Document` and `Invoice` whose implementation extends `Document` and contains additional `serialNumber`
+property
+
+**Context** (the configuration is stored in the database but for the simplicity it is presented as equivalent JSON):
+
+```json
+{
+  "type": "Document",
+  "matchRule": {
+    "serialNumber": 10
+  }
+}
+```
+
+When retrieving matching configurations for `Invoice` object containing `serialNumber` property with `10` as a value,
+above context configuration despite being defined for `Document` type, will match that object so all configuration
+elements defined within that context will be applied to that object. This happens because `Invoice` is a subtype
+of `Document` type.
+
 ### Dictionary
 
-_Dictionaries__ are key-value maps for storing expected values for objects fields. They can be later used for example on
+_Dictionaries_ are key-value maps for storing expected values for objects fields. They can be later used for example on
 the UI as options for combo or radio boxes. The key is called a _label_ while value is a map of columns and their 
 respective values. It means single dictionary value can keep multiple values in fact. For example if we want to use 
 dictionary to store VAT rates the label will look like `VAT_08` and the value can contain `multiplier` column with 
