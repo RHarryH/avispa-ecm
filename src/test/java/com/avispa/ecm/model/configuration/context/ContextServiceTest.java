@@ -37,7 +37,6 @@ import com.avispa.ecm.util.expression.ExpressionResolver;
 import com.avispa.ecm.util.json.JsonValidator;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
@@ -49,7 +48,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -110,14 +108,17 @@ class ContextServiceTest {
     }
 
     @Test
-    @Disabled("Hibernate 6 SQM bug or behavior change. https://hibernate.atlassian.net/jira/software/c/projects/HHH/issues/HHH-17527")
-    void throwExceptionWhenInputJsonContainsNonExistingField() {
+    void findConfigurationWhenTypeIsNotFinalTypeAndContextMatchRuleContainsSubtypeField() {
         Document document = createDocument();
+        Document testDocument = createTestDocument();
         Autoname autoname = createAutoname();
 
-        createContext(documentType, "{ \"objectName\": \"It's me\", \"testString\": \"Test string\"}", autoname);
+        createContext(documentType, "{ \"objectName\": \"It's me\", \"testString\": \"Test String\"}", autoname);
 
-        assertThrows(IllegalArgumentException.class, () -> contextService.getConfigurations(document));
+        // document does not have "testString" so nothing will be found
+        assertTrue(contextService.getConfigurations(document).isEmpty());
+        // however Test Document subtype contains that field so it finds the configuration
+        assertEquals(List.of(autoname), contextService.getConfigurations(testDocument));
     }
 
     @Test
