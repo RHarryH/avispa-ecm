@@ -48,6 +48,19 @@
         <sonar.skip>true</sonar.skip>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>avispa-repository-release</id>
+            <name>Avispa Repository Release</name>
+            <url>https://repository.rafalhiszpanski.pl/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>avispa-repository-snapshot</id>
+            <name>Avispa Repository Snapshot</name>
+            <url>https://repository.rafalhiszpanski.pl/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <profiles>
         <profile>
             <id>sonar</id>
@@ -190,7 +203,7 @@
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
-                    <version>3.10.0.2594</version>
+                    <version>3.11.0.3922</version>
                 </plugin>
             </plugins>
         </pluginManagement>
