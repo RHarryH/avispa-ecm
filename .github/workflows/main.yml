@@ -25,39 +25,21 @@ jobs:
       - name: Build with Maven
         run: mvn -Davispa.ecm.office.home='/usr/lib/libreoffice' -B verify
 
-      - name: Upload JaCoCo coverage report
-        uses: actions/upload-artifact@v3.1.1
-        with:
-          name: jacoco-report
-          path: target/site/jacoco/
-
-  generate_badges:
-    runs-on: ubuntu-22.04
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
-    needs: build_job
-    steps:
-      - name: Get JaCoCo coverage report
-        uses: actions/download-artifact@v3.0.2
-        with:
-          name: jacoco-report
-          path: target/site/jacoco/
-
       - name: Generate JaCoCo Badge
+        if: github.ref == 'refs/heads/develop'
+        id: jacoco
         uses: cicirello/jacoco-badge-generator@v2.9.0
         with:
           generate-branches-badge: true
 
       - name: Log coverage percentage
+        if: github.ref == 'refs/heads/develop'
         run: |
           echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
           echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
 
-      - name: Shallow Checkout
-        uses: actions/checkout@v3.2.0
-        with:
-          fetch-depth: 1
-
       - name: Commit and push the badge (if it changed)
+        if: github.ref == 'refs/heads/develop'
         uses: EndBug/add-and-commit@v9.1.1
         with:
           default_author: github_actions
