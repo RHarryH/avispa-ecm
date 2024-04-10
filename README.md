@@ -159,14 +159,17 @@ name.
 Property page is used to define the layout of UI form for displaying object fields (known also as _properties_).
 Property page configuration requires a JSON content file with the layout details. Object fields are wrapped in so-called
 _property controls_. There are also different kind of _controls_ which are not related to properties
-like `separator`, `label` or _grouping controls_ like `group`, `columns`, `table` or `tabs`. The file structure is 
-defined in JSON Schema files found [here](src/main/resources/json-schemas).
+like `separator`, `label` or _grouping controls_ like `group`, `columns`, `table` or `tabs`. The file structure is
+defined in JSON Schema files found [here](src/main/resources/json-schemas). For additional details on control-specific
+properties please check
+[this](#controls) section.
 
 Below are some of the general details about grouping limitations:
 
 - `columns` can have up to 4 nested controls, which are not a grouping controls.
 - `table` can use only `checkbox`, `combo`, `date`, `datetime`, `money`, `number`, and `text` controls. Constraints are
-  not allowed for these controls, and they are always required (except for checboxes, they have always only `true/false`
+  not allowed for these controls, and they are always required (except for checkboxes, they have always
+  only `true/false`
   values). Tables cannot be present in any grouping control.
 - `group` does not allow to nest another group within it. However `columns` or `tabs` are allowed.
 - `tabs` allows to nest `columns` and `groups` without `tabs` nested.
@@ -179,15 +182,69 @@ Property page can be run in one of multiple context modes:
 - `INSERT` - properties are editable but all `id` fields are hidden
 - `EDIT` - properties are editable, `id`s of objects are passed to the property page
 
-#### Visibility and requirement constraints
+#### Accessibility constraints
 
-Apart from controls defined in `table`, property controls can have a `required` property defined, which tells if the
-value of property must be provided or is optional. For `checkbox` requirement means, the checkbox has to be checked.
+Apart from controls defined in `table`, property controls can have properties, which tells whether they should be
+readonly, required or visible. The basic ones are:
 
-Additionally, all controls apart from `table` nested properties and `columns` can have a visibility and requirement
-constraints defined. Visibility constraint tells the control should be hidden. Requirement constraint overwrites
-`required` property if specified. Constraints can be defined as [condition](#conditions) (visibility or requirement is
-determined based on the values of other properties) or by defining allowed property page context modes.
+- `required` property tells if the value of property must be provided or is optional. For `checkbox` requirement means,
+  the checkbox has to be checked.
+- `readonly` property allows to make control always read only. Please note if property page is opened in `READONLY`
+  context, this property is always overwritten to `true`
+
+To have more fine-grained control over properties behavior they can be configured with `constraints` node. There are
+three categories of constraints:
+
+- `visibility` constraint tells whether the control should be hidden
+- `requirement` constraint tells whether the control should be required and overwrites `required` property setting
+- `modifiable` constraint tells whether the control should be modifiable and overwrites `readonly` property setting.
+  Please note it has reversed meaning to the `readonly` - when resolved condition will return positive result, the
+  property can be modified.
+
+This applies to all controls apart from following exclusions:
+
+- `table` nested properties and `columns` are not controllable in such way
+- `group`, `tabs`, `label` and `separator` have only `visibility` constraint
+
+Constraints can be defined in two ways:
+
+- as [conditions](#conditions) (accessibility is determined based on the values of other properties)
+- by defining property page [context mode](#context-mode) in which behavior should be applied.
+
+#### Controls
+
+Apart from common properties described in the previous sections, controls can have many properties specific to them.
+Each control has also `type` property, which can take one of the values presented in the [main](#property-page) section
+and describes the control type. Property controls have to define `property` control to tell, which value will be read
+or write. For some controls (see `table`) it has additional meaning.
+
+##### Table
+
+| Property name | Type      | Required | Description                                                                                                                          |
+|---------------|-----------|----------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `label`       | `string`  | No       | Label with the name of the table                                                                                                     |
+| `fixed`       | `boolean` | No       | When set to yes, the possibility of adding or removing new rows should be forbidden (only modification of existing rows is possible) |
+| `property`    | `string`  | Yes      | Root property name, maps to `java.util.List` field in the database entity                                                            |
+| `controls`    | `array`   | Yes      | Array of controls for display root property properties. They are relative to the root `property`.                                    |
+
+##### Combobox and radio button
+
+Both `combobox` and `radio` controls have to load some static or dynamic dictionary defined through `loadSettings`
+property. It can have one of two structures depending on the type of dictionary.
+
+For static dictionaries:
+
+| Property name | Type      | Required | Description                                                                                  |
+|---------------|-----------|----------|----------------------------------------------------------------------------------------------|
+| `dictionary`  | `string`  | Yes      | Name of the dictionary from the [zip configuration](#zip-configuration)                      |
+| `sortByLabel` | `boolean` | No       | By default dictionary values are sorted by the values keys. This option allows to change it. |
+
+For dynamic dictionaries:
+
+| Property name   | Type     | Required | Description                                                                                                   |
+|-----------------|----------|----------|---------------------------------------------------------------------------------------------------------------|
+| `type`          | `string` | Yes      | Name of the type, which should be queried                                                                     |
+| `qualification` | `string` | No       | Additional qualification to narrow the result. Qualification is a regular [condition](#conditions-processing) |
 
 ## Conditions processing
 
