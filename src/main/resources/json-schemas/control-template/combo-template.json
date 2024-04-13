@@ -27,10 +27,7 @@
             "sortByLabel": {
               "type": "boolean"
             }
-          },
-          "required": [
-            "dictionary"
-          ]
+          }
         },
         {
           "additionalProperties": false,
